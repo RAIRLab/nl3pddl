@@ -6,8 +6,8 @@ CREATE TABLE Domains (
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     loop_number INTEGER NOT NULL,
     label TEXT NOT NULL, -- The name of the domain, should be identifiable with ground truth
-    raw_pddl TEXT NOT NULL
-    raw_blob BLOB NOT NULL, --A Pickled AST of the domain from python pddl package 
+    raw_pddl TEXT NOT NULL,
+    raw_blob BLOB NOT NULL --A Pickled AST of the domain from python pddl package 
 );
 
 -- A description of a domain, predicate, action, etc, along with an associated class.
@@ -38,7 +38,7 @@ CREATE TABLE PredicateOwners (
 CREATE TABLE PredicateDescriptionOwners (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     predicate_id INTEGER NOT NULL REFERENCES Predicates(id),
-    predicate_description_id INTEGER NOT NULL REFERENCES Descriptions(id)
+    description_id INTEGER NOT NULL REFERENCES Descriptions(id)
 );
 
 CREATE TABLE Actions (
@@ -55,7 +55,7 @@ CREATE TABLE ActionOwners (
 CREATE TABLE ActionDescriptionOwners (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     action_id INTEGER NOT NULL REFERENCES Actions(id),
-    action_description_id INTEGER NOT NULL REFERENCES Descriptions(id)
+    description_id INTEGER NOT NULL REFERENCES Descriptions(id)
 );
 
 CREATE TABLE DomainTemplates (

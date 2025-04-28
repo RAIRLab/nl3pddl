@@ -10,7 +10,7 @@ def wipe_db(db_file: str) -> None:
     """Wipe the database by deleting the file if it exists."""
     if os.path.exists(db_file):
         os.remove(db_file)
-    logging.warn(f"Database wiped (or did not exist).")
+    logging.warning(f"Database wiped (or did not exist).")
 
 def reset_db(db_file: str) -> sqlite3.Connection:
     """Reset the database by deleting the file if it exists and creating a new one,

@@ -13,7 +13,7 @@ DB_FILE_PATH = "data/domains.db"
 CONFIG_FILE_PATH = "data/config.json"
 TEMPLATE_FILE_NAME = "template.pddl.txt"
 GROUND_TRUTH_FILE_NAME = "ground.pddl"
-NL_FILE_NAME = "nl.txt"
+NL_FILE_NAME = "nl.json"
 
 
 def get_new_domains() -> list[str]:
@@ -53,7 +53,7 @@ def write_domain_raw(conn: sqlite3.Connection, domain_str: str, domain_obj: Doma
     blob : bytes = pickle.dumps(domain_obj)
     # Write the domain itself into the database
     cursor.execute(
-        "INSERT INTO Domains (created_at, loop_number, raw_pddl, raw_blob) VALUES (?, ?, ?, ?)",
+        "INSERT INTO Domains (created_at, loop_number, label, raw_pddl, raw_blob) VALUES (?, ?, ?, ?, ?)",
         (created_at, loop_num, label, domain_str, blob)
     )
     domain_id = cursor.lastrowid
@@ -62,8 +62,8 @@ def write_domain_raw(conn: sqlite3.Connection, domain_str: str, domain_obj: Doma
     pred_map = {}
     for predicate in domain_obj.predicates:
         cursor.execute(
-            "INSERT INTO Predicates (predicate) VALUES (?)",
-            (predicate.name)
+            "INSERT INTO Predicates (label) VALUES (?)",
+            (predicate.name,)
         )
         predicate_id = cursor.lastrowid
         cursor.execute(
@@ -76,8 +76,8 @@ def write_domain_raw(conn: sqlite3.Connection, domain_str: str, domain_obj: Doma
     action_id_map = {}
     for action in domain_obj.actions:
         cursor.execute(
-            "INSERT INTO Actions (action) VALUES (?)",
-            (action.name)
+            "INSERT INTO Actions (label) VALUES (?)",
+            (action.name,)
         )
         action_id = cursor.lastrowid
         cursor.execute(
@@ -90,6 +90,7 @@ def write_domain_raw(conn: sqlite3.Connection, domain_str: str, domain_obj: Doma
 def write_domain(conn: sqlite3.Connection, domain_dir_path: str) -> None:
     """Takes a domain directory path, parses all the data into the database"""
 
+    logging.info(f"Storing domain {domain_dir_path} into the database.")
     # Write the ground truth domain into the database
     domain_path = os.path.join(domain_dir_path, GROUND_TRUTH_FILE_NAME)
     with open(domain_path, "r") as f:
@@ -103,8 +104,8 @@ def write_domain(conn: sqlite3.Connection, domain_dir_path: str) -> None:
         template_str = f.read()
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO DomainTemplates (raw_pddl) VALUES (?)",
-        (template_str)
+        "INSERT INTO DomainTemplates (raw_text) VALUES (?)",
+        (template_str,)
     )
     template_id = cursor.lastrowid
     cursor.execute(
@@ -117,8 +118,8 @@ def write_domain(conn: sqlite3.Connection, domain_dir_path: str) -> None:
     with open(nl_path, "r") as f:
         nl_str = f.read()
     nl_json = json.loads(nl_str)
-    for (desc_class, desc) in nl_json["overall"]:
-        cursor.execute("INSERT INTO Descriptions (nl, nl_class) VALUES (?)", (desc, desc_class))
+    for (desc_class, desc) in nl_json["overall"].items():
+        cursor.execute("INSERT INTO Descriptions (nl, nl_class) VALUES (?, ?)", (desc, desc_class))
         description_id = cursor.lastrowid
         cursor.execute(
             "INSERT INTO DomainDescriptionOwners (domain_id, description_id) VALUES (?, ?)",
@@ -126,8 +127,8 @@ def write_domain(conn: sqlite3.Connection, domain_dir_path: str) -> None:
         )
 
     assert len(nl_json["predicates"]) == len(ids.predicate_id_map), "Predicate count mismatch"
-    for (pred_name, pred_obj) in nl_json["predicates"]:
-        for (desc_class, desc) in pred_obj["overall"]:
+    for (pred_name, pred_obj) in nl_json["predicates"].items():
+        for (desc_class, desc) in pred_obj.items():
             cursor.execute("INSERT INTO Descriptions (nl, nl_class) VALUES (?, ?)", (desc, desc_class))
             description_id = cursor.lastrowid
             cursor.execute(
@@ -136,8 +137,8 @@ def write_domain(conn: sqlite3.Connection, domain_dir_path: str) -> None:
             )
         
     assert len(nl_json["actions"]) == len(ids.action_id_map), "Action count mismatch"
-    for (action_name, action_obj) in nl_json["actions"]:
-        for (desc_class, desc) in action_obj["overall"]:
+    for (action_name, action_obj) in nl_json["actions"].items():
+        for (desc_class, desc) in action_obj.items():
             cursor.execute("INSERT INTO Descriptions (nl, nl_class) VALUES (?, ?)", (desc, desc_class))
             description_id = cursor.lastrowid
             cursor.execute(
