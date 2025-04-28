@@ -1,0 +1,12 @@
+The Bookseller domain models the transportation of books via drones to different locations. 
+The domain operates over a finite number of books, locations, and drones. Each drone can hold a stack of books, 
+but only the bottom book can be accessed at any time. The goal is to transport all books to a specific location.
+
+The domain contains the following actions:
+1. loadFirst: A drone picks up the first book at a location.
+2. loadBottom: A drone picks up the bottom book at a location.
+4. unloadFinal: A drone drops off the top and final book at a location.
+5. unloadBottom: A drone drops off the bottom book at a location.
+6. flyDrone: A drone flies from one location to another.
+
+

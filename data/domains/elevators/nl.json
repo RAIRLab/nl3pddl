@@ -1,0 +1,50 @@
+{
+    "overall": {
+        "first": "The elevators domain models the operation of a single elevator in a building with multiple floors.",
+        "detailed-first": "This domain simulates the functioning of an elevator system in a multi-story building. The elevator can move up and down between floors, pick up waiting passengers, and drop them off at their desired destinations. The goal is to transport all passengers to their destination floors efficiently, at which point they are considered served."
+    },
+    "predicates": {
+        "at": {
+            "first": "The elevator is at a specific floor.",
+            "detailed-first": "This predicate indicates the current position of the elevator within the building, specifying which floor it is currently located on."
+        },
+        "origin": {
+            "first": "The passenger's starting floor.",
+            "detailed-first": "This predicate identifies the floor where a passenger initially appears and waits for the elevator, representing their point of entry into the system."
+        },
+        "destin": {
+            "first": "The passenger's destination floor.",
+            "detailed-first": "This predicate identifies the floor where a passenger wants to go, representing their intended exit point from the elevator system."
+        },
+        "above": {
+            "first": "One floor is directly above another floor.",
+            "detailed-first": "This predicate establishes the vertical relationship between floors, indicating that the first floor is exactly one level above the second floor."
+        },
+        "boarded": {
+            "first": "The passenger is inside the elevator.",
+            "detailed-first": "This predicate indicates that a passenger has entered the elevator and is currently being transported, no longer waiting on their origin floor."
+        },
+        "served": {
+            "first": "The passenger has reached their destination.",
+            "detailed-first": "This predicate indicates that a passenger has been successfully transported to their destination floor and has exited the elevator, completing their journey."
+        }
+    },
+    "actions": {
+        "board": {
+            "first": "A passenger boards the elevator on their origin floor.",
+            "detailed-first": "This action occurs when the elevator is at the same floor as a waiting passenger. The passenger enters the elevator and is marked as boarded, no longer waiting at their origin floor."
+        },
+        "depart": {
+            "first": "A passenger departs the elevator on their destination floor and becomes served.",
+            "detailed-first": "This action occurs when the elevator reaches a passenger's destination floor. The passenger exits the elevator and is marked as served, completing their journey."
+        },
+        "up": {
+            "first": "The elevator moves up one floor.",
+            "detailed-first": "This action moves the elevator from its current floor to the floor directly above it, traveling upward one level at a time."
+        },
+        "down": {
+            "first": "The elevator moves down one floor.",
+            "detailed-first": "This action moves the elevator from its current floor to the floor directly below it, traveling downward one level at a time."
+        }
+    }
+}

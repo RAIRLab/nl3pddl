@@ -1,0 +1,31 @@
+(define (domain gripperStrips)
+
+    (:requirements :strips :typing )
+
+    (:types room obj robot gripper)
+
+    (:predicates 
+        (at-robot ?r - room)
+        (free ?g - gripper)
+        (carry ?o - obj ?g - gripper)
+        (at ?o - obj ?r - room)
+    )
+
+    (:action move
+        :parameters (?from ?to - room)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action pick
+        :parameters (?o - obj ?r - room ?g - gripper)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action drop
+        :parameters (?o - obj ?r - room ?g - gripper)
+        :precondition ()
+        :effect ()
+    )
+)

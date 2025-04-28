@@ -1,0 +1,38 @@
+(define (domain flow_free)
+
+    (:requirements :strips :typing)
+
+    (:types
+        color
+        location
+    )
+
+    (:predicates
+        (offboard)
+        (empty ?l - location)
+        (not-empty ?l - location)
+        (color-at ?l - location ?c - color)
+        (adjacent ?l1 - location ?l2 - location)
+        (flow-end ?l - location ?c - color)
+        (flow-at ?l1 - location ?c - color)
+        (flow-complete ?c - color)
+    )
+
+    (:action start
+        :parameters (?l - location ?c - color)
+        :precondition () 
+        :effect ()
+    )
+
+    (:action move
+        :parameters (?l1  ?l2 - location ?c - color)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action finish
+        :parameters (?l1  ?l2 - location ?c - color)
+        :precondition () 
+        :effect ()
+    )
+)

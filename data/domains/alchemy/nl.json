@@ -1,0 +1,55 @@
+{
+    "creation": "2025-02-16",
+    "overall": {
+        "first": "The alchemy domain models mixing and combining available ingredients to create potions in a step by step process. The alchemist collects ingredients, adds them to a container, mixes them, and brews a potion.",
+        "detailed-first": "This domain immerses the user in the world of alchemy, where an alchemist collects ingredients and uses containers to mix them into potent potions. The process involves gathering available ingredients, carefully adding them to containers, cleaning off any unwanted residues, and performing a precise mixing of three distinct ingredients. The primary goal is to complete the mixture in a container and then brew a potion that is ready for use. This detailed description emphasizes the systematic approach and challenges in ensuring that each step is correctly executed to achieve the final objective."
+    },
+    "predicates": {
+        "available": {
+            "first" : "The ingredient is available to be collected.",
+            "detailed-first" : "This predicate indicates that the ingredient is available to be collected by the alchemist. The ingredient can be found in the environment and can be picked up by the alchemist to be used in the potion-making process."
+        },
+        "has-ingredient": {
+            "first" : "The alchemist has the ingredient.",
+            "detailed-first" : "This predicate indicates that the alchemist has successfully collected the ingredient and added it to their inventory. The ingredient is now in the possession of the alchemist and can be used in the potion-making process."
+        },
+        "in": {
+            "first" : "The ingredient is in the container.",
+            "detailed-first" : "This predicate indicates that the ingredient is inside the container. The alchemist has added the ingredient to the container as part of the potion-making process."
+        },
+        "mixture-complete": {
+            "first" : "The mixture in the container is complete.",
+            "detailed-first" : "This predicate indicates that the alchemist has successfully added all three ingredients to the container. The alchemist has carefully mixed the ingredients to create a potent potion that is ready for use."
+        },
+        "potion-ready": {
+            "first" : "The potion is ready for use.",
+            "detailed-first" : "This predicate indicates that the alchemist has successfully completed the potion-making process. The alchemist has collected the ingredients, added them to the container, mixed them carefully, and created a potent potion that is now ready for use."
+        },
+        "different": {
+            "first" : "Two ingredient are different from each other.",
+            "detailed-first" : "This predicate indicates that the ingredient is distinct from the other ingredients in the potion-making process. The alchemist must carefully identify the unique properties of the ingredient and ensure that it is added to the container at the right time."
+        }
+    },
+    "actions": {
+        "collect-ingredient": {
+            "first" : "An alchemist collects available ingredients, removing them from the available ingredients list.",
+            "detailed-first" : "This action allows the alchemist to collect the ingredient from the environment. The alchemist must move to the location of the ingredient and interact with it to pick it up and add it to their inventory."
+        },
+        "add-ingredient": {
+            "first" : "An alchemist adds an ingredient to a container.",
+            "detailed-first" : "This action allows the alchemist to add the ingredient to the container. The alchemist must ensure that the ingredient is properly placed in the container and that it is ready for mixing."
+        },
+        "clean-container": {
+            "first" : "An alchemist cleans the container.",
+            "detailed-first" : "This action allows the alchemist to clean the container before adding the ingredients. The alchemist must ensure that the container is free of any unwanted residues that could affect the potion-making process."
+        },
+        "mix-ingredients": {
+            "first" : "An alchemist mixes the ingredients in the container.",
+            "detailed-first" : "This action allows the alchemist to mix the ingredients in the container. The alchemist must ensure that the ingredients are thoroughly combined to create a potent potion."
+        },
+        "brew-potion": {
+            "first" : "An alchemist brews the potion.",
+            "detailed-first" : "This action allows the alchemist to brew the potion. The alchemist must ensure that the potion is properly heated and that it is ready for use."
+        }
+    }
+}

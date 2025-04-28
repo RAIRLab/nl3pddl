@@ -1,0 +1,11 @@
+The elevators domain models the operation of a single elevator in a building with multiple floors. 
+The elevator can move between floors, pick up passengers, and drop off passengers. Once a passenger
+has been picked up, they must be dropped off at their destination floor, and they will be considered served.
+
+The domain has four actions:
+1. board: A passenger boards the elevator on their origin floor.
+2. depart: A passenger departs the elevator on their destination floor and becomes served.
+3. up: The elevator moves up one floor.
+4. down: The elevator moves down one floor.
+
+

@@ -1,0 +1,54 @@
+{
+    "overall": {
+        "first": "The Flow domain models the game 'Flow Free,' where players connect pairs of colored endpoints by drawing continuous, non-overlapping paths on a grid.",
+        "detailed-first": "This domain models the game 'Flow Free,' where the objective is to connect pairs of colored endpoints on a square grid by drawing continuous, non-overlapping paths. To win the game the player must connect all the endpoints and fill the entire board. The board is made up of squares in a grid, and each flow is associated with a particular color."
+    },
+    "predicates": {
+        "offboard": {
+            "first": "The player's finger is not on the board.",
+            "detailed-first": "This predicate indicates that the player's finger is off the board, allowing them to begin any flow."
+        },
+        "empty": {
+            "first": "The location has no color.",
+            "detailed-first": "This predicate indicates that the specified location on the grid has not been filled with any color yet."
+        },
+        "not-empty": {
+            "first": "The location has a color.",
+            "detailed-first": "This predicate indicates that the location has already been filled with a color, representing the negation of the empty predicate."
+        },
+        "color-at": {
+            "first": "The location has a specific color.",
+            "detailed-first": "This predicate indicates that the specified location has been marked with the specified color as part of a flow path."
+        },
+        "adjacent": {
+            "first": "Two locations are next to each other.",
+            "detailed-first": "This predicate indicates that one location is directly adjacent to another location on the grid, allowing movement between them."
+        },
+        "flow-end": {
+            "first": "The location is an endpoint for a flow.",
+            "detailed-first": "This predicate indicates that the specified location is an endpoint (origin or destination) for a flow of the specified color."
+        },
+        "flow-at": {
+            "first": "The player is drawing a flow at a location.",
+            "detailed-first": "This predicate indicates that the player is currently at the specified location drawing a flow of the specified color."
+        },
+        "flow-complete": {
+            "first": "The flow for a color is completed.",
+            "detailed-first": "This predicate indicates that the flow for the specified color has been successfully completed by connecting its two endpoints."
+        }
+    },
+    "actions": {
+        "start": {
+            "first": "Begin a flow from an endpoint.",
+            "detailed-first": "This action begins a flow by placing the player's finger on an empty endpoint of a specific color. This action initiates the drawing of a path from that endpoint."
+        },
+        "move": {
+            "first": "Extend an active flow to an adjacent empty location.",
+            "detailed-first": "This action extends an active flow by moving the finger from its current location to an adjacent empty location, marking the new cell with the flow's color as the path continues."
+        },
+        "finish": {
+            "first": "Complete a flow by connecting to its other endpoint.",
+            "detailed-first": "This action completes an active flow by connecting the drawn path to a matching colored endpoint. This action finishes the flow by moving the finger into an adjacent empty endpoint, marking it with the flow's color and finalizing the connection."
+        }
+    }
+}

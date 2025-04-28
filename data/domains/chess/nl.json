@@ -1,0 +1,22 @@
+{
+    "overall": {
+        "first": "This domain models the movement of a knight on a 3x3 chess board.",
+        "detailed-first": "The chess domain models the movement of a knight on a 3x3 chess board. The domain captures connections between locations as possible moves for the knight, as well as the current position of the knight. The goal is to see if the knight can move to a specific location."
+    },
+    "predicates": {
+        "at": {
+            "first": "The knight is at a specific location.",
+            "detailed-first": "Knight is at location ?loc"
+        },
+        "connected": {
+            "first": "Two locations are connected by a knight's move.",
+            "detailed-first": "Location ?from is connected to location ?to by a valid knight's move"
+        }
+    },
+    "actions": {
+        "move": {
+            "first": "The knight moves from one location to another.",
+            "detailed-first": "The knight moves from one connected location to another."
+        }
+    }
+}

@@ -1,0 +1,8 @@
+(a1 a ba baa abaa)
+(a2 a ba a baa aba aa abaa abaaa abaaabaaa)
+(mp abaa abaaa abaaabaaa)
+(a1 a b ba aba)
+(mp aba aa abaaa)
+
+
+

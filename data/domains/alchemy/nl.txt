@@ -1,0 +1,9 @@
+The alchemy domain models mixing and combining available ingredients to create potions in a step by step process. 
+The alchemist collects ingredients, adds them to a container, mixes them, and brews a potion.
+
+The domain includes the following actions:
+1. collect-ingredient: an alchemist collects available ingredients, removing them from the available ingredients list.
+2. add-ingredient: an alchemist adds an ingredient to a container.
+3. clean-container: an alchemist cleans a container by removing an ingredient from it.
+4. mix-ingredients: an alchemist mixes three different ingredients in a container to complete the mixture.
+5. brew-potion: an alchemist brews a potion from a complete mixture in a container.

@@ -1,0 +1,16 @@
+(define (domain knight-move)
+  (:requirements :strips :typing)
+  
+  (:types location)
+  
+  (:predicates
+    (at ?loc - location)
+    (connected ?from ?to - location) 
+  )
+  
+  (:action move
+    :parameters (?from ?to - location)
+    :precondition ()
+    :effect ()
+  )
+)

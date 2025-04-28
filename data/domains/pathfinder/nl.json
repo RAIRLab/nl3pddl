@@ -1,0 +1,54 @@
+{
+    "overall": {
+        "first": "The Pathfinder domain models movement in a grid-like environment with pressure plates and walls, inspired by the Honkai Star Rail game. The goal is to navigate the environment efficiently while considering how pressure plates will alter available routes.",
+        "detailed-first": "This domain simulates a puzzle-like environment where a player moves in four cardinal directions across a grid of locations. Once motion begins in a direction, the player continues until encountering an obstacle. The environment contains clear paths, walls that block movement, and pressure plates that transform into walls after being stepped on, preventing backtracking. The strategy involves planning a path that navigates through the environment efficiently while considering how pressure plates will alter available routes."
+    },
+    "predicates": {
+        "plate-at": {
+            "first": "A pressure plate is at this location.",
+            "detailed-first": "This predicate indicates that a pressure plate is present at the specified location. When the player moves onto a pressure plate, it will convert into a wall, blocking future passage through that location."
+        },
+        "wall-at": {
+            "first": "A wall is at this location.",
+            "detailed-first": "This predicate indicates that a wall is present at the specified location, making it impossible for the player to move into or through that space."
+        },
+        "clear": {
+            "first": "The location is clear and traversable.",
+            "detailed-first": "This predicate indicates that a location has no obstacles (no walls or pressure plates) and can be freely moved through by the player."
+        },
+        "connected": {
+            "first": "Two locations are connected in a specific direction.",
+            "detailed-first": "This predicate establishes that one location is adjacent to another location in a particular direction, defining the grid structure of the environment and allowing movement between connected locations."
+        },
+        "in-motion": {
+            "first": "The player is moving in a specific direction.",
+            "detailed-first": "This predicate indicates that the player has started moving in a particular direction and will continue moving in that direction until encountering an obstacle or completing the motion."
+        },
+        "not-in-motion": {
+            "first": "The player is stationary and can choose a direction to move.",
+            "detailed-first": "This predicate indicates that the player is currently not moving and is free to initiate movement in any valid direction."
+        },
+        "at": {
+            "first": "The player is at this location.",
+            "detailed-first": "This predicate specifies the current position of the player within the grid environment."
+        }
+    },
+    "actions": {
+        "motion-clear": {
+            "first": "The player moves through a clear location while in motion.",
+            "detailed-first": "This action allows the player to continue moving in their current direction by proceeding from their current location to an adjacent clear location. This represents ongoing momentum in the chosen direction."
+        },
+        "motion-start": {
+            "first": "The player begins moving in a chosen direction.",
+            "detailed-first": "This action initiates movement in a specific direction from a stationary position. Once movement begins, the player will continue in that direction until stopped by an obstacle or completing the motion."
+        },
+        "motion-plate": {
+            "first": "The player moves onto a pressure plate, converting it to a wall.",
+            "detailed-first": "This action allows the player to move from their current location onto an adjacent pressure plate. Upon doing so, the pressure plate is activated and transforms into a wall, preventing any future movement through that location."
+        },
+        "motion-wall": {
+            "first": "The player encounters a wall and stops moving.",
+            "detailed-first": "This action represents the player's motion being halted by a wall. When the player attempts to move into a location with a wall, they remain in their current position and return to a stationary state."
+        }
+    }
+}

@@ -1,0 +1,11 @@
+
+The pathfinder domain models a puzzle game where an agent must get from one location to another in a grid environment 
+with walls and pressure plates. Once the agent starts moving in a direction it can not stop until it hits a wall. If the agent
+passes over a pressure plate while in motion, it will replace the location of the pressure plate with the wall. While the classic
+game is two dimensional, this version can be made to be n-dimensional.
+
+The domain has 4 actions
+1. motion-start: starts the agent moving in one direction
+2. motion-clear: if the space in front of the agent is clear and the agent is in motion, the agent will move into the space.
+3. motion-plate: if the space in front of the agent is a pressure plate and the agent is in motion, the agent will move onto the plate and the plate will be replaced with a wall.
+4. motion-wall: if the agent moves into a wall, the agent stops at the position before the wall and is no longer moving.

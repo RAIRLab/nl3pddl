@@ -1,0 +1,51 @@
+
+(define (domain lukasiewiczP2)
+
+    (:requirements :strips :typing)
+
+    (:types formula - object)
+
+    (:predicates
+        (undef ?f - formula)
+        (def ?f - formula)
+        (implies ?f ?l ?r - formula)
+        (neg ?f ?a - formula)
+        (provable ?f - formula)
+    )
+
+    (:action def_imp 
+        :parameters (?f ?l ?r - formula)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action def_neg
+        :parameters (?f ?a - formula)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action a1
+        :parameters (?p ?q ?qp ?pqp - formula)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action a2 
+        :parameters (?p ?q ?r ?qr ?pq ?pr ?pqr ?pqpr ?pqrpqpr - formula)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action a3
+        :parameters (?p ?q ?np ?nq ?nqnp ?qp ?nqnpqp - formula)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action mp 
+        :parameters (?p ?q ?pq - formula)
+        :precondition ()
+        :effect ()
+    )
+)

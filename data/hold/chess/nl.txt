@@ -1,0 +1,7 @@
+
+The chess domain models the movement of a knight on a 3x3 chess board. 
+The domain captures connections between locations as possible moves for the knight,
+as well as the current position of the knight. The goal is to see if the knight can move to a specific location.
+
+The domain contains the following action:
+1. move: The knight moves from one connected location to another.

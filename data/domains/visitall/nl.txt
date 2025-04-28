@@ -1,0 +1,6 @@
+
+An agent is in the middle of a square grid and must visit all cells in the grid. 
+
+there is one action:
+
+1. move: which allows for the agent to move from one cell to an adjacent cell.

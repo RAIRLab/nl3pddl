@@ -1,0 +1,17 @@
+
+The Lukasiewicz P2 domain models proving propositional formulae in a Hilbert system using the axioms provided by Lukasiewicz's P2.
+The domain operates over a finite number of propositional formulae, which may be composed into more complex formulae using implication and negation.
+Since implication and negation are functionally complete, any propositional formula can be represented in this domain after a translation. 
+
+The domain contains the following actions:
+1. def_imp: Defines an implication formula given two defined formulae.
+2. def_neg: Defines a negation formula given a defined formula.
+3. a1: The first of three axioms in Lukasiewicz's P2, which states that
+   if a formulae is in the form p implies q and q implies p, then p is provable.
+4. a2: The second of three axioms in Lukasiewicz's P2, which states that if a formulae
+   is in the form p implies q, q implies r, r implies p, p implies q, q implies p, and
+p implies r, then p implies r is provable.
+5. a3: The third of three axioms in Lukasiewicz's P2, which states that if a formulae
+   is in the form not p implies not q, then q implies p is provable.
+6. mp: Modus ponens, which states that if p implies q and p are provable, then q is provable.
+

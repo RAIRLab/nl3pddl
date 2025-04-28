@@ -1,0 +1,47 @@
+
+(define (domain bookseller)
+
+    (:requirements :strips :typing)
+
+    (:types book location drone capacity - object)
+
+    (:predicates 
+        (book-at ?b - book ?l - location)
+        (drone-at ?d - drone ?l - location)
+        (path ?l1 - location ?l2 - location)
+        (empty ?d - drone)
+        (first ?b - book ?d - drone)
+        (last ?b - book ?d - drone)
+        (ontop ?b1 - book ?b2 - book)
+    )
+
+    (:action loadFirst
+        :parameters (?d - drone ?b - book ?l - location)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action loadBottom
+        :parameters (?d - drone ?b1 ?b2 - book ?l - location)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action unloadFinal
+        :parameters (?d - drone ?b - book ?l - location)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action unloadBottom
+        :parameters (?d - drone ?b1 ?b2 - book ?l - location)
+        :precondition ()
+        :effect ()
+    )
+
+    (:action flyDrone
+        :parameters (?d - drone ?l1 ?l2 - location)
+        :precondition ()
+        :effect ()
+    )
+)

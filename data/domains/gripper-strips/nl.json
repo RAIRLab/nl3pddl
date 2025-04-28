@@ -1,0 +1,38 @@
+{
+    "overall": {
+        "first": "The Gripper domain involves a robot that can pick up and move objects between rooms using its grippers.",
+        "detailed-first": "This domain models a robot equipped with grippers that can pick up objects, move between rooms, and drop objects. The robot must use its grippers efficiently to transport objects from their initial locations to desired destinations."
+    },
+    "predicates": {
+        "at-robot": {
+            "first": "The robot is in a specific room.",
+            "detailed-first": "This predicate indicates that the robot is physically present in the specified room, allowing it to interact with objects in that room."
+        },
+        "free": {
+            "first": "The gripper is empty and available for use.",
+            "detailed-first": "This predicate indicates that the specified gripper is not holding any object and is free to pick up something."
+        },
+        "carry": {
+            "first": "The gripper is carrying an object.",
+            "detailed-first": "This predicate indicates that the specified gripper is currently holding the specified object, which means that object is no longer in a room but with the robot."
+        },
+        "at": {
+            "first": "The object is in a specific room.",
+            "detailed-first": "This predicate indicates that the specified object is physically located in the specified room, making it available for the robot to pick up when in that room."
+        }
+    },
+    "actions": {
+        "move": {
+            "first": "The robot moves from one room to another.",
+            "detailed-first": "This action allows the robot to move from its current room to a different room. The robot can carry objects in its grippers while moving."
+        },
+        "pick": {
+            "first": "The robot picks up an object with a gripper.",
+            "detailed-first": "This action allows the robot to pick up an object that is in the same room using an available gripper. After picking up, the object is no longer in the room but carried by the gripper."
+        },
+        "drop": {
+            "first": "The robot drops an object from a gripper.",
+            "detailed-first": "This action allows the robot to release an object it is carrying in a gripper, placing the object in the room where the robot currently is and freeing the gripper for future use."
+        }
+    }
+}

@@ -1,0 +1,58 @@
+{
+    "overall": {
+        "first": "The Bookseller domain models the transportation of books via drones to different locations.",
+        "detailed-first": "This domain operates over a finite set of books, locations, and drones. Drones pick up books at a location and form a stack inside the drone—only the bottom book is accessible—and then transport them along defined paths to deliver them at targeted locations. The goal is to efficiently move all books to a designated location."
+    },
+    "predicates": {
+        "book-at": {
+            "first": "A book is at a location.",
+            "detailed-first": "Indicates that a particular book is available at a given location, ready for pickup or delivery."
+        },
+        "drone-at": {
+            "first": "A drone is at a location.",
+            "detailed-first": "Specifies that a drone is present at a specific location, making it eligible to load or unload books or to fly to another location."
+        },
+        "path": {
+            "first": "There is a path between two locations.",
+            "detailed-first": "Denotes that a connection exists between two locations, allowing a drone to fly from one to the other."
+        },
+        "empty": {
+            "first": "A drone is empty.",
+            "detailed-first": "Indicates that the drone is not carrying any books, so it is available to pick up a new book."
+        },
+        "first": {
+            "first": "A book is the first in a drone's stack.",
+            "detailed-first": "Marks that a book, when loaded into a drone, is recognized as the first book in its stack, typically when the drone is initially empty."
+        },
+        "last": {
+            "first": "A book is the last (bottom) in a drone's stack.",
+            "detailed-first": "Identifies the bottom book in the drone's stack. This book is accessible when loading additional books or when unloading from the bottom."
+        },
+        "ontop": {
+            "first": "One book is directly on top of another.",
+            "detailed-first": "Indicates that a book is stacked directly above another book, establishing the order of books carried by the drone."
+        }
+    },
+    "actions": {
+        "loadFirst": {
+            "first": "A drone picks up the first book at a location.",
+            "detailed-first": "When a drone is at a location and is empty, and a book is available there, the loadFirst action loads that book into the drone. The book is marked both as the first and the last book in the drone's stack, and it is removed from the location."
+        },
+        "loadBottom": {
+            "first": "A drone picks up the bottom book at a location.",
+            "detailed-first": "If a drone already carries a book (marked as last) and another book is available at the same location, the loadBottom action allows the drone to load the new book underneath the existing stack. This action updates the previous bottom book by removing its 'last' status, marks it as 'ontop' of the new book, and sets the new book as the last in the stack."
+        },
+        "unloadFinal": {
+            "first": "A drone drops off its only (top and final) book at a location.",
+            "detailed-first": "When a drone carrying a single book returns to a location, the unloadFinal action unloads that book. The drone becomes empty, the book is placed at the location, and both the 'first' and 'last' predicates for that book are removed."
+        },
+        "unloadBottom": {
+            "first": "A drone drops off the bottom book from its stack.",
+            "detailed-first": "This action unloads the bottom book from a drone's stack. When a drone is at a location with a stacked load of books, unloadBottom removes the lowest book (currently marked as last) from the drone, places it at the location, and updates the stack so that the next book in line becomes the new last."
+        },
+        "flyDrone": {
+            "first": "A drone flies from one location to another.",
+            "detailed-first": "Simulates drone movement between locations along a defined path. When a drone is at its starting location and a valid path connects it to a destination, the flyDrone action moves the drone to the destination and updates its position accordingly."
+        }
+    }
+}

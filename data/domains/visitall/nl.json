@@ -1,0 +1,26 @@
+{
+    "overall": {
+        "first": "The VisitAll domain features an agent that must visit every cell in a square grid.",
+        "detailed-first": "This domain represents a navigation problem where an agent starts in the middle of a square grid and must systematically visit all cells. The agent can only move between adjacent cells (horizontally or vertically), and the challenge is to find an efficient path that ensures every cell is visited at least once."
+    },
+    "predicates": {
+        "at": {
+            "first": "The agent is at a specific location in the grid.",
+            "detailed-first": "This predicate indicates the current position of the agent within the square grid, representing which cell the agent occupies at any given time."
+        },
+        "visited": {
+            "first": "The location has been visited by the agent.",
+            "detailed-first": "This predicate tracks whether a specific cell in the grid has been visited by the agent at least once during its journey."
+        },
+        "connected": {
+            "first": "Two locations are directly connected.",
+            "detailed-first": "This predicate establishes that two cells in the grid are adjacent to each other, either horizontally or vertically, allowing the agent to move directly between them."
+        }
+    },
+    "actions": {
+        "move": {
+            "first": "The agent moves from one cell to an adjacent cell.",
+            "detailed-first": "This action allows the agent to move from its current position to a directly connected cell in the grid. When the agent enters a cell, that cell is marked as visited. The objective is to use this action strategically to visit all cells in the grid with minimal movement."
+        }
+    }
+}
