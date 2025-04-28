@@ -1,11 +1,13 @@
 
---A syntactically valid PDDL domain. 
+--A syntactically valid PDDL domain.
+--Loop number is what loop this domain was created in, with 0 being the ground truth domain.
 CREATE TABLE Domains (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     loop_number INTEGER NOT NULL,
-    label TEXT NOT NULL,
+    label TEXT NOT NULL, -- The name of the domain, should be identifiable with ground truth
     raw_pddl TEXT NOT NULL
+    raw_blob BLOB NOT NULL, --A Pickled AST of the domain from python pddl package 
 );
 
 -- A description of a domain, predicate, action, etc, along with an associated class.
@@ -15,28 +17,12 @@ CREATE TABLE Descriptions (
     nl_class TEXT NOT NULL
 );
 
+-- Table relating a domain with a description.
 CREATE TABLE DomainDescriptionOwners (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     domain_id INTEGER NOT NULL REFERENCES Domains(id),
     description_id INTEGER NOT NULL REFERENCES Descriptions(id)
 );
-
--- CREATE TABLE Types (
---     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
---     label TEXT NOT NULL,
--- );
-
--- CREATE TABLE SuperTypes (
---     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
---     sub_type_id INTEGER NOT NULL REFERENCES Types(id),
---     domain_id INTEGER NOT NULL REFERENCES Domains(id)
--- );
-
--- CREATE TABLE TypeOwners (
---     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
---     type_id INTEGER NOT NULL REFERENCES Types(id),
---     domain_id INTEGER NOT NULL REFERENCES Domains(id)
--- )
 
 CREATE TABLE Predicates (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -55,14 +41,6 @@ CREATE TABLE PredicateDescriptionOwners (
     predicate_description_id INTEGER NOT NULL REFERENCES Descriptions(id)
 );
 
--- CREATE TABLE PredicateArgs (
---     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
---     label TEXT NOT NULL,
---     pos INTEGER NOT NULL,
---     predicate_id INTEGER NOT NULL REFERENCES Predicates(id),
---     type_id INTEGER NOT NULL REFERENCES Types(id)
--- );
-
 CREATE TABLE Actions (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     label TEXT NOT NULL
@@ -79,29 +57,6 @@ CREATE TABLE ActionDescriptionOwners (
     action_id INTEGER NOT NULL REFERENCES Actions(id),
     action_description_id INTEGER NOT NULL REFERENCES Descriptions(id)
 );
-
--- CREATE TABLE ActionArgs (
---     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
---     label TEXT NOT NULL,
---     pos INTEGER NOT NULL,
---     action_id INTEGER NOT NULL REFERENCES Actions(id),
---     type_id INTEGER NOT NULL REFERENCES Types(id)
--- );
-
--- CREATE TABLE ActionPreds (
---     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
---     precondition BOOLEAN NOT NULL,
---     negated BOOLEAN NOT NULL,
---     action_id INTEGER NOT NULL REFERENCES Actions(id),
---     predicate_id INTEGER NOT NULL REFERENCES Predicates(id)
--- );
-
--- CREATE TABLE ActionPredArgs (
---     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
---     pos INTEGER NOT NULL,
---     action_predicate_id INTEGER NOT NULL REFERENCES ActionPreds(id),
---     predicate_arg_id INTEGER NOT NULL REFERENCES ActionArgs(id)
--- );
 
 CREATE TABLE DomainTemplates (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,

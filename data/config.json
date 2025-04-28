@@ -1,0 +1,16 @@
+{
+    "classic_domains": [
+        "visitall",
+        "blocks",
+        "elevators",
+        "logistics",
+        "gripper-strips"
+    ],
+    "new_domains": [
+        "alchemy",
+        "bookseller",
+        "chess",
+        "flow",
+        "pathfinder"
+    ]
+}
