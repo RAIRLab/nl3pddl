@@ -7,7 +7,8 @@ CREATE TABLE Domains (
     loop_number INTEGER NOT NULL,
     label TEXT NOT NULL, -- The name of the domain, should be identifiable with ground truth
     raw_pddl TEXT NOT NULL,
-    raw_blob BLOB NOT NULL --A Pickled AST of the domain from python pddl package 
+    raw_blob BLOB NOT NULL, --A Pickled AST of the domain from python pddl package 
+    file_path TEXT
 );
 
 -- A description of a domain, predicate, action, etc, along with an associated class.

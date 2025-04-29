@@ -15,7 +15,7 @@ from typing import Any
 from subprocess import CalledProcessError
 
 #The location of VAL relative to where this is being run from
-VAL_PATH = "VAL/build/bin/Validate"
+VAL_PATH = "submodules/VAL/build/bin/Validate"
 
 def new_pipe(tmpdir : str, pipe_name : str, contents : str) -> str:
     """
@@ -78,13 +78,13 @@ def can_apply_plan(
     except CalledProcessError as err:
         shutil.rmtree(tmpdir)
         return False, "DifDomain", "NewToOriginal", err.output.decode()
-    try:
-        #Backward direction, try plan from the original domain in the new domain
-        args = [VAL_PATH, new_domain_path, problem_path, original_plan_path]
-        _ = subprocess.check_output(args, stderr=subprocess.DEVNULL)
-    except CalledProcessError as err:
-        shutil.rmtree(tmpdir)
-        return False, "DifDomain", "OriginalToNew", err.output.decode()
+    # try:
+    #     #Backward direction, try plan from the original domain in the new domain
+    #     args = [VAL_PATH, new_domain_path, problem_path, original_plan_path]
+    #     _ = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+    # except CalledProcessError as err:
+    #     shutil.rmtree(tmpdir)
+    #     return False, "DifDomain", "OriginalToNew", err.output.decode()
     shutil.rmtree(tmpdir)
     if os.path.exists("found_plans"):
         shutil.rmtree("found_plans")
@@ -97,6 +97,14 @@ def evaluate_responses(conn : sqlite3.Connection, loop_id : int) -> None:
     cursor = conn.cursor()
     requests = cursor.execute("""
         SELECT pl.plan_file, p.problem_file, d.name, r.raw_response
-        FROM ModelResponses WHERE loop_id = ? and error = 0 
+        FROM ModelResponses res 
+        JOIN ModelResponseOwners reso ON reso.response_id = res.id
+        JOIN ModelRequestOwners reqo ON reqo.request_id = reso.request_id
+        JOIN ProblemOwners probo ON probo.domain_id = reqo.domain_id
+        JOIN PlanOwners plo ON pl.problem_id = probo.problem_id
+        JOIN Problems p ON p.id = probo.problem_id
+        JOIN Domains d ON d.id = probo.domain_id
+        JOIN Plans pl ON pl.id = plo.plan_id
+        WHERE res.loop_id = ? and res.error = 0
     """, (loop_id,)).fetchall()
-    for ()
+    

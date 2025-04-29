@@ -4,7 +4,7 @@ import sqlite3
 import logging
 import json
 
-BASE_PROMPT_PATH = "data/prompts/start_prompt.txt"
+BASE_PROMPT_PATH = "data/prompts/start_prompt_template.txt"
 CONTEXT_PATH = "data/context"
 CONTEXT1 = "blocksworld"
 CONTEXT2 = "logistics"
@@ -56,25 +56,30 @@ def chat_completion_prompt(new_template:str) -> list[dict[str, str]]:
 def construct_initial_prompts(conn : sqlite3.Connection) -> None:
     """Constructs the initial prompts for all the domains in the database"""
     cur = conn.cursor()
-    for model in MODELS:
-        rows = cur.execute("""
-            SELECT dt.raw_text, d.id, d.label 
-            FROM Domains d
-            JOIN DomainTemplateOwners dto ON dto.domain_id = d.id
-            JOIN DomainTemplates dt ON dto.template_id = dt.id
-        """).fetchall()
-        for (template_raw_text, domain_id, domain_name) in rows:
-            logging.info(f"Constructing initial prompt for {domain_name} with model {model}")
-            messages = chat_completion_prompt(template_raw_text)
-            cur.execute(
-                "INSERT INTO ModelRequests (loop_id, model_name, api_provider, raw_json) VALUES (?, ?, ?, ?)",
-                (0, model, "openai", json.dumps(messages))
-            )
-            request_id = cur.lastrowid
-            cur.execute(
-                "INSERT INTO ModelRequestOwners (domain_id, owner_id, request_id) VALUES (?, ?, ?)",
-                (domain_id, None, request_id)
-            )
+    #for model in MODELS:
+
+    rows = cur.execute("""
+        SELECT dt.raw_text, d.id, d.label 
+        FROM Domains d
+        JOIN DomainTemplateOwners dto ON dto.domain_id = d.id
+        JOIN DomainTemplates dt ON dto.template_id = dt.id
+    """).fetchall()
+    for (template_raw_text, domain_id, domain_name) in rows:
+        #logging.info(f"Constructing initial prompt for {domain_name} with model {model}")
+        messages = chat_completion_prompt(template_raw_text)
+        for message in messages:
+            print(message["role"])
+            print(message["content"])
+        cur.execute(
+            "INSERT INTO ModelRequests (loop_id, model_name, api_provider, raw_json) VALUES (?, ?, ?, ?)",
+            #(0, model, "openai", json.dumps(messages))
+            (0, "gpt-4.1", "openai", json.dumps(messages))
+        )
+        request_id = cur.lastrowid
+        cur.execute(
+            "INSERT INTO ModelRequestOwners (domain_id, owner_id, request_id) VALUES (?, ?, ?)",
+            (domain_id, None, request_id)
+        )
     try:
         conn.commit()
     except:
