@@ -6,13 +6,6 @@
     (:types book location drone capacity - object)
 
     (:predicates 
-        (book-at ?b - book ?l - location)
-        (drone-at ?d - drone ?l - location)
-        (path ?l1 - location ?l2 - location)
-        (empty ?d - drone)
-        (first ?b - book ?d - drone)
-        (last ?b - book ?d - drone)
-        (ontop ?b1 - book ?b2 - book)
     )
 
     (:action loadFirst

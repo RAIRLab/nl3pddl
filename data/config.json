@@ -7,9 +7,12 @@
         "gripper-strips"
     ],
     "new_domains": [
-        "alchemy",
         "bookseller",
         "flow",
         "pathfinder"
+    ],
+    "unused_domains": [
+        "chess",
+        "alchemy"
     ]
 }

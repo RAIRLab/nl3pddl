@@ -72,7 +72,9 @@ CREATE TABLE DomainTemplateOwners (
 CREATE TABLE Problems (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     label TEXT NOT NULL,
-    raw_pddl TEXT NOT NULL
+    raw_pddl TEXT NOT NULL,
+    raw_blob BLOB NOT NULL, --A Pickled AST of the problem from python pddl package
+    file_path TEXT NOT NULL -- The path to the file that this problem was created from
 );
 
 CREATE TABLE ProblemOwners (
@@ -83,7 +85,8 @@ CREATE TABLE ProblemOwners (
 
 CREATE TABLE Plans (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    raw_text TEXT NOT NULL
+    raw_text TEXT NOT NULL,
+    file_path TEXT NOT NULL -- The path to the file that this plan was created from
 );
 
 CREATE TABLE PlanOwners (
@@ -92,12 +95,12 @@ CREATE TABLE PlanOwners (
     plan_id INTEGER NOT NULL REFERENCES Plans(id)
 );
 
-CREATE TABLE Prompts (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    model_style TEXT NOT NULL, --Either chat completion or text completion
-    raw_prompt TEXT NOT NULL,
-    loop_id INTEGER NOT NULL
-);
+-- CREATE TABLE Prompts (
+--     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+--     model_style TEXT NOT NULL, --Either chat completion or text completion
+--     raw_prompt TEXT NOT NULL,
+--     loop_id INTEGER NOT NULL
+-- );
 
 -- A model request is a request that is actually sent to the LLM,
 -- It associates a prompt with a specific model and parameters to that model.
@@ -111,12 +114,15 @@ CREATE TABLE ModelRequests (
 
 CREATE TABLE ModelRequestOwners (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    prompt_id INTEGER NOT NULL REFERENCES Prompts(id),
-    model_request_id INTEGER NOT NULL REFERENCES ModelRequests(id)
+    domain_id INTEGER NOT NULL REFERENCES Domains(id),
+    owner_id INTEGER REFERENCES ModelRequests(id),
+    request_id INTEGER NOT NULL REFERENCES ModelRequests(id)
 );
 
 CREATE TABLE ModelResponses (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    loop_id INTEGER NOT NULL, --The id of the loop that this response is part of
+    error BOOLEAN NOT NULL, --True if the response is good, false otherwise
     raw_response TEXT NOT NULL
 );
 

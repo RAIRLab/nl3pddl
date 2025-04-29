@@ -146,6 +146,40 @@ def write_domain(conn: sqlite3.Connection, domain_dir_path: str) -> None:
                 (ids.action_id_map[action_name], description_id)
             )
 
+    #write the two problem files and their plans to the database
+    for i in range(1, 3):
+        problem_path = os.path.join(domain_dir_path, f"p1{i}.pddl")
+        with open(problem_path, "r") as f:
+            problem_str = f.read()
+        
+        problem_ast = DomainParser()(problem_str)
+        blob = pickle.dumps(problem_ast)
+        problem_name = problem_ast.name
+
+        cursor.execute(
+            "INSERT INTO Problems (label, raw_pddl, raw_blob, file_path) VALUES (?, ?)",
+            (problem_name, problem_str, blob, problem_path)
+        )
+        problem_id = cursor.lastrowid
+        cursor.execute(
+            "INSERT INTO ProblemOwners (domain_id, problem_id) VALUES (?, ?)",
+            (ids.domain_id, problem_id)
+        )
+
+        plan_path = os.path.join(domain_dir_path, f"plan{i}.pddl")
+        with open(plan_path, "r") as f:
+            plan_str = f.read()
+        cursor.execute(
+            "INSERT INTO Plans (raw_text, file_path) VALUES (?, ?)",
+            (plan_str, plan_path)
+        )
+        plan_id = cursor.lastrowid
+        cursor.execute(
+            "INSERT INTO PlanOwners (problem_id, plan_id) VALUES (?, ?)",
+            (problem_id, plan_id)
+        )
+
+
 def write_new_domains(conn: sqlite3.Connection) -> None:
     """Adds all new domains to the database"""
     new_domains = get_new_domains()

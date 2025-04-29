@@ -6,11 +6,6 @@
     (:types formula - object)
 
     (:predicates
-        (undef ?f - formula)
-        (def ?f - formula)
-        (implies ?f ?l ?r - formula)
-        (neg ?f ?a - formula)
-        (provable ?f - formula)
     )
 
     (:action def_imp 

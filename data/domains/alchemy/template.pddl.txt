@@ -6,12 +6,6 @@
   )
   
   (:predicates
-    (available ?i - ingredient)
-    (has-ingredient ?a - alchemist ?i - ingredient)
-    (in ?i - ingredient ?c - container)  
-    (mixture-complete ?c - container)    
-    (potion-ready ?p - potion ?c - container) 
-    (different ?i1 ?i2 - ingredient)
   )
   
   (:action collect-ingredient

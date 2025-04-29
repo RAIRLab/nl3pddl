@@ -5,9 +5,6 @@
     (:types place - object)
 
     (:predicates 
-        (connected ?x ?y - place)
-        (at-robot ?x - place)
-        (visited ?x - place)
     )
         
     (:action move

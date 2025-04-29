@@ -1,10 +1,20 @@
 {
     "cSpell.words": [
         "AUTOINCREMENT",
+        "blocksworld",
         "executescript",
         "lastrowid",
         "pycache",
+        "reprompts",
         "venv",
         "visitall"
+    ],
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "data/database.db",
+            "name": "db"
+        }
     ]
 }

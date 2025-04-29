@@ -5,13 +5,6 @@
     (:types location direction - object)
 
     (:predicates
-        (plate-at ?l - location)
-        (wall-at ?l - location)
-        (clear ?l - location)
-        (connected ?l1 ?l2 - location ?d - direction)
-        (in-motion ?d - direction)
-        (not-in-motion)
-        (at ?l - location)
     )
 
     (:action motion-clear

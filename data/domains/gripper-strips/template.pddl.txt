@@ -5,10 +5,6 @@
     (:types room obj robot gripper)
 
     (:predicates 
-        (at-robot ?r - room)
-        (free ?g - gripper)
-        (carry ?o - obj ?g - gripper)
-        (at ?o - obj ?r - room)
     )
 
     (:action move

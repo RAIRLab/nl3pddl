@@ -1,0 +1,8 @@
+
+Given a template of a Planning Domain Definition Language (PDDL) planning domain and a natural language description of that domain,
+fill in the types and predicates as well as the missing preconditions and effects for each action in the domain using the provided natural language description.
+
+The following restrictions apply to the output:
+1) You are only to output PDDL, and nothing else. You are to output the domain as raw text, with no additional formatting.
+2) You are to use the provided template as a base, and only fill in the missing preconditions and effects for each action.
+3) The output domain should be typed STRIPS, which means that the preconditions should only contain positive literals, do not include any negated preconditions, or quantified preconditions or effects. 

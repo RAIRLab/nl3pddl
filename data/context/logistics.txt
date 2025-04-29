@@ -2,27 +2,3 @@ The domain assumes a world where there are a set of packages that must be
 transported between various locations using vehicles. Two types of vehicles
 operate in this world: trucks, which travel on roads between nearby locations,
 and airplanes, which fly between more distant locations (typically airports).
-
-
-predicates:
-in-city: Indicates that a location is within a specific city.
-at: Indicates that an object (truck, airplane, or package) is at a specific
-location.
-in: Indicates that a package is inside a vehicle (truck or airplane).
-
-Actions:
-load-truck: Allows a truck to load a package at a location if both the
-package and the truck are present there. After the load-truck action, the
-package is no longer at the location but is inside the truck.
-
-unload-truck: Allows a truck to unload a package at a location if the truck
-is present there and carrying the package. After the unload-truck action, the
-package is placed at that location.
-
-drive-truck: Allows a truck to move from one location to another along the
-road network. After the drive-truck action, the truck’s location is updated to
-the destination.
-
-load-airplane: Allows an airplane to load a package at an airport if both
-the package and the airplane are at the same airport. After the load-airplane
-action, the package is no longer at the airport but is inside the airplane.
