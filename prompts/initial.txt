@@ -1,0 +1,8 @@
+
+The following is a natural language description of a PDDL domain:
+
+{domain_nl}
+
+To start you may use the following predicates but are free to add more:
+
+{predicates_nl}
