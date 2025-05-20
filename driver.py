@@ -1,18 +1,18 @@
 
+
+import os
 import json
 import logging
 from typing import Any, Literal
+from typing import Annotated
+from typing_extensions import TypedDict
 
-import os
+import pandas as pd
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph
 from pydantic import BaseModel, Field
-
-from typing import Annotated
-
-from typing_extensions import TypedDict
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
@@ -25,6 +25,8 @@ load_dotenv()
 if not os.environ.get("OPENAI_API_KEY"):
   raise RuntimeError("OPENAI_API_KEY environment variable not set. Please set it in your .env file.")
 
+ACTION_THRESHOLD = 5
+VAL_THRESHOLD = 10
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -63,9 +65,19 @@ class State(TypedDict):
 
     # The domain we are currently working on is HDE
     domain_hde_val: bool
-    hde_iterations : int
-    
 
+    action_iterations : int
+
+    hde_iterations : int
+
+# "domain_path": p.domain_path,
+# "provider": p.provider,
+# "model": p.model,
+# "give_pred_descriptions": p.give_pred_descriptions,
+# "desc_class": p.desc_class,
+# "result" : r
+
+results_df = pd.DataFrame(columns=n3p.params_header())
 for p in n3p.param_grid(dataset):
     model = init_chat_model(p.model, model_provider=p.provider)
     action_model = model.with_structured_output(ActionSchema)
@@ -97,14 +109,16 @@ for p in n3p.param_grid(dataset):
             return {
                 "messages": [n3p.action_message(dataset, p, action_name)],
                 "action_index" : action_index + 1,
-                "actions" : actions + [state["json_last"]]
+                "actions" : actions + [state["json_last"]],
+                "action_iterations" : 0
             }
     
     def check_action(state: State):
         res = n3p.check_action_output(n3p.domain_name(dataset, p), p, state["json_last"])
         return {
             "messages": [res] if res else [],
-            "action_valid" : res is None
+            "action_valid" : res is None,
+            "action_iterations" : state["action_iterations"] + 1
         }
 
     def build_domain(state: State):
@@ -123,16 +137,20 @@ for p in n3p.param_grid(dataset):
 
     def validate(state: State):
         res = n3p.val_all(dataset, p, state["json_last"].pddl_domain)
+        hde_iterations = state["hde_iterations"]
         return {
             "messages": [res] if res else [],
-            "domain_hde_val" : res is None
+            "domain_hde_val" : res is None,
+            "hde_iterations" : hde_iterations + 1
         }
     
     # Conditional Routing Helpers =============================================
     # TODO: Move these to the nicer inline notation
 
-    def route_actions(state: State) -> Literal['next_action', 'call_action_model']:
-        if state["action_valid"]:
+    def route_actions(state: State) -> Literal['__end__', 'next_action', 'call_action_model']:
+        if state["action_iterations"] >= ACTION_THRESHOLD:
+            return END
+        elif state["action_valid"]:
             return "next_action"
         else:
             return "call_action_model"
@@ -151,10 +169,10 @@ for p in n3p.param_grid(dataset):
         
     def route_hde(state: State) -> Literal['call_domain_model', '__end__']:
         if state["domain_hde_val"]:
-            return "call_domain_model"
-        else:
             return END
-    
+        else:
+            return "call_domain_model"
+            
     # Create the graph
     graph_builder = StateGraph(State)
     graph_builder.add_node("call_action_model", call_action_model)
@@ -189,15 +207,23 @@ for p in n3p.param_grid(dataset):
         "actions" : [],
         "domain_syn_val": False,
         "domain_hde_val": False,
+        "action_iterations" : 0,
         "hde_iterations" : 0
     }
-    
-    for step in graph.stream(initial_state, stream_mode="values", debug=True):
-        step["messages"][-1].pretty_print()
 
+    hde_iterations = 0
+    action_iterations = 0
+    try: 
+        logging.info(f"Running graph for {p}")
+        for i, step in enumerate(graph.stream(initial_state, stream_mode="values")):
+            #logging.info(f"Step: {i}")
+            step["messages"][-1].pretty_print()
+            hde_iterations = step["hde_iterations"]
+            action_iterations = step["action_iterations"]
+        results_df = results_df._append(n3p.params_as_dict(p, hde_iterations, action_iterations), ignore_index=True)
+    except Exception as e:
+        results_df = results_df._append(n3p.params_as_dict(p, hde_iterations, action_iterations), ignore_index=True)
+    results_df.to_csv("results.csv", index=False)
         
-        
-        
-
 
 

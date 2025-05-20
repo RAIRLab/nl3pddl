@@ -2,17 +2,17 @@
     "classic_domains": [
         "visitall",
         "blocks",
-        "elevators",
         "logistics",
         "gripper-strips"
     ],
     "new_domains": [
-        "flow"
+        "elevators",
+        "flow", 
+        "pathfinder",
+        "bookseller",
+        "alchemy"
     ],
     "unused_domains": [
-        "chess",
-        "alchemy",
-        "pathfinder",
-        "bookseller"
+        "chess"
     ]
 }

@@ -4,10 +4,6 @@
         "detailed-first": "This domain simulates the functioning of an elevator system in a multi-story building. The elevator can move up and down between floors, pick up waiting passengers, and drop them off at their desired destinations. The goal is to transport all passengers to their destination floors efficiently, at which point they are considered served."
     },
     "predicates": {
-        "at": {
-            "first": "The elevator is at a specific floor.",
-            "detailed-first": "This predicate indicates the current position of the elevator within the building, specifying which floor it is currently located on."
-        },
         "origin": {
             "first": "The passenger's starting floor.",
             "detailed-first": "This predicate identifies the floor where a passenger initially appears and waits for the elevator, representing their point of entry into the system."
@@ -19,6 +15,18 @@
         "above": {
             "first": "One floor is directly above another floor.",
             "detailed-first": "This predicate establishes the vertical relationship between floors, indicating that the first floor is exactly one level above the second floor."
+        },
+        "not-boarded": {
+            "first": "The passenger has not boarded the elevator yet.",
+            "detailed-first": "This predicate indicates that a passenger is waiting to board the elevator and has not yet entered it."
+        },
+        "not-served": {
+            "first": "The passenger has not reached their destination yet.",
+            "detailed-first": "This predicate indicates that a passenger has not yet been transported to their destination floor, meaning their journey is incomplete."
+        },
+        "lift-at": {
+            "first": "The elevator is at a specific floor.",
+            "detailed-first": "This predicate indicates the current position of the elevator within the building, specifying which floor it is currently located on."
         },
         "boarded": {
             "first": "The passenger is inside the elevator.",
