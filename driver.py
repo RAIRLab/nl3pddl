@@ -1,18 +1,13 @@
 
+import json
 import logging
 from typing import Any, Literal
 
 import os
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
-from langgraph.prebuilt import create_react_agent
-from langchain_core.tools import tool
-from langchain_core.messages import HumanMessage
-from langsmith.wrappers import wrap_openai
-from langchain_core.messages import HumanMessage
-from langchain_core.tools import tool
-from langgraph.graph import StateGraph, MessagesState
-from langgraph.prebuilt import ToolNode
+from langchain_core.messages import HumanMessage, AIMessage
+from langgraph.graph import StateGraph
 from pydantic import BaseModel, Field
 
 from typing import Annotated
@@ -35,13 +30,14 @@ logging.getLogger().setLevel(logging.INFO)
 
 dataset = n3p.Dataset()
 
-
 class ActionSchema(BaseModel):
+    """Always use this tool to structure your response to the user."""
     pddl_action: str = Field(description="String of raw typed STRIPS PDDL code for a single action (:action name :parameters (...) :precondition (...) :effect (...))")
-    predicates: str = Field(description="List of allowed predicates of the form (name arg1 - type1 arg2 - type2 ...) from this action and previous actions, adding any new predicates used in this action")
-    types: str = Field(description="List of allowed types from this action and previous actions, adding any new types used in this action")
+    predicates: list[str] = Field(description="List of allowed predicates of the form (name arg1 - type1 arg2 - type2 ...) from this action and previous actions, adding any new predicates used in this action")
+    types: list[str] = Field(description="List of allowed types from this action and previous actions, adding any new types used in this action")
 
 class DomainSchema(BaseModel):
+    """Always use this tool to structure your response to the user."""
     pddl_domain: str = Field(description="String of raw typed STRIPS PDDL code for an entire domain (:domain name :requirements (...) :types (...) :predicates (...) :functions (...) :action (...))")
 
 class State(TypedDict):
@@ -50,20 +46,24 @@ class State(TypedDict):
     # (in this case, it appends messages to the list, rather than overwriting them)
     messages: Annotated[list, add_messages]
     # The index of the action we are currently trying to write
-    action_index: int = 0
+
+    # The json object of the message returned by the model
+    json_last: Any  
+
+    action_index: int
     # The current action has passed validation
-    action_valid: bool = False
+    action_valid: bool
     # We are done and have constructed all actions
-    actions_done: bool = False
+    actions_done: bool
     # List of good action outputs
     actions : list[Any]
 
     # The domain we are currently working on is syntactically valid
-    domain_syn_val: bool = False
+    domain_syn_val: bool
 
     # The domain we are currently working on is HDE
-    domain_hde_val: bool = False
-    hde_iterations : int = 0
+    domain_hde_val: bool
+    hde_iterations : int
     
 
 for p in n3p.param_grid(dataset):
@@ -71,13 +71,17 @@ for p in n3p.param_grid(dataset):
     action_model = model.with_structured_output(ActionSchema)
     domain_model = model.with_structured_output(DomainSchema)
 
-    # Lang-graph nodes ========================================================
+    # Lang-graph nodes =======================================================
 
     def call_action_model(state: State):
-        return {"messages": [action_model.invoke(state["messages"])]}
+        json_obj = action_model.invoke(state["messages"])
+        raw = json.dumps(json_obj.model_dump())
+        return {"messages": [AIMessage(raw)], "json_last": json_obj}
     
     def call_domain_model(state: State):
-        return {"messages": [action_model.invoke(state["messages"])]}
+        json_obj = domain_model.invoke(state["messages"])
+        raw = json.dumps(json_obj.model_dump())
+        return {"messages": [AIMessage(raw)], "json_last": json_obj}
     
     def next_action(state: State):
         action_index = state["action_index"]
@@ -86,18 +90,18 @@ for p in n3p.param_grid(dataset):
         if action_index >= len(actions_names):
             return {
                 "actions_done": True,
-                "actions" : actions + [state["messages"][-1]]
+                "actions" : actions + [state["json_last"]]
             }
         else:
             action_name = actions_names[action_index]
             return {
                 "messages": [n3p.action_message(dataset, p, action_name)],
                 "action_index" : action_index + 1,
-                "actions" : actions + [state["messages"][-1]]
+                "actions" : actions + [state["json_last"]]
             }
     
     def check_action(state: State):
-        res = n3p.check_action_output(dataset, p, state["messages"][-1])
+        res = n3p.check_action_output(n3p.domain_name(dataset, p), p, state["json_last"])
         return {
             "messages": [res] if res else [],
             "action_valid" : res is None
@@ -105,23 +109,28 @@ for p in n3p.param_grid(dataset):
 
     def build_domain(state: State):
         full_domain_raw = n3p.domain_template(n3p.domain_name(dataset, p), state["actions"])
-        return {"messages" : [HumanMessage(full_domain_raw)]}
+        return {
+            "messages" : [HumanMessage(full_domain_raw)],
+            "json_last": DomainSchema(**{"pddl_domain":full_domain_raw})
+        }
 
     def check_domain(state: State):
-        res = n3p.check_domain_output(dataset, p, state["messages"][-1])
+        res = n3p.check_domain_output(p, state["json_last"])
         return {
             "messages": [res] if res else [],
             "domain_syn_val" : res is None
         }
 
     def validate(state: State):
-        res = n3p.val_all(dataset, p, state["actions"])
+        res = n3p.val_all(dataset, p, state["json_last"].pddl_domain)
         return {
             "messages": [res] if res else [],
             "domain_hde_val" : res is None
         }
     
     # Conditional Routing Helpers =============================================
+    # TODO: Move these to the nicer inline notation
+
     def route_actions(state: State) -> Literal['next_action', 'call_action_model']:
         if state["action_valid"]:
             return "next_action"
@@ -171,7 +180,19 @@ for p in n3p.param_grid(dataset):
     # Save the graph to a png file
     graph.get_graph().draw_png(f"graph.png")
 
-    for step in graph.stream({"messages" : n3p.init_msgs(dataset, p)}, stream_mode="values"):
+    initial_state = {
+        "messages": n3p.init_msgs(dataset, p),
+        "action_index": 0,
+        "json_last": None,
+        "action_valid": False,
+        "actions_done": False,
+        "actions" : [],
+        "domain_syn_val": False,
+        "domain_hde_val": False,
+        "hde_iterations" : 0
+    }
+    
+    for step in graph.stream(initial_state, stream_mode="values", debug=True):
         step["messages"][-1].pretty_print()
 
         

@@ -6,6 +6,7 @@ TODO: Parametrize out the prompts into their own files
 
 
 # LLM libs
+from typing import Any
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, BaseMessage
@@ -111,8 +112,9 @@ def init_msgs(d: Dataset, p : Params) -> list[BaseMessage]:
     # Change the initial prompt based off of whether we want to include pred descriptions or not
     if p.give_pred_descriptions:
         description_pairs = []
-        for pred_sig in get_all_pred_signatures_domain(d, p.domain_path):
-            pred_name = pred_sig.split("(")[0]
+        pred_sigs = get_all_pred_signatures_domain(d, p.domain_path)
+        names = {pred_sig.split("(")[0] for pred_sig in pred_sigs}
+        for pred_name in names:
             description_pairs.append((pred_name, d.nl_json[p.domain_path]["predicates"][pred_name][p.desc_class]))
         predicates_nl = "[" + ", ".join([f"{pred_name}: {pred_desc}" for pred_name, pred_desc in description_pairs]) + "]"
     else:
@@ -123,6 +125,7 @@ def init_msgs(d: Dataset, p : Params) -> list[BaseMessage]:
         predicates_nl=predicates_nl,
         types_nl=types_nl
     )))
+    return messages
 
 def action_message(d : Dataset, h : Params, action_name : str) -> HumanMessage:
     """
@@ -137,3 +140,20 @@ def action_message(d : Dataset, h : Params, action_name : str) -> HumanMessage:
 Part2 = HumanMessage("""
 You have completed the following domain:                       
 """)
+
+def domain_template(domain_name : str, outputs: list[Any]) -> str:
+    """
+    Given the components of the domain, types & preds & action, return a string of the domain
+    """
+    types = "\n".join(outputs[-1].types)
+    preds = "\n".join(outputs[-1].predicates)
+    actions = "\n".join(map(lambda x: x.pddl_action, outputs))
+    return f"""
+        (define (domain {domain_name})
+            (:requirements :strips :typing)
+            (:types {types})
+            (:predicates {preds})
+
+            {actions}
+        )
+    """

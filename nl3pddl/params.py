@@ -13,9 +13,9 @@ MODELS = {
     "openai" : {
         "gpt-4o-mini"
     },
-    "deepseek" : {
-        "deepseek-chat", "deepseek-reasoner"
-    }
+    # "deepseek" : {
+    #     "deepseek-chat", "deepseek-reasoner"
+    # }
 }
 
 GIVE_PRED_DESCRIPTIONS = [True]

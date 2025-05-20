@@ -7,6 +7,7 @@ from pddl.core import Domain, Action
 from pddl.parser.domain import DomainParser
 from pddl.formatter import domain_to_string
 
+from langchain.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
 from langchain_core.runnables import RunnableConfig
@@ -42,11 +43,11 @@ def action_syntax_check(model_output : str) -> str | PipelineResult:
     model_output : str = model_output[start_index:]
     model_output = model_output.strip()
     if start_index == -1 or model_output[0] != '(':
-        return PipelineResult("SyntaxError", "NoPDDL", f"Could not find opening ( in ```{action_str}```")
+        return PipelineResult("SyntaxError", "NoPDDL", f"Could not find opening ( in ```{model_output}``` this should be a valid PDDL action of the form, (:action <action_name> :parameters (<param1> - <type1> <param2> - <type2>) :precondition (<pred1> <pred2>) :effect (<pred1> <pred2>) )")
 
     closing_index = matching_closing_paren(model_output)
     if closing_index is None:
-        return PipelineResult("SyntaxError", "ParenMismatch", f"Could not find closing ) in ```{action_str}```")
+        return PipelineResult("SyntaxError", "ParenMismatch", f"Could not find closing ) in ```{model_output}```")
     
     action_str : str = model_output[start_index:closing_index+1]
     if ":action" not in action_str:
@@ -98,36 +99,50 @@ def action_domain_template(domain_name: str, types : list[str], preds: list[str]
         )
     """
 
-def check_action_output(p : Params, message : Any) -> None | str:
+def lark_err_str(e : Exception) -> str:
+    return f"""Failed at position {e.pos_in_stream} with error: {e.token} as {e}"""
+
+bad_pred_list_template = PromptTemplate(template="""
+    The following predicate list you provided is invalid:
+    {predicates}
+    The error is: {error}
+    Please note that the predicate list must be a types PDDL list of predicates in the form
+    ["(predicate1 ?x - type1 ?y - type2 ...)", "(predicate2 ?x - type1 ?y - type2 ...), ...]
+    where the types are defined in the domain.
+    """)
+
+def check_action_output(domain_name : str, p : Params, message : Any) -> None | str:
     """
     Converts a pddl string to a PDDL action object or returns an error
     """
-    preds = message["predicates"]
-    types = message["types"]
-    action_str = message["pddl_action"]
+    preds = message.predicates
+    types = message.types
+    action_str = message.pddl_action
     # Check if the predicates are valid
-    if (res := pred_syntax_check(preds)) is PipelineResult:
-        return res
+    res = pred_syntax_check(preds)
+    if isinstance(res, PipelineResult):
+        return bad_pred_list_template.format(predicates=preds, error=res.message)
 
     # Check if the action string is valid
-    if (res := action_syntax_check(action_str)) is PipelineResult:
-        return res
+    res = action_syntax_check(action_str)
+    if isinstance(res, PipelineResult):
+        return res.message
 
     #return None
-    action_domain = action_domain_template(p.domain_name, types, preds, action_str)
+    action_domain = action_domain_template(domain_name, types, preds, action_str)
     try:
         _ = DOMAIN_PARSER(action_domain)
         return None
     except Exception as e:
-        return HumanMessage(f"Unable to parse action ```{action_str}```\nError: {repr(e)} \nPlease revise the action and try again.")
+        return HumanMessage(f"Unable to parse action ```{action_str}```\nError: {lark_err_str(e)} \nPlease revise the action and try again.")
 
 def check_domain_output(p : Params, message : Any) -> None | str:
     """
     Converts a pddl string to a PDDL domain object or returns an error
     """
-    domain_str = message["pddl_domain"]
+    domain_str = message.pddl_domain
     try:
         _ = DOMAIN_PARSER(domain_str)
         return None
     except Exception as e:
-        return HumanMessage(f"Unable to parse domain ```{domain_str}```\nError: {repr(e)} \nPlease revise the domain and try again.")
+        return HumanMessage(f"Unable to parse domain ```{domain_str}```\nError: {lark_err_str(e)} \nPlease revise the domain and try again.")

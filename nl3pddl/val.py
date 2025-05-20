@@ -78,7 +78,7 @@ def val_all(d : Dataset, p : Params, new_domain_str : str) -> HumanMessage | Non
     # Get the domain and problem paths
     problem_paths = d.problem_paths[p.domain_path]
     for problem_path in problem_paths:
-        plan_path = d.plans_paths[p.domain_path]
+        plan_path = d.plan_paths[problem_path]
         # Validate the new domain
         result = raw_validate(new_domain_str, problem_path, plan_path)
         if result is not None:
