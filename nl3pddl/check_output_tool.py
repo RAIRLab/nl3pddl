@@ -1,20 +1,19 @@
+"""
+This file contains functions for checking the output of the LLM for
+action and domain syntax and semantic feedback.
+"""
 
-
+# Standard library imports
 import re
 from typing import Any
 
-from pddl.core import Domain, Action
+# External package imports
 from pddl.parser.domain import DomainParser
-from pddl.formatter import domain_to_string
-
 from langchain.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage
-from langchain_core.tools import tool
-from langchain_core.runnables import RunnableConfig
 
-from .params import MODELS, Params
-from .dataset import Dataset, PipelineResult
-
+# Internal package imports
+from .dataset import PipelineResult
 
 
 DOMAIN_PARSER = DomainParser()
@@ -43,21 +42,30 @@ def action_syntax_check(model_output : str) -> str | PipelineResult:
     model_output : str = model_output[start_index:]
     model_output = model_output.strip()
     if start_index == -1 or model_output[0] != '(':
-        return PipelineResult("SyntaxError", "NoPDDL", f"Could not find opening ( in ```{model_output}``` this should be a valid PDDL action of the form, (:action <action_name> :parameters (<param1> - <type1> <param2> - <type2>) :precondition (<pred1> <pred2>) :effect (<pred1> <pred2>) )")
+        return PipelineResult("SyntaxError", "NoPDDL",
+        f"Could not find opening ( in ```{model_output}``` this should be a \
+        valid PDDL action of the form, (:action <action_name> \
+        :parameters (<param1> - <type1> <param2> - <type2>) \
+        :precondition (<pred1> <pred2>) :effect (<pred1> <pred2>) )")
 
     closing_index = matching_closing_paren(model_output)
     if closing_index is None:
-        return PipelineResult("SyntaxError", "ParenMismatch", f"Could not find closing ) in ```{model_output}```")
-    
+        return PipelineResult("SyntaxError", "ParenMismatch",
+            f"Could not find closing ) in ```{model_output}```")
+
     action_str : str = model_output[start_index:closing_index+1]
     if ":action" not in action_str:
-        return PipelineResult("SyntaxError", "NoAction", f"Unable to find :action in ```{action_str}```")
+        return PipelineResult("SyntaxError", "NoAction",
+            f"Unable to find :action in ```{action_str}```")
     elif ":parameters" not in action_str:
-        return PipelineResult("SyntaxError", "NoParams", f"Unable to find :parameters in ```{action_str}```")
+        return PipelineResult("SyntaxError", "NoParams",
+            f"Unable to find :parameters in ```{action_str}```")
     elif ":precondition" not in action_str:
-        return PipelineResult("SyntaxError", "NoPrecond", f"Unable to find :precondition in ```{action_str}```")
+        return PipelineResult("SyntaxError", "NoPrecond",
+            f"Unable to find :precondition in ```{action_str}```")
     elif ":effect" not in action_str:
-        return PipelineResult("SyntaxError", "NoEffect", f"Unable to find :effect in ```{action_str}```")
+        return PipelineResult("SyntaxError", "NoEffect",
+            f"Unable to find :effect in ```{action_str}```")
 
     return action_str
 
@@ -70,22 +78,30 @@ def pred_syntax_check(preds : list[str]) -> list[str] | PipelineResult:
         pred : str = pred[start_index:]
 
         if start_index == -1 or pred[0] != '(':
-            return PipelineResult("SyntaxError", "NoPred", f"Could not find opening ( in ```{pred}```")
-        
+            return PipelineResult("SyntaxError", "NoPred",
+                f"Could not find opening ( in ```{pred}```")
+
         pred = pred.strip()
         closing_index = matching_closing_paren(pred)
         if closing_index is None:
-            return PipelineResult("SyntaxError", "NoPred", f"Could not find closing ) in ```{pred}```")
+            return PipelineResult("SyntaxError", "NoPred",
+                f"Could not find closing ) in ```{pred}```")
 
         pred_regex = r"\(\w+(\-\w+)?( \?\w+ - \w+)*\)"
         if not re.match(pred_regex, pred):
-            return PipelineResult("SyntaxError", "NoPred", f"Invalid predicate syntax in ```{pred}``` ex (on ?x - block ?y - block)")
-        
+            return PipelineResult("SyntaxError", "NoPred",
+                f"Invalid predicate syntax in ```{pred}```\
+                ex (on ?x - block ?y - block)")
     return preds
 
-def action_domain_template(domain_name: str, types : list[str], preds: list[str], action : str) -> str:
+def action_domain_template(
+    types : list[str],
+    preds: list[str],
+    action : str
+) -> str:
     """
-    Given the components of the domain, types & preds & action, return a string of the domain
+    Given the components of the domain, types & preds & action,
+    return a string of the domain
     """
     types_str = "\n".join(types)
     preds_str = "\n".join(preds)
@@ -100,7 +116,10 @@ def action_domain_template(domain_name: str, types : list[str], preds: list[str]
     """
 
 def lark_err_str(e : Exception) -> str:
-    return f"""Failed at position {e.pos_in_stream} with error: {e.token} as {e}"""
+    """
+    Converts a lark parsing error to a human-readable string.
+    """
+    return f"Failed at position {e.pos_in_stream} with error: {e.token} as {e}"
 
 bad_pred_list_template = PromptTemplate(template="""
     The following predicate list you provided is invalid:
@@ -111,7 +130,9 @@ bad_pred_list_template = PromptTemplate(template="""
     where the types are defined in the domain.
     """)
 
-def check_action_output(domain_name : str, p : Params, message : Any) -> None | str:
+def check_action_output(
+    message : Any
+) -> None | str:
     """
     Converts a pddl string to a PDDL action object or returns an error
     """
@@ -129,14 +150,15 @@ def check_action_output(domain_name : str, p : Params, message : Any) -> None | 
         return res.message
 
     #return None
-    action_domain = action_domain_template(domain_name, types, preds, action_str)
+    action_domain = action_domain_template(types, preds, action_str)
     try:
         _ = DOMAIN_PARSER(action_domain)
         return None
-    except Exception as e:
-        return HumanMessage(f"Unable to parse action ```{action_str}```\nError: {lark_err_str(e)} \nPlease revise the action and try again.")
+    except Exception as e: # pylint: disable=broad-except
+        return HumanMessage(f"Unable to parse action ```{action_str}```\n\
+        Error: {lark_err_str(e)} \nPlease revise the action and try again.")
 
-def check_domain_output(p : Params, message : Any) -> None | str:
+def check_domain_output(message : Any) -> None | str:
     """
     Converts a pddl string to a PDDL domain object or returns an error
     """
@@ -144,5 +166,6 @@ def check_domain_output(p : Params, message : Any) -> None | str:
     try:
         _ = DOMAIN_PARSER(domain_str)
         return None
-    except Exception as e:
-        return HumanMessage(f"Unable to parse domain ```{domain_str}```\nError: {lark_err_str(e)} \nPlease revise the domain and try again.")
+    except Exception as e: # pylint: disable=broad-except
+        return HumanMessage(f"Unable to parse domain ```{domain_str}```\n\
+        Error: {lark_err_str(e)} \nPlease revise the domain and try again.")

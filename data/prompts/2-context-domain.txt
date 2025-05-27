@@ -1,0 +1,11 @@
+The following is a natural language description of a PDDL domain:
+
+The domain assumes a world where there are a set of blocks that can be stacked on top of each other, an arm that can hold one block at a time, and a table where blocks can be placed.
+
+To start you may use the following predicates but are free to add more:
+
+["(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)"]
+
+You may also use the following types:
+
+["block"]

@@ -1,0 +1,47 @@
+```lisp
+(define (domain pathfinder)
+
+    ; Removed irrelevant requirements. Only STRIPS and typing are needed.
+    (:requirements :strips :typing)
+
+    (:types location direction - object)
+
+    (:predicates
+        (platform-at ?loc - location)   ; indicates a platform exists at the location
+        (connected ?from ?to - location ?dir - direction) ; defines a direct path from one location to another in a specific direction
+        (visited ?loc - location)       ; indicates whether a location has been visited
+        (clear ?loc - location)         ; indicates that a location is clear and can be moved to
+    )
+
+    ; Action to move from one location to another
+    (:action move
+        :parameters (?from ?to - location ?dir - direction)
+        :precondition (and
+                        (connected ?from ?to ?dir)
+                        (clear ?to)
+                        (visited ?from)
+                      )
+        :effect (and
+                    (not (visited ?from))
+                    (visited ?to)
+                )
+    )
+
+    ; Action to clear an obstructed path
+    (:action clear-path
+        :parameters (?loc - location)
+        :precondition (not (clear ?loc))
+        :effect (clear ?loc)
+    )
+
+    ; Action to mark a platform at a location
+    (:action mark-platform
+        :parameters (?loc - location)
+        :precondition (clear ?loc)
+        :effect (platform-at ?loc)
+    )
+
+)
+```
+
+This PDDL domain defines a basic pathfinding problem where agents can move between connected locations if the path is clear and a location is marked as visited. The `clear-path` action allows the agent to clear an obstructed path, and the `mark-platform` action indicates the presence of a platform at a specific location.

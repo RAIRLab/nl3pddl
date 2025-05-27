@@ -1,0 +1,5 @@
+{ 
+    "pddl_action": "(:action pick-up :parameters (?x - block) :precondition (and (ontable ?x) (clear ?x) (handempty)) :effect (and (not (ontable ?x)) (holding ?x) (not (handempty)) (not (clear ?x)))\n)",
+    "predicates": ["(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)"],
+    "types": ["block"]
+}

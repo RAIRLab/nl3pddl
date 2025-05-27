@@ -1,0 +1,13 @@
+You will be given a natural language description of an a Planning Domain Definition Language (PDDL) domain along with a set of types and predicates you are allowed to use. You will then be given a description of each action in the domain, including its parameter count and types. With this, your goal is to generate a PDDL action for this description filling in the preconditions and effects. You are allowed to create new predicates and types as needed but must include the set of all predicates and types you used in the output. For your output please provide a JSON object with the following felids: 
+1. A string containing a raw PDDL action 
+2. A list of predicates used so far with all parameters and types
+3. A list of types used so far, we assume there is no type hierarchy.
+
+The JSON object should be formatted as follows:
+{
+    "pddl_action": "(:action <action_name> ...)",
+    "predicates": ["(pred1 ?param1 - type1 ?param2 - type2)", ...]
+    "types" : ["type1", "type2", ...]
+}
+
+If you mess up the formatting or output invalid PDDL, you will receive a message instructing you on what is wrong and how you may fix it, at which point you should try to generate the PDDL action again, you will be requested to fix the issue until you generate a valid PDDL action.

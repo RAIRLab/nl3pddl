@@ -1,0 +1,27 @@
+```pddl
+(define (domain grid-visit-all)
+
+    (:requirements :typing :strips)
+
+    (:types place - object)
+
+    (:predicates 
+        (connected ?x ?y - place)
+        (at-robot ?x - place)
+        (visited ?x - place)
+    )
+
+    (:action move
+        :parameters (?from ?to - place)
+        :precondition (and (at-robot ?from) (connected ?from ?to))
+        :effect (and (not (at-robot ?from)) (at-robot ?to))
+    )
+
+    (:action visit
+        :parameters (?p - place)
+        :precondition (at-robot ?p)
+        :effect (visited ?p)
+    )
+
+)
+```

@@ -1,4 +1,0 @@
-The domain assumes a world where there are a set of packages that must be
-transported between various locations using vehicles. Two types of vehicles
-operate in this world: trucks, which travel on roads between nearby locations,
-and airplanes, which fly between more distant locations (typically airports).

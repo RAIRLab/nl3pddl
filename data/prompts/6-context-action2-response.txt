@@ -1,0 +1,5 @@
+{
+    "pddl_action": "(:action stack :parameters (?x ?y - block) :precondition (and (clear ?y) (on ?x) (handempty)) :effect (and (not (on ?x)) (not (handempty)) (stacked ?x ?y) (not (clear ?y)))\n)",
+    "predicates": [(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)]
+    "types": ["block"]
+} 

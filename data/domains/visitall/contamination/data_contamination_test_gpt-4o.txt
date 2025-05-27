@@ -1,0 +1,11 @@
+```lisp
+    )
+
+    (:action move
+        :parameters (?from ?to - place)
+        :precondition (and (at-robot ?from) (connected ?from ?to))
+        :effect (and (not (at-robot ?from)) (at-robot ?to))
+    )
+
+)
+```

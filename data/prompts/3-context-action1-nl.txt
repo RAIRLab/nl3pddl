@@ -1,0 +1,5 @@
+Using the current list of predicates and any new predicates you feel you need,generate a desc described action in the above described domain. 
+
+The pick-up action represents the action of a robot arm picking up a single block from the table
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.

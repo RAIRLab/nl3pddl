@@ -5,6 +5,7 @@ as well as a function that generates a grid over these parameters.
 """
 
 from dataclasses import dataclass
+import itertools
 from typing import Generator
 
 from .dataset import Dataset
@@ -29,6 +30,12 @@ RUN_TRIALS = 3
 
 @dataclass
 class Params:
+    """
+    This class contains the parameters for a single experiment run.
+    It is distinct from the Dataset class, which contains the fixed dataset
+    used by all experiments, but does contain some flags specifying what 
+    parts of the dataset should be used, i.e. what description class etc.
+    """
     domain_path : str
     provider : str
     model : str
@@ -37,13 +44,18 @@ class Params:
     trial : int
 
 def param_grid(d : Dataset) -> Generator[Params, None, None]:
-    for trial in range(1, RUN_TRIALS + 1):
-        for provider in MODELS.keys():
-            for model_name in MODELS[provider]:
-                for domain_path in d.domain_paths:
-                    for give_pred_desc in GIVE_PRED_DESCRIPTIONS:
-                        for desc_class in DESC_CLASSES:
-                            yield Params(domain_path, provider, model_name, give_pred_desc, desc_class, trial)
+    """
+    Generates a grid of parameters for the experiments.
+    """
+    grid = itertools.product(
+        range(1, RUN_TRIALS + 1), # Trials
+        MODELS.items(), # Model provider and name pairs
+        d.domain_paths, # Domain paths
+        GIVE_PRED_DESCRIPTIONS, # Whether to give predicate descriptions
+        DESC_CLASSES # Description classes
+    )
+    for (trial, (prov, mod), dp, gpd, desc) in grid:
+        yield Params(dp, prov, mod, gpd, desc, trial)
 
 
 def action_names(d : Dataset, h : Params) -> list[str]:
@@ -77,4 +89,7 @@ def params_header () -> list[str]:
     """
     Returns the header for the parameters
     """
-    return ["trial", "domain_path", "provider", "model", "give_pred_descriptions", "desc_class", "hde_runs", "action_runs"]
+    return [
+        "trial", "domain_path", "provider",
+        "model", "give_pred_descriptions",
+        "desc_class", "hde_runs", "action_runs"]

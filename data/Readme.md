@@ -1,9 +1,4 @@
 
-# Structure of Data
-Each directory contains the following
-* 
-
-
 # List Of Domains
 
 * Blocksworld: 

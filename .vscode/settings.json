@@ -34,5 +34,13 @@
             "database": "data/database.db",
             "name": "db"
         }
-    ]
+    ],
+    "editor.rulers": [
+        {
+            "column": 80,
+            "position": "right"
+        }
+    ],
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 80,
 }

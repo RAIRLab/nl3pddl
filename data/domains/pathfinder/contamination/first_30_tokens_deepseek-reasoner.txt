@@ -1,0 +1,6 @@
+;Honkai Star Rail Pathfinder Domain
+
+(define (domain pathfinder)
+
+    ;remove requirements that are not needed
+    (:requirements :st

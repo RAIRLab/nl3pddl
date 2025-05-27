@@ -1,11 +1,12 @@
+"""
+Wrapper for the VAL validator
+"""
 
 import os
 import shutil
 import tempfile
 import subprocess
-from typing import Any
 from subprocess import CalledProcessError
-from dataclasses import dataclass
 
 from langchain.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage
@@ -71,7 +72,8 @@ val_prompt_template = PromptTemplate(template="""
     your output should exclusively be a typed STRIPS domain.
 """)
 
-def val_all(d : Dataset, p : Params, new_domain_str : str) -> HumanMessage | None:
+def val_all(d : Dataset, p : Params, new_domain_str : str) ->\
+HumanMessage | None:
     """
     Check if the new domain is valid for all problems and plans
     """

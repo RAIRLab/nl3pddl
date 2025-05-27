@@ -1,0 +1,39 @@
+```pddl
+(define (domain pathfinder)
+    (:requirements :strips :typing)
+    (:types
+        location ; Represents different areas in the universe
+        direction ; Cardinal directions for navigation
+    )
+    
+    (:predicates
+        (connected ?from - location ?to - location ?dir - direction)
+        ; Indicates two locations are connected in a specific direction
+        (at ?loc - location)
+        ; Tracks the character's current position
+    )
+    
+    (:action move
+        :parameters (?from - location ?to - location ?dir - direction)
+        :precondition (and
+            (at ?from)
+            (connected ?from ?to ?dir)
+        )
+        :effect (and
+            (not (at ?from))
+            (at ?to)
+        )
+    )
+)
+```
+
+This domain:
+1. Defines two types: locations and directions
+2. Uses two predicates:
+   - `connected` to model directional paths between locations
+   - `at` to track current position
+3. Implements a `move` action that:
+   - Requires being at the source location and having a connection
+   - Updates the character's position when moving through valid connections
+
+The STRIPS-style operators ensure the planner can efficiently compute paths through the celestial locations while maintaining proper typing constraints.

@@ -1,0 +1,7 @@
+(define (domain grid-visit-all)
+
+    (:requirements :typing :strips)
+
+    (:types place - object)
+
+    (:predicates
