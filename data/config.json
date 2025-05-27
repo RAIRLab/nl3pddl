@@ -1,11 +1,10 @@
 {
     "classic_domains": [
-        "blocks",
         "logistics",
         "gripper-strips"
     ],
     "new_domains": [
-        "visitall",
+        "blocks",
         "elevators",
         "flow", 
         "pathfinder",
@@ -13,6 +12,7 @@
         "alchemy"
     ],
     "unused_domains": [
-        "chess"
+        "chess",
+        "visitall"
     ]
 }

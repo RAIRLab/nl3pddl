@@ -4,12 +4,14 @@
         "AUTOINCREMENT",
         "blocksworld",
         "curpos",
+        "DEEPEEK",
         "deepseek",
         "descs",
         "destin",
         "dotenv",
         "executescript",
         "exponentiate",
+        "figsize",
         "flydrone",
         "handempty",
         "hyperparam",
@@ -31,9 +33,13 @@
         "reqo",
         "reso",
         "unloadbottom",
+        "valw",
         "venv",
         "visitall",
-        "wplan"
+        "wplan",
+        "xlabel",
+        "xticks",
+        "ylabel"
     ],
     "sqltools.connections": [
         {

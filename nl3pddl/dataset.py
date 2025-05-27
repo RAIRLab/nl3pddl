@@ -99,6 +99,8 @@ class Dataset:
     # Dictionary from plan paths to their raw string representation
     plan_raws : Dict[str, str] = {}
 
+    wplan_raws : Dict[str, str] = {}
+
     # NL descriptions of the predicates and actions in the domain
     nl_json : Dict[str, Any] = {}
 
@@ -120,12 +122,16 @@ class Dataset:
                 problem = pddl.parse_problem(problem_file)
                 self.problems[problem_file] = problem
                 plan_path = problem_file.replace(".pddl", ".plan.txt")
-                wplan_path = "w" + problem_file.replace(".pddl", ".plan.txt")
+                #TODO: Fix this so its actually general and not a hack
+                wplan_path = plan_path.replace("/p1", "/wp1")
+                wplan_path = plan_path.replace("/p2", "/wp2")
                 self.plan_paths[problem_file] = plan_path
                 self.wplan_paths[problem_file] = wplan_path
                 with open(plan_path, "r", encoding="utf-8") as f:
                     self.plan_raws[plan_path] = f.read()
                 self.plans[plan_path] = parse_plan(plan_path)
+                with open(wplan_path, "r", encoding="utf-8") as f:
+                    self.wplan_raws[wplan_path] = f.read()
             nl_file_path = os.path.join(domain_path, NL_FILE_NAME)
             with open(nl_file_path, "r", encoding="utf-8") as f:
                 self.nl_json[domain_path] = json.load(f)

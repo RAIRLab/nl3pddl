@@ -5,6 +5,7 @@ It uses LangGraph to
 
 # Standard library imports
 import os
+import csv
 import json
 import logging
 from typing import Any, Literal, Annotated
@@ -53,6 +54,8 @@ class DomainSchema(BaseModel):
 
 class State(TypedDict):
     """ The LangGraph application State"""
+    #Run ID, identifier for the experiment run, allows us to filter in langsmith
+    run_id: str
     #LLM Message History
     messages: Annotated[list, add_messages]
     # The json object of the message returned by the model
@@ -75,6 +78,9 @@ class State(TypedDict):
     action_iterations : int
     # Number of iterations we have done in the HDE validation phase
     hde_iterations : int
+
+ACTION_THRESHOLD = 5
+VAL_THRESHOLD = 10
 
 def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     """
@@ -205,8 +211,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 def run_experiment(
     d: Dataset,     # Dataset
     p: Params,      # Experiment Parameters
-    results : pd.DataFrame, # Results DataFrame
-    results_lock    # Lock on results for thread safety
+    results_lock    # Lock on results file for thread safety
 ) -> None:
     """
     Executes a LangGraph for a single experiment, and writes results
@@ -233,21 +238,21 @@ def run_experiment(
     try:
         logging.info("Running graph for %s", repr(p))
         for step in graph.stream(initial_state, stream_mode="values"):
-            step["messages"][-1].pretty_print()
+            #step["messages"][-1].pretty_print()
             hde_iterations = step["hde_iterations"]
             action_iterations = step["action_iterations"]
-    finally: # pylint: disable=broad-except
+    except Exception as e: # pylint: disable=broad-except
+        print (f"Error: {e}")
+    finally:
         results_lock.acquire()
-        results.loc[len(results.index)] = n3p.params_as_dict(
-            p,
-            hde_iterations,
-            action_iterations
-        )
+        with open(r'results.csv', 'a', encoding="utf-8") as res_file:
+            csv_writer = csv.writer(res_file)
+            csv_writer.writerow(n3p.params_as_dict(
+                p,
+                hde_iterations,
+                action_iterations
+            ).values())
         results_lock.release()
-
-
-ACTION_THRESHOLD = 5
-VAL_THRESHOLD = 10
 
 if __name__ == "__main__":
 
@@ -256,24 +261,31 @@ if __name__ == "__main__":
     if not os.environ.get("OPENAI_API_KEY"):
         raise RuntimeError("OPENAI_API_KEY environment variable not set.\
                             Please set it in your .env file.")
+    if not os.environ.get("DEEPSEEK_API_KEY"):
+        raise RuntimeError("DEEPEEK_API_KEY environment variable not set.\
+                            Please set it in your .env file.")
 
     logging.getLogger().setLevel(logging.INFO)
 
     dataset = n3p.Dataset()
 
-    results_df = pd.DataFrame(columns=n3p.params_header())
+    #results_df = pd.DataFrame(columns=n3p.params_header())
+    with open(r'results.csv', 'w', encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(n3p.params_header())
+
     lock = mp.Lock()
     processes = []
     for params in n3p.param_grid(dataset):
         process = mp.Process(
             target=run_experiment,
-            args=(dataset, params, results_df, lock)
+            args=(dataset, params, lock)
         )
         processes.append(process)
         process.start()
     for process in processes:
         process.join()
-    results_df.to_csv("results.csv", index=False)
+    print("Successfully joined all processes.")
 
 else:
     raise RuntimeError("This file is a driver for the NL3PDDL project. \

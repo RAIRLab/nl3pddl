@@ -4,7 +4,7 @@
         "detailed-first": "This domain represents a navigation problem where an agent starts in the middle of a square grid and must systematically visit all cells. The agent can only move between adjacent cells (horizontally or vertically), and the challenge is to find an efficient path that ensures every cell is visited at least once."
     },
     "predicates": {
-        "at": {
+        "at-robot": {
             "first": "The agent is at a specific location in the grid.",
             "detailed-first": "This predicate indicates the current position of the agent within the square grid, representing which cell the agent occupies at any given time."
         },

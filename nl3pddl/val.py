@@ -51,27 +51,25 @@ def raw_validate(
         shutil.rmtree("found_plans")
     return None
 
-def raw_antivalidate(    
+def raw_antivalidate(
     new_domain_str : str,
     problem_path : str,
     wplan_path : str
-) -> PipelineResult:
+) -> str | None:
     """
-    Validates that the new domain against a wrong plan, expects validation failure. 
+    Validates that the new domain against a wrong plan,
+    expects validation failure. 
     TODO: Needs better error messages based on generation of wrong plants
     that specify where the error is in the plan.
     """
     res = raw_validate(new_domain_str, problem_path, wplan_path)
     if res is None:
-        return PipelineResult(
-            major_class="wplanVals",
-            minor_class="wplanVals",
-            message="Validation of wrong plan in new domain succeeded, \
-                     but it should not have."
-        )
+        return "Validation of wrong plan in new domain succeeded, \
+        but it should not have."
     return None
 
 VAL_PROMPT_TEMPLATE = PromptTemplate.from_file("data/prompts/9-val.txt")
+VALW_PROMPT_TEMPLATE = PromptTemplate.from_file("data/prompts/10-valw.txt")
 
 def val_all(d : Dataset, p : Params, new_domain_str : str) ->\
 HumanMessage | None:
@@ -92,15 +90,14 @@ HumanMessage | None:
                 plan=plan_raw,
                 val_output=result
             ))
+        # Validate the new domain against the wrong plan
         wplan_path = d.wplan_paths[problem_path]
-        if wplan_path:
-            # Validate the new domain against the wrong plan
-            result = raw_antivalidate(new_domain_str, problem_path, wplan_path)
-            if result is not None:
-                problem_raw = d.problem_raws[problem_path]
-                return HumanMessage(VAL_PROMPT_TEMPLATE.format(
-                    problem=problem_raw,
-                    plan="",
-                    val_output=result
-                ))
+        result = raw_antivalidate(new_domain_str, problem_path, wplan_path)
+        if result is not None:
+            problem_raw = d.problem_raws[problem_path]
+            wplan_raw = d.wplan_raws[plan_path]
+            return HumanMessage(VALW_PROMPT_TEMPLATE.format(
+                problem=problem_raw,
+                plan=wplan_raw
+            ))
     return None
