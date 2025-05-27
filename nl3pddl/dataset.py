@@ -89,6 +89,9 @@ class Dataset:
     # Dictionary from problem paths to for now a single plan paths.
     plan_paths : Dict[str, str] = {}
 
+    # Dictionary from plan paths to a wrong problem path,
+    wplan_paths : Dict[str, str] = {}
+
     # "AST" of the plan, maps a single plan path to its "AST", a list of
     # actions and their arguments.
     plans : Dict[str, List[Tuple[str, List[str]]]] = {}
@@ -117,7 +120,9 @@ class Dataset:
                 problem = pddl.parse_problem(problem_file)
                 self.problems[problem_file] = problem
                 plan_path = problem_file.replace(".pddl", ".plan.txt")
+                wplan_path = "w" + problem_file.replace(".pddl", ".plan.txt")
                 self.plan_paths[problem_file] = plan_path
+                self.wplan_paths[problem_file] = wplan_path
                 with open(plan_path, "r", encoding="utf-8") as f:
                     self.plan_raws[plan_path] = f.read()
                 self.plans[plan_path] = parse_plan(plan_path)

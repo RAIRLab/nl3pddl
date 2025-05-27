@@ -1,7 +1,6 @@
 (start p_0_0 red)
 (move p_0_0 p_0_1 red)
 (move p_0_1 p_0_2 red)
-(move p_0_2 p_0_3 red)
 (move p_0_3 p_0_4 red)
 (finish p_0_4 p_1_4 red)
 (start p_4_0 yellow)

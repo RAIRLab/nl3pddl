@@ -31,11 +31,11 @@ def raw_validate(
     new_domain_str : str,
     problem_path : str,
     plan_path : str
-) -> PipelineResult:
+) -> PipelineResult | None:
     """
     Given an original domain (path) and a new domain (string) problem,
     check if the the plan from the original can be used in
-    the new domain and vice versa.
+    the new domain.
     """
     tmpdir = tempfile.mkdtemp()
     new_domain_path = new_pipe(tmpdir, 'new_domain.pddl', new_domain_str)
@@ -51,10 +51,27 @@ def raw_validate(
         shutil.rmtree("found_plans")
     return None
 
+def raw_antivalidate(    
+    new_domain_str : str,
+    problem_path : str,
+    wplan_path : str
+) -> PipelineResult:
+    """
+    Validates that the new domain against a wrong plan, expects validation failure. 
+    TODO: Needs better error messages based on generation of wrong plants
+    that specify where the error is in the plan.
+    """
+    res = raw_validate(new_domain_str, problem_path, wplan_path)
+    if res is None:
+        return PipelineResult(
+            major_class="wplanVals",
+            minor_class="wplanVals",
+            message="Validation of wrong plan in new domain succeeded, \
+                     but it should not have."
+        )
+    return None
 
-val_prompt_template = PromptTemplate(template="""
-
-""")
+VAL_PROMPT_TEMPLATE = PromptTemplate.from_file("data/prompts/9-val.txt")
 
 def val_all(d : Dataset, p : Params, new_domain_str : str) ->\
 HumanMessage | None:
@@ -70,9 +87,20 @@ HumanMessage | None:
         if result is not None:
             problem_raw = d.problem_raws[problem_path]
             plan_raw = d.plan_raws[plan_path]
-            return HumanMessage(val_prompt_template.format(
+            return HumanMessage(VAL_PROMPT_TEMPLATE.format(
                 problem=problem_raw,
                 plan=plan_raw,
                 val_output=result
             ))
+        wplan_path = d.wplan_paths[problem_path]
+        if wplan_path:
+            # Validate the new domain against the wrong plan
+            result = raw_antivalidate(new_domain_str, problem_path, wplan_path)
+            if result is not None:
+                problem_raw = d.problem_raws[problem_path]
+                return HumanMessage(VAL_PROMPT_TEMPLATE.format(
+                    problem=problem_raw,
+                    plan="",
+                    val_output=result
+                ))
     return None

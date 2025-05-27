@@ -1,11 +1,11 @@
 {
     "classic_domains": [
-        "visitall",
         "blocks",
         "logistics",
         "gripper-strips"
     ],
     "new_domains": [
+        "visitall",
         "elevators",
         "flow", 
         "pathfinder",

@@ -1,0 +1,8 @@
+(collect-ingredient alchemist1 herb)
+(collect-ingredient alchemist1 mushroom)
+(collect-ingredient alchemist1 crystal)
+(add-ingredient alchemist1 herb container1)
+(add-ingredient alchemist1 mushroom container1)
+(add-ingredient alchemist1 crystal container1)
+(mix-ingredients alchemist1 herb mushroom crystal container1)
+(brew-potion alchemist1 container1 potion1)

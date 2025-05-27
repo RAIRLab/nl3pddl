@@ -1,4 +1,13 @@
 
+# Domain Format
+
+Each domain folder in `domains` contains the following
+1) a `ground.pddl` file containing the ground truth pddl
+2) a `nl.json` file containing nl descriptions of the domain, preds and actions
+3) a set of `pN.pddl` files containing problems
+3) a set of `pN.plan.txt` files containing solutions to problems
+4) a set of `wpN.pddl` files containing wrong solutions to problems
+
 # List Of Domains
 
 * Blocksworld: 

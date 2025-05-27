@@ -20,7 +20,7 @@ from .params import (
 )
 
 # Natural Language Syntax and Semantic feedback
-from .check_output_tool import check_action_output, check_domain_output
+from .check_output import check_action_output, check_domain_output
 
 # Interface with the VAL planning validator tool
 from .val import val_all

@@ -1,0 +1,47 @@
+{
+    "creation": "2025-03-11",
+    "overall": {
+        "first": "The blocks world domain involves stacking and unstacking blocks on a table. The goal is to arrange the blocks in certain configurations by picking up blocks, putting them down on the table, or stacking them on other blocks.",
+        "detailed-first": "This domain models a robot manipulating colored blocks on a table. Each block can be either on the table, on top of another block, or held by the robot's arm. The robot can only hold one block at a time, and can only pick up a block if it has nothing on top of it. The robot needs to carefully plan a sequence of pick-up, put-down, and stack operations to achieve desired block configurations. This planning challenge emphasizes spatial reasoning and requires understanding constraints like a block cannot be moved if another block is on top of it."
+    },
+    "predicates": {
+        "on": {
+            "first": "One block is on top of another block.",
+            "detailed-first": "This predicate indicates that one block is physically placed directly on top of another block, creating a stack. The block on top is supported by the block beneath it."
+        },
+        "ontable": {
+            "first": "The block is on the table.",
+            "detailed-first": "This predicate indicates that a block is placed directly on the table surface rather than on top of another block. The table serves as the bottom support for all block configurations."
+        },
+        "clear": {
+            "first": "The block has nothing on top of it.",
+            "detailed-first": "This predicate indicates that a block has no other blocks stacked on top of it, making it accessible to be picked up by the robot arm. Only blocks with this property can be moved."
+        },
+        "handempty": {
+            "first": "The robot's hand is empty.",
+            "detailed-first": "This predicate indicates that the robot's hand is not currently holding any block, making it available to pick up a new block. The robot can only hold one block at a time."
+        },
+        "holding": {
+            "first": "The robot is holding the block.",
+            "detailed-first": "This predicate indicates that the robot has picked up a specific block and is currently holding it in its hand. While holding a block, the robot cannot pick up any other blocks."
+        }
+    },
+    "actions": {
+        "pickup": {
+            "first": "The robot picks up a block from the table.",
+            "detailed-first": "This action allows the robot to lift a block from the table and hold it in its hand. The action can only be performed if the block is on the table, nothing is stacked on top of it, and the robot's hand is currently empty."
+        },
+        "putdown": {
+            "first": "The robot puts down a block it is holding onto the table.",
+            "detailed-first": "This action allows the robot to place a block it is currently holding onto the table surface. After performing this action, the block will be on the table and the robot's hand will be empty again."
+        },
+        "stack": {
+            "first": "The robot stacks a block it is holding onto another block.",
+            "detailed-first": "This action allows the robot to place a block it is currently holding on top of another block. The target block must be clear (have nothing on top of it). After performing this action, the robot's hand will be empty."
+        },
+        "unstack": {
+            "first": "The robot picks up a block from on top of another block.",
+            "detailed-first": "This action allows the robot to lift a block that is currently stacked on top of another block. The block being picked up must be clear (have nothing on top of it), and the robot's hand must be empty before performing this action."
+        }
+    }
+}
