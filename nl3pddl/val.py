@@ -53,23 +53,7 @@ def raw_validate(
 
 
 val_prompt_template = PromptTemplate(template="""
-    Given the above domain you just generated, attempting to use it with the following problem:
-    ```
-    {problem}
-    ```
-    An issue was encountered with the following plan:
-    ```
-    {plan}
-    ```
-    The output of the plan validator VAL is:
-    ```
-    {val_output}
-    ```
-    Please revise the pervious domain to fix the issue. 
-    You may create new predicates and types if needed, but make
-    sure to update the predicate and type lists accordingly.
-    You may not add new requirements to the domain,
-    your output should exclusively be a typed STRIPS domain.
+
 """)
 
 def val_all(d : Dataset, p : Params, new_domain_str : str) ->\
