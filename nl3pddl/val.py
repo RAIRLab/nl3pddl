@@ -90,14 +90,14 @@ HumanMessage | None:
                 plan=plan_raw,
                 val_output=result
             ))
-        # Validate the new domain against the wrong plan
-        wplan_path = d.wplan_paths[problem_path]
-        result = raw_antivalidate(new_domain_str, problem_path, wplan_path)
-        if result is not None:
-            problem_raw = d.problem_raws[problem_path]
-            wplan_raw = d.wplan_raws[plan_path]
-            return HumanMessage(VALW_PROMPT_TEMPLATE.format(
-                problem=problem_raw,
-                plan=wplan_raw
-            ))
+        # # Validate the new domain against the wrong plan
+        # wplan_path = d.wplan_paths[problem_path]
+        # result = raw_antivalidate(new_domain_str, problem_path, wplan_path)
+        # if result is not None:
+        #     problem_raw = d.problem_raws[problem_path]
+        #     wplan_raw = d.wplan_raws[plan_path]
+        #     return HumanMessage(VALW_PROMPT_TEMPLATE.format(
+        #         problem=problem_raw,
+        #         plan=wplan_raw
+        #     ))
     return None

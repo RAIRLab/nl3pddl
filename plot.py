@@ -1,6 +1,8 @@
 
 """
 This script generates all the plots from the results.csv file.
+
+TODO: Overhaul this entire file, it is slop.
 """
 
 import pandas as pd
@@ -13,7 +15,7 @@ if __name__ != "__main__":
 # ==============================================================================
 # Average HDE Steps by Model and Description Class
 
-df = pd.read_csv("results4.csv")
+df = pd.read_csv("results.csv")
 
 # Filter out rows where action_runs == 5
 df = df[df['action_runs'] != 5]
@@ -38,7 +40,7 @@ plt.savefig('figs/avgHDEbM.png')
 # ==============================================================================
 # Average HDE Steps by Domain and Description Class
 
-df = pd.read_csv("results4.csv")
+df = pd.read_csv("results.csv")
 
 # Filter out rows where action_runs == 5
 df = df[df['action_runs'] != 5]
@@ -65,7 +67,7 @@ plt.savefig('figs/avgHDEbD.png')
 
 # ==============================================================================
 
-df = pd.read_csv("results4.csv")
+df = pd.read_csv("results.csv")
 
 # Prepare counts
 models = df['model'].unique()
@@ -92,9 +94,9 @@ plt.tight_layout()
 plt.savefig('figs/SvFbM.png')
 
 # ==============================================================================
-df = pd.read_csv("results4.csv")
+df = pd.read_csv("results.csv")
 for model in df['model'].unique():
-    df = pd.read_csv("results4.csv")
+    df = pd.read_csv("results.csv")
 
     # Extract simple domain name
     df['domain'] = df['domain_path'].apply(lambda x: x.split('/')[-1])
@@ -122,7 +124,7 @@ for model in df['model'].unique():
 
     plt.savefig(f'figs/SvFbD-{model}.png')
 
-    df = pd.read_csv("results4.csv")
+    df = pd.read_csv("results.csv")
 
     # Filter by model
     df = df[df['model'] == model]

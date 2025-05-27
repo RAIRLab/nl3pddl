@@ -54,6 +54,7 @@ class DomainSchema(BaseModel):
 class State(TypedDict):
     """ The LangGraph application State"""
     #Run ID, identifier for the experiment run, allows us to filter in langsmith
+    #TODO: populate this.
     run_id: str
     #LLM Message History
     messages: Annotated[list, add_messages]
