@@ -52,8 +52,11 @@ def get_init_preds(problem: Problem) -> List[Tuple[str, List[str]]]:
 
 def get_goal_preds(problem: Problem) -> List[Tuple[str, List[str]]]:
     """Returns a set of predicates in the goal state of the problem."""
-    return [(pred.name, [arg.name for arg in pred.terms])
-            for pred in problem.goal]
+    if hasattr(problem.goal, "operands"):
+        return [(pred.name, [arg.name for arg in pred.terms])
+                for pred in problem.goal.operands]
+    else:
+        return [(problem.goal.name, [arg.name for arg in problem.goal.terms])]
 
 def get_all_preds(problem: Problem) -> List[Tuple[str, List[str]]]:
     """Returns a list of predicates in the initial

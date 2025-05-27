@@ -119,7 +119,14 @@ def lark_err_str(e : Exception) -> str:
     """
     Converts a lark parsing error to a human-readable string.
     """
-    return f"Failed at position {e.pos_in_stream} with error: {e.token} as {e}"
+    try:
+        return f"Failed at position {e.pos_in_stream}\
+                 with error: {e.token} as {e}"
+    except Exception: # pylint: disable=broad-except
+        #This should NEVER happen, come up with better cases.
+        #Occasionally the lark error fails, this is the worst case
+        #fallback scenario
+        return "There is a severe syntax error in the PDDL code."
 
 bad_pred_list_template = PromptTemplate(template="""
     The following predicate list you provided is invalid:
@@ -142,7 +149,10 @@ def check_action_output(
     # Check if the predicates are valid
     res = pred_syntax_check(preds)
     if isinstance(res, PipelineResult):
-        return bad_pred_list_template.format(predicates=preds, error=res.message)
+        return bad_pred_list_template.format(
+            predicates=preds, 
+            error=res.message
+        )
 
     # Check if the action string is valid
     res = action_syntax_check(action_str)

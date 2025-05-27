@@ -5,7 +5,6 @@ as well as a function that generates a grid over these parameters.
 """
 
 from dataclasses import dataclass
-import itertools
 from typing import Generator
 
 from .dataset import Dataset
@@ -47,15 +46,16 @@ def param_grid(d : Dataset) -> Generator[Params, None, None]:
     """
     Generates a grid of parameters for the experiments.
     """
-    grid = itertools.product(
-        range(1, RUN_TRIALS + 1), # Trials
-        MODELS.items(), # Model provider and name pairs
-        d.domain_paths, # Domain paths
-        GIVE_PRED_DESCRIPTIONS, # Whether to give predicate descriptions
-        DESC_CLASSES # Description classes
-    )
-    for (trial, (prov, mod), dp, gpd, desc) in grid:
-        yield Params(dp, prov, mod, gpd, desc, trial)
+    for trial in range(1, RUN_TRIALS + 1):
+        for provider, models in MODELS.items():
+            for model in models:
+                for domain_path in d.domain_paths:
+                    for give_pred_desc in GIVE_PRED_DESCRIPTIONS:
+                        for desc_class in DESC_CLASSES:
+                            yield Params(
+                                domain_path, provider, model,
+                                give_pred_desc, desc_class, trial
+                            )
 
 
 def action_names(d : Dataset, h : Params) -> list[str]:
