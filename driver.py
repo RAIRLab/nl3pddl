@@ -12,7 +12,6 @@ from typing import Any, Literal, Annotated
 import multiprocessing as mp
 
 # External package imports
-import pandas as pd
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from typing_extensions import TypedDict
