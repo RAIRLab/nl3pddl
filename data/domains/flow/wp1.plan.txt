@@ -1,0 +1,2 @@
+(start p_0_0 red)
+(move p_0_0 p_1_0 red)
