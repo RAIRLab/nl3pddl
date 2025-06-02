@@ -215,7 +215,7 @@ def run_experiment(
 ) -> None:
     """
     Executes a LangGraph for a single experiment, and writes results
-    to the results DataFrame.
+    to the results file.
     """
     graph = create_langgraph(d, p)
 
