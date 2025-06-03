@@ -10,10 +10,12 @@ import json
 import logging
 from typing import Any, Literal, Annotated
 import multiprocessing as mp
+from datetime import datetime
 
 # External package imports
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
+from tqdm import tqdm
 from typing_extensions import TypedDict
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, AIMessage
@@ -54,7 +56,6 @@ class DomainSchema(BaseModel):
 class State(TypedDict):
     """ The LangGraph application State"""
     #Run ID, identifier for the experiment run, allows us to filter in langsmith
-    #TODO: populate this.
     run_id: str
     #LLM Message History
     messages: Annotated[list, add_messages]
@@ -147,7 +148,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
 
     def validate(state: State):
-        res = n3p.val_all(dataset, p, state["json_last"].pddl_domain)
+        res = n3p.val_all(d, p, state["json_last"].pddl_domain)
         hde_iterations = state["hde_iterations"]
         return {
             "messages": [res] if res else [],
@@ -211,8 +212,10 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 def run_experiment(
     d: Dataset,     # Dataset
     p: Params,      # Experiment Parameters
-    results_lock    # Lock on results file for thread safety
-) -> None:
+    #results_lock,   # Lock on results file for thread safety
+    batch_id : str,  # Identifier for the batch of experiments
+    #results_path: str  # File to write results to
+) -> dict:
     """
     Executes a LangGraph for a single experiment, and writes results
     to the results file.
@@ -220,6 +223,7 @@ def run_experiment(
     graph = create_langgraph(d, p)
 
     initial_state = {
+        "run_id": batch_id,
         "messages": n3p.init_msgs(d, p),
         "action_index": 0,
         "json_last": None,
@@ -243,19 +247,27 @@ def run_experiment(
             action_iterations = step["action_iterations"]
     except Exception as e: # pylint: disable=broad-except
         print (f"Error: {e}")
-    finally:
-        results_lock.acquire()
-        with open(r'results.csv', 'a', encoding="utf-8") as res_file:
-            csv_writer = csv.writer(res_file)
-            csv_writer.writerow(n3p.params_as_dict(
-                p,
-                hde_iterations,
-                action_iterations
-            ).values())
-        results_lock.release()
+    res = n3p.params_as_dict(p, hde_iterations, action_iterations)
+    return res
+    #results_lock.acquire()
+    #with open(results_path, 'a', encoding="utf-8") as res_file:
+    #csv_writer = csv.writer(res_file)
+    #csv_writer.writerow(res.values())
+    #results_lock.release()
 
-if __name__ == "__main__":
+def run_experiment_star(
+    args: tuple[Dataset, Params, str]  # Dataset, Params, Batch ID
+) -> dict:
+    """
+    Wrapper for run_experiment to unpack the arguments.
+    This is used for multiprocessing.
+    """
+    return run_experiment(*args)
 
+def main() -> None:
+    """
+    Driver Main, runs the experiments in parallel using the parameter grid
+    """
     load_dotenv()
 
     if not os.environ.get("OPENAI_API_KEY"):
@@ -269,24 +281,35 @@ if __name__ == "__main__":
 
     dataset = n3p.Dataset()
 
-    #results_df = pd.DataFrame(columns=n3p.params_header())
-    with open(r'results.csv', 'w', encoding="utf-8") as f:
+    date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    results_path = f'results/results-{date}.csv'
+    with open(results_path, 'w', encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(n3p.params_header())
 
-    lock = mp.Lock()
-    processes = []
-    for params in n3p.param_grid(dataset):
-        process = mp.Process(
-            target=run_experiment,
-            args=(dataset, params, lock)
-        )
-        processes.append(process)
-        process.start()
-    for process in processes:
-        process.join()
+    #lock = mp.Lock()
+    # processes = []
+    # for params in n3p.param_grid(dataset):
+    #     process = mp.Process(
+    #         target=run_experiment,
+    #         args=(dataset, params, lock)
+    #     )
+    #     processes.append(process)
+    #     process.start()
+    # for process in processes:
+    #     process.join()
+    args = [(dataset, params, date) for params in n3p.param_grid(dataset)]
+    with mp.Pool(processes=None) as pool:
+        res = list(tqdm(pool.imap(run_experiment_star, args), total=len(args)))
+        with open(results_path, 'w', encoding="utf-8") as res_file:
+            csv_writer = csv.writer(res_file)
+            for v in res:
+                csv_writer.writerow(v.values())
     print("Successfully joined all processes.")
 
+
+if __name__ == "__main__":
+    main()
 else:
     raise RuntimeError("This file is a driver for the NL3PDDL project. \
                         It should be run as a script, not imported.")

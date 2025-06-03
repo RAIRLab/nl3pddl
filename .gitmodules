@@ -1,3 +1,6 @@
 [submodule "submodules/VAL"]
 	path = submodules/VAL
 	url = https://github.com/KCL-Planning/VAL.git
+[submodule "submodules/numberlink"]
+	path = submodules/numberlink
+	url = https://github.com/thomasahle/numberlink
