@@ -71,6 +71,42 @@ def raw_antivalidate(
 VAL_PROMPT_TEMPLATE = PromptTemplate.from_file("data/prompts/9-val.txt")
 VALW_PROMPT_TEMPLATE = PromptTemplate.from_file("data/prompts/10-valw.txt")
 
+def val_pos(d : Dataset, p : Params, new_domain_str : str) ->\
+HumanMessage | None:
+    """ Check if the new domain is valid for a single problem and plan"""
+    # Get the domain and problem paths
+    problem_paths = d.problem_paths[p.domain_path]
+    for problem_path in problem_paths:
+        plan_path = d.plan_paths[problem_path]
+        # Validate the new domain
+        result = raw_validate(new_domain_str, problem_path, plan_path)
+        if result is not None:
+            problem_raw = d.problem_raws[problem_path]
+            plan_raw = d.plan_raws[plan_path]
+            return HumanMessage(VAL_PROMPT_TEMPLATE.format(
+                problem=problem_raw,
+                plan=plan_raw,
+                val_output=result
+            ))
+
+def val_neg(d : Dataset, p : Params, new_domain_str : str) ->\
+HumanMessage | None:
+    """
+    Check if the new domain is invalid for a single problem and plan
+    """
+    # Get the domain and problem paths
+    problem_paths = d.problem_paths[p.domain_path]
+    for problem_path in problem_paths:
+        wplan_path = d.wplan_paths[problem_path]
+        result = raw_antivalidate(new_domain_str, problem_path, wplan_path)
+        if result is not None:
+            problem_raw = d.problem_raws[problem_path]
+            wplan_raw = d.wplan_raws[wplan_path]
+            return HumanMessage(VALW_PROMPT_TEMPLATE.format(
+                problem=problem_raw,
+                plan=wplan_raw
+            ))
+
 def val_all(d : Dataset, p : Params, new_domain_str : str) ->\
 HumanMessage | None:
     """

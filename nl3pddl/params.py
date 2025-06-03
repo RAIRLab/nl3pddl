@@ -13,9 +13,9 @@ MODELS = {
     "openai" : {
         "o4-mini", "gpt-4o-mini"
     },
-    "deepseek" : {
-        "deepseek-chat"
-    }
+    # "deepseek" : {
+    #     "deepseek-chat"
+    # }
 }
 
 GIVE_PRED_DESCRIPTIONS = [True]
@@ -24,7 +24,7 @@ DESC_CLASSES = [
     "detailed-first", "first"
 ]
 
-RUN_TRIALS = 3
+RUN_TRIALS = 10
 
 
 @dataclass
