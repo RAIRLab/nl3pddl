@@ -10,19 +10,29 @@ from tqdm import tqdm
 import pddl
 from pddl.core import Domain, Problem
 
-CONFIG_FILE_PATH = "data/config.json"
-CONFIG_FILE_PATH = "data/config.json"
+#TODO: this should be moved to a config file, we redefine it in gen_problems.py
+PLANS_PER_PROBLEM = 2
 TEMPLATE_FILE_NAME = "template.pddl.txt"
 GROUND_TRUTH_FILE_NAME = "ground.pddl"
 NL_FILE_NAME = "nl.json"
+TRAINING_PROBLEM_DIR = "data/gen_problems/training"
+TESTING_PROBLEM_DIR = "data/gen_problems/testing"
+
+def domains() -> list[str]:
+    """returns a list of paths of folders in data/domains"""
+    domain_paths = []
+    for root, dirs, files in os.walk("data/domains"):
+        for dir_name in dirs:
+            domain_path = os.path.join(root, dir_name)
+            if os.path.isdir(domain_path):
+                domain_paths.append(dir_name)
+    return domain_paths
 
 def get_new_domains() -> list[str]:
     """returns a list of paths of folders in data/domains
        marked as new in data/config.json"""
-    with open(CONFIG_FILE_PATH, "r", encoding="utf-8") as f:
-        config = json.load(f)
     new_domains = []
-    for domain in config["new_domains"]:
+    for domain in domains():
         domain_path = os.path.join("data/domains", domain)
         if os.path.isdir(domain_path):
             new_domains.append(domain_path)
@@ -87,7 +97,9 @@ class Dataset:
     problems : Dict[str, Problem] = {}
 
     # Dictionary from problem paths to for now a single plan paths.
-    plan_paths : Dict[str, str] = {}
+    plan_paths : Dict[str, list[str]] = {}
+
+    
 
     # Dictionary from plan paths to a wrong problem path,
     wplan_paths : Dict[str, str] = {}
@@ -95,6 +107,11 @@ class Dataset:
     # "AST" of the plan, maps a single plan path to its "AST", a list of
     # actions and their arguments.
     plans : Dict[str, List[Tuple[str, List[str]]]] = {}
+
+    testing_problem_paths : Dict[str, List[str]] = {}
+    testing_problem_raws : Dict[str, str] = {}
+    testing_plan_paths : Dict[str, List[str]] = {}
+    testing_plan_raws : Dict[str, str] = {}
 
     # Dictionary from plan paths to their raw string representation
     plan_raws : Dict[str, str] = {}
@@ -111,27 +128,50 @@ class Dataset:
         self.domain_paths = get_new_domains()
         for domain_path in tqdm(self.domain_paths, "Parsing Domains"):
             ground_path = os.path.join(domain_path, GROUND_TRUTH_FILE_NAME)
-            domain = pddl.parse_domain(ground_path)
+            try:
+                domain = pddl.parse_domain(ground_path)
+            except Exception as e:
+                logging.error("Error parsing domain %s: %s", ground_path, e)
+                exit(1)
+
             self.domains[domain_path] = domain
+
+            #TODO: duplicate code, refactor to a function
+            # Read the training problems
+            problem_dir = os.path.join(TRAINING_PROBLEM_DIR, domain.name)
             self.problem_paths[domain_path] = \
-                [os.path.join(domain_path, f) for f in os.listdir(domain_path)\
-                 if f.startswith("p") and f.endswith(".pddl")]
-            for problem_file in self.problem_paths[domain_path]:
+                [os.path.join(problem_dir, f) for f in os.listdir(problem_dir) \
+                 if f.endswith(".pddl")]
+            for i, problem_file in enumerate(self.problem_paths[domain_path]):
                 with open(problem_file, "r", encoding="utf-8") as f:
                     self.problem_raws[problem_file] = f.read()
-                problem = pddl.parse_problem(problem_file)
+                try:
+                    problem = pddl.parse_problem(problem_file)
+                except Exception as e:
+                    logging.error("Error parsing problem %s: %s", problem_file, e)
+                    exit(1)
                 self.problems[problem_file] = problem
-                plan_path = problem_file.replace(".pddl", ".plan.txt")
-                #TODO: Fix this so its actually general and not a hack
-                wplan_path = plan_path.replace("/p1", "/wp1")
-                wplan_path = plan_path.replace("/p2", "/wp2")
-                self.plan_paths[problem_file] = plan_path
-                self.wplan_paths[problem_file] = wplan_path
-                with open(plan_path, "r", encoding="utf-8") as f:
-                    self.plan_raws[plan_path] = f.read()
-                self.plans[plan_path] = parse_plan(plan_path)
-                with open(wplan_path, "r", encoding="utf-8") as f:
-                    self.wplan_raws[wplan_path] = f.read()
+                self.plan_paths[problem_file] = [os.path.join(problem_dir, f"plan-{i+1}-{j}.txt") for j in range(1, PLANS_PER_PROBLEM + 1)]
+                for plan_path in self.plan_paths[problem_file]:
+                    if os.path.exists(plan_path):
+                        self.plans[plan_path] = parse_plan(plan_path)
+                        with open(plan_path, "r", encoding="utf-8") as f:
+                            self.plan_raws[plan_path] = f.read()
+            # Read the testing problems
+            problem_dir = os.path.join(TESTING_PROBLEM_DIR, domain.name)
+            self.testing_problem_paths[domain_path] = \
+                [os.path.join(problem_dir, f) for f in os.listdir(problem_dir) \
+                 if f.endswith(".pddl")]
+            for i, problem_file in enumerate(self.testing_problem_paths[domain_path]):
+                with open(problem_file, "r", encoding="utf-8") as f:
+                    self.testing_problem_raws[problem_file] = f.read()
+                self.testing_plan_paths[problem_file] = [os.path.join(problem_dir, f"plan-{i+1}-{j}.txt") for j in range(1, PLANS_PER_PROBLEM + 1)]
+                for plan_path in self.testing_plan_paths[problem_file]:
+                    if os.path.exists(plan_path):
+                        self.plans[plan_path] = parse_plan(plan_path)
+                        with open(plan_path, "r", encoding="utf-8") as f:
+                            self.testing_plan_raws[plan_path] = f.read()
+
             nl_file_path = os.path.join(domain_path, NL_FILE_NAME)
             with open(nl_file_path, "r", encoding="utf-8") as f:
                 self.nl_json[domain_path] = json.load(f)

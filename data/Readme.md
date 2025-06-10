@@ -1,4 +1,7 @@
 
+
+TODO: this file is very outdated. Before submission update it -James
+
 # Domain Format
 
 Each domain folder in `domains` contains the following

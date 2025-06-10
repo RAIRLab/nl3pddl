@@ -19,9 +19,11 @@
         "handempty",
         "hyperparam",
         "hyperparams",
+        "kstar",
         "langchain",
         "LANGSMITH",
         "lastrowid",
+        "lmcut",
         "loadbottom",
         "loadfirst",
         "miconic",
@@ -29,6 +31,7 @@
         "nopep",
         "numberlink",
         "ontable",
+        "pathing",
         "Precond",
         "preds",
         "probo",
@@ -42,6 +45,7 @@
         "valw",
         "venv",
         "visitall",
+        "vlines",
         "wplan",
         "xlabel",
         "xticks",
@@ -63,4 +67,5 @@
     ],
     "editor.wordWrap": "wordWrapColumn",
     "editor.wordWrapColumn": 80,
+    "search.useIgnoreFiles": true
 }

@@ -5,6 +5,7 @@ This script generates all the plots from the results.csv file.
 TODO: Overhaul this entire file, it is slop.
 """
 
+import math
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -12,7 +13,7 @@ if __name__ != "__main__":
     raise RuntimeError("This script is intended to be run"
                        " directly, not imported.")
 
-results_file = "results/results-2025-06-03_11-25-32.csv"
+results_file = "results/results-2025-06-10_12-22-59.csv"
 
 # # ================================================================
 # # Average HDE Steps by Model and Description Class
@@ -168,23 +169,43 @@ for model in df['model'].unique():
     # Filter by model
     df = df[df['model'] == model]
 
-    # Filter out rows where action_runs == 5
-    df = df[df['action_runs'] != 5]
-
     # Rename hde_runs to hde_steps
     df.rename(columns={'hde_runs': 'hde_steps'}, inplace=True)
+
+    # if action_runs == 5, then mark as timeout and set hde_steps to 25
+    #df.loc[df['action_runs'] == 5, 'hde_steps'] = 25
+    df = df[df['action_runs'] != 5]
 
     # map domain paths to domain names
     df['domain_path'] = df['domain_path'].apply(
         lambda x: x.split('/')[-1] if '/' in x else x)
 
-    # Generate grouped boxplots by desc_class, where each major class is a
-    # domain and each group is a description class
-    ax = df.boxplot(column='hde_steps', by=[
-                    'domain_path', 'desc_class'], figsize=(12, 6))
-    ax.set_xlabel('Domain and Description Class')
-    ax.set_ylabel('HDE Steps')
-    ax.set_title(f'Average HDE Steps by Domain and Description Class: {model}')
+    stats = df.groupby(['domain_path', 'desc_class'])['hde_steps'].agg(["mean", "count", "std"])
+
+    ci95_hi = []
+    ci95_lo = []
+    ms = []
+    for i in stats.index:
+        m, c, s = stats.loc[i]
+        ci95_hi.append(m + 1.96*s/math.sqrt(c))
+        ci95_lo.append(max(m - 1.96*s/math.sqrt(c), 0))
+        ms.append(m)
+
+    grouped = df.groupby(['domain_path', 'desc_class'])[
+        'hde_steps'].mean().unstack()
+    # Grouped boxplot with error bars as 95% confidence intervals
+    ax = grouped.plot.bar()
+
+    #generate error bars based on ci_hi and ci_lo
+    for i, p in enumerate(ax.patches):
+        height = p.get_height()
+        #TODO: this works but needs to be fixed, if we ever have identical heights we cant get the index.
+        ind = ms.index(height)
+        ci_hi = ci95_hi[ind]
+        ci_lo = ci95_lo[ind]
+        plt.vlines(p.get_x() + p.get_width()/2, ci_lo, ci_hi, color='k')
+
+    plt.title(f'Average HDE Steps by Domain and Description Class: {model}')
     plt.suptitle('')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()

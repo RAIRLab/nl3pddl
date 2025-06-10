@@ -43,10 +43,11 @@ def problem_gen(
         color_locs.append((color, f"p_{x1}_{y1}"))
         assert 0 <= x2 < n and 0 <= y2 < m
         color_locs.append((color, f"p_{x2}_{y2}"))
-
+    #append a c to the front of each color
+    colors = [f"c_{color}" for color in colors]
     nl = "\n\t"
     return f'''
-(define (problem flow_{n}_{m}) (:domain flow_free)
+(define (problem flow_{n}_{m}) (:domain flow)
 (:objects 
     {nl.join(colors)} - color
     {nl.join(points)} - location
@@ -56,7 +57,7 @@ def problem_gen(
     (offboard)
     {nl.join(f"(empty {p})" for p in points)}
     {nl.join(f"(adjacent {x} {y})" for (x,y) in connections)}
-    {nl.join(f"(flow-end {l} {c})" for (c, l) in color_locs)}
+    {nl.join(f"(flow-end {l} c_{c})" for (c, l) in color_locs)}
 )
 
 (:goal (and
@@ -72,7 +73,7 @@ def problem_gen(
 
 
 def gen_problem_file(
-    n: int, m: int,
+    n: int,
     flows: dict[str, tuple[tuple[int, int], tuple[int, int]]],
     name=None
 ) -> None:
@@ -81,9 +82,9 @@ def gen_problem_file(
     dimensions and flows.
     """
     if name is None:
-        name = f"flowproblem{n}x{m}.pddl"
+        name = f"flowproblem{n}x{n}.pddl"
     with open(name, "w", encoding="utf-8") as file:
-        file.write(problem_gen(n, m, flows))
+        file.write(problem_gen(n, n, flows))
 
 
 def generate_flow_problem(width: int, height: int) -> str:
@@ -137,19 +138,13 @@ def parse_flow_problem(problem_str: str) \
         rv[color] = (starts[color], ends[color])
     return rv
 
-def main():
+def generate_problem(n : int, filename : str) -> None:
     """
     Main
     """
-    width = 5
-    height = 5
-    problem_str = generate_flow_problem(width, height)
+    n = 5
+    problem_str = generate_flow_problem(n, n)
     flows = parse_flow_problem(problem_str)
-
     # Generate the PDDL problem file
-    gen_problem_file(width, height, flows, "flow_problem.pddl")
+    gen_problem_file(n, flows, filename)
 
-    print("Flow problem generated and saved to flow_problem.pddl")
-
-if __name__ == "__main__":
-    main()

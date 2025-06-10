@@ -1,0 +1,50 @@
+{
+    "overall": {
+        "first": "",
+        "detailed-first": ""
+    },
+    "predicates": {
+        "at" : {
+            "first": "A checker is at a square.",
+            "detailed-first": "Indicates that a specific checker (red or blue) occupies a particular square on the board."
+        },
+        "empty": {
+            "first": "A square is empty.",
+            "detailed-first": "Specifies that a square on the board does not contain any checker, making it available for movement."
+        },
+        "left-of": {
+            "first": "A square is to the left of another square.",
+            "detailed-first": "Denotes the relative position of one square being directly to the left of another square on the board."
+        },
+        "right-of": {
+            "first": "A square is to the right of another square.",
+            "detailed-first": "Denotes the relative position of one square being directly to the right of another square on the board."
+        },
+        "is-red": {
+            "first": "A checker is red.",
+            "detailed-first": "Indicates that a specific checker is red, distinguishing it from blue checkers."
+        },
+        "is-blue": {
+            "first": "A checker is blue.",
+            "detailed-first": "Indicates that a specific checker is blue, distinguishing it from red checkers."
+        }
+    },
+    "actions": {
+        "slide-red": {
+            "first": "move a red checker to an adjacent empty square",
+            "detailed-first": "This action allows a player to move a red checker to an adjacent square. The square must be empty, meaning no other checker is present. The player can not slide the checker backwards."
+        },
+        "slide-blue": {
+            "first": "move a blue checker to an adjacent empty square",
+            "detailed-first": "This action allows a player to move a blue checker to an adjacent square. The square must be empty, meaning no other checker is present. The player can not slide the checker backwards."
+        },
+        "jump-red": {
+            "first": "jump over an adjacent checker to an empty square",
+            "detailed-first": "This action allows a player to jump over an adjacent blue checker to land on an empty square directly on the opposite side of the jumped checker."
+        },
+        "jump-blue": {
+            "first": "jump over an adjacent checker to an empty square",
+            "detailed-first": "This action allows a player to jump over an adjacent red checker to land on an empty square directly on the opposite side of the jumped checker."
+        }
+    }
+}

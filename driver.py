@@ -287,17 +287,6 @@ def main() -> None:
         writer = csv.writer(f)
         writer.writerow(n3p.params_header())
 
-    #lock = mp.Lock()
-    # processes = []
-    # for params in n3p.param_grid(dataset):
-    #     process = mp.Process(
-    #         target=run_experiment,
-    #         args=(dataset, params, lock)
-    #     )
-    #     processes.append(process)
-    #     process.start()
-    # for process in processes:
-    #     process.join()
     args = [(dataset, params, date) for params in n3p.param_grid(dataset)]
     with mp.Pool(processes=None) as pool:
         res = list(tqdm(pool.imap(run_experiment_star, args), total=len(args)))
