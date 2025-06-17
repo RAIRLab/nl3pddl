@@ -23,4 +23,4 @@ from .params import (
 from .check_output import check_action_output, check_domain_output
 
 # Interface with the VAL planning validator tool
-from .val import val_all
+from .val import val_feedback, val_evaluate

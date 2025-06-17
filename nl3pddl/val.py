@@ -31,11 +31,12 @@ def raw_validate(
     new_domain_str : str,
     problem_path : str,
     plan_path : str
-) -> PipelineResult | None:
+) -> str | None:
     """
     Given an original domain (path) and a new domain (string) problem,
     check if the the plan from the original can be used in
-    the new domain.
+    the new domain. returns None if the plan is valid in the new domain,
+    or an error message if it is not valid.
     """
     tmpdir = tempfile.mkdtemp()
     new_domain_path = new_pipe(tmpdir, 'new_domain.pddl', new_domain_str)
@@ -71,71 +72,43 @@ def raw_antivalidate(
 VAL_PROMPT_TEMPLATE = PromptTemplate.from_file("data/prompts/9-val.txt")
 VALW_PROMPT_TEMPLATE = PromptTemplate.from_file("data/prompts/10-valw.txt")
 
-#TODO: This needs to be reimplemented if used
-# def val_pos(d : Dataset, p : Params, new_domain_str : str) ->\
-# HumanMessage | None:
-#     """ Check if the new domain is valid for a single problem and plan"""
-#     # Get the domain and problem paths
-#     problem_paths = d.problem_paths[p.domain_path]
-#     for problem_path in problem_paths:
-#         for 
-#         plan_path = d.plan_paths[problem_path]
-#         # Validate the new domain
-#         result = raw_validate(new_domain_str, problem_path, plan_path)
-#         if result is not None:
-#             problem_raw = d.problem_raws[problem_path]
-#             plan_raw = d.plan_raws[plan_path]
-#             return HumanMessage(VAL_PROMPT_TEMPLATE.format(
-#                 problem=problem_raw,
-#                 plan=plan_raw,
-#                 val_output=result
-#             ))
-
-# def val_neg(d : Dataset, p : Params, new_domain_str : str) ->\
-# HumanMessage | None:
-#     """
-#     Check if the new domain is invalid for a single problem and plan
-#     """
-#     # Get the domain and problem paths
-#     problem_paths = d.problem_paths[p.domain_path]
-#     for problem_path in problem_paths:
-#         wplan_path = d.wplan_paths[problem_path]
-#         result = raw_antivalidate(new_domain_str, problem_path, wplan_path)
-#         if result is not None:
-#             problem_raw = d.problem_raws[problem_path]
-#             wplan_raw = d.wplan_raws[wplan_path]
-#             return HumanMessage(VALW_PROMPT_TEMPLATE.format(
-#                 problem=problem_raw,
-#                 plan=wplan_raw
-#             ))
-
-def val_all(d : Dataset, p : Params, new_domain_str : str) ->\
+def val_feedback(d : Dataset, p : Params, new_domain_str : str) ->\
 HumanMessage | None:
     """
-    Check if the new domain is valid for all problems and plans
+    Check if the new domain is valid for all problems and plans, if not, 
+    return an error message with the problem and plan that failed validation, as well as the error message from VAL.
     """
     # Get the domain and problem paths
-    problem_paths = d.testing_problem_paths[p.domain_path]
+    problem_paths = d.feedback_problem_paths[p.domain_path]
     for problem_path in problem_paths:
-        for plan_path in d.testing_plan_paths[problem_path]:
+        for plan_path in d.feedback_plan_paths[problem_path]:
             result = raw_validate(new_domain_str, problem_path, plan_path)
             if result is not None:
-                problem_raw = d.testing_problem_raws[problem_path]
-                plan_raw = d.testing_plan_raws[plan_path]
+                problem_raw = d.feedback_problem_raws[problem_path]
+                plan_raw = d.feedback_plan_raws[plan_path]
                 return HumanMessage(VAL_PROMPT_TEMPLATE.format(
                     problem=problem_raw,
                     plan=plan_raw,
                     val_output=result
                 ))
-        #TODO: Rework for wrong plans
-        # # Validate the new domain against the wrong plan
-        # wplan_path = d.wplan_paths[problem_path]
-        # result = raw_antivalidate(new_domain_str, problem_path, wplan_path)
-        # if result is not None:
-        #     problem_raw = d.problem_raws[problem_path]
-        #     wplan_raw = d.wplan_raws[plan_path]
-        #     return HumanMessage(VALW_PROMPT_TEMPLATE.format(
-        #         problem=problem_raw,
-        #         plan=wplan_raw
-        #     ))
     return None
+
+def val_evaluate(
+        d : Dataset, 
+        p : Params,
+        new_domain_str : str
+) -> tuple[int, int]:
+    """
+    Checks how many plans are valid in the new domain from the evaluation set.
+    """
+    valid_count = 0
+    total_count = 0
+    # Get the evaluation problem paths
+    problem_paths = d.evaluation_problem_paths[p.domain_path]
+    for problem_path in problem_paths:
+        for plan_path in d.evaluation_plan_paths[problem_path]:
+            result = raw_validate(new_domain_str, problem_path, plan_path)
+            if result is None:
+                valid_count += 1
+            total_count += 1
+    return valid_count, total_count

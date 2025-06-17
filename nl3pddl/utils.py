@@ -79,8 +79,8 @@ def get_all_pred_names_domain(d : Dataset, domain_path: str) -> set[str]:
     """For a given domain, get the list of all
        predicates in the initial state and goal of all problems."""
     all_pred_names = set()
-    for problem_path in d.problem_paths[domain_path]:
-        all_pred_names= all_pred_names.union(get_all_pred_names(d.problems[problem_path]))
+    for problem_path in d.feedback_problem_paths[domain_path]:
+        all_pred_names= all_pred_names.union(get_all_pred_names(d.feedback_problems[problem_path]))
     return all_pred_names
 
 def get_all_pred_signatures_domain(d : Dataset, domain_path: str) -> set[str]:
@@ -89,8 +89,8 @@ def get_all_pred_signatures_domain(d : Dataset, domain_path: str) -> set[str]:
     the initial state and goal of all problems.
     """
     all_pred_signatures = set()
-    for problem_path in d.problem_paths[domain_path]:
-        problem_preds = get_all_pred_signatures(d.problems[problem_path])
+    for problem_path in d.feedback_problem_paths[domain_path]:
+        problem_preds = get_all_pred_signatures(d.feedback_problems[problem_path])
         all_pred_signatures = all_pred_signatures.union(problem_preds)
     return all_pred_signatures
 
@@ -104,7 +104,7 @@ def get_all_type_names_domain(d : Dataset, domain_path: str) -> set[str]:
     the initial state and goal of all problems.
     """
     all_type_names = set()
-    for problem_path in d.problem_paths[domain_path]:
-        problem_types = get_all_type_names(d.problems[problem_path])
+    for problem_path in d.feedback_problem_paths[domain_path]:
+        problem_types = get_all_type_names(d.feedback_problems[problem_path])
         all_type_names = all_type_names.union(problem_types)
     return all_type_names

@@ -15,8 +15,8 @@ PLANS_PER_PROBLEM = 2
 TEMPLATE_FILE_NAME = "template.pddl.txt"
 GROUND_TRUTH_FILE_NAME = "ground.pddl"
 NL_FILE_NAME = "nl.json"
-TRAINING_PROBLEM_DIR = "data/gen_problems/training"
-TESTING_PROBLEM_DIR = "data/gen_problems/testing"
+FEEDBACK_PROBLEM_DIR = "data/gen_problems/training"
+EVALUATION_PROBLEM_DIR = "data/gen_problems/testing"
 
 def domains() -> list[str]:
     """returns a list of paths of folders in data/domains"""
@@ -88,30 +88,30 @@ class Dataset:
 
     # Dictionary from domain paths to a list of paths
     # to problem files in the folder
-    problem_paths : Dict[str, List[str]] = {}
+    feedback_problem_paths : Dict[str, List[str]] = {}
 
     # Dictionary from problem paths to problem strings
-    problem_raws: Dict[str, str] = {}
+    feedback_problem_raws: Dict[str, str] = {}
 
     # Dictionary from problem paths to an AST Problem object
-    problems : Dict[str, Problem] = {}
+    feedback_problems : Dict[str, Problem] = {}
 
     # Dictionary from problem paths to for now a single plan paths.
-    plan_paths : Dict[str, list[str]] = {}
+    feedback_plan_paths : Dict[str, list[str]] = {}
 
-    
+    feedback_plan_raws : Dict[str, str] = {}
 
     # Dictionary from plan paths to a wrong problem path,
     wplan_paths : Dict[str, str] = {}
 
     # "AST" of the plan, maps a single plan path to its "AST", a list of
     # actions and their arguments.
-    plans : Dict[str, List[Tuple[str, List[str]]]] = {}
+    feedback_plans : Dict[str, List[Tuple[str, List[str]]]] = {}
 
-    testing_problem_paths : Dict[str, List[str]] = {}
-    testing_problem_raws : Dict[str, str] = {}
-    testing_plan_paths : Dict[str, List[str]] = {}
-    testing_plan_raws : Dict[str, str] = {}
+    evaluation_problem_paths : Dict[str, List[str]] = {}
+    evaluation_problem_raws : Dict[str, str] = {}
+    evaluation_plan_paths : Dict[str, List[str]] = {}
+    evaluation_plan_raws : Dict[str, str] = {}
 
     # Dictionary from plan paths to their raw string representation
     plan_raws : Dict[str, str] = {}
@@ -138,39 +138,39 @@ class Dataset:
 
             #TODO: duplicate code, refactor to a function
             # Read the training problems
-            problem_dir = os.path.join(TRAINING_PROBLEM_DIR, domain.name)
-            self.problem_paths[domain_path] = \
+            problem_dir = os.path.join(FEEDBACK_PROBLEM_DIR, domain.name)
+            self.feedback_problem_paths[domain_path] = \
                 [os.path.join(problem_dir, f) for f in os.listdir(problem_dir) \
                  if f.endswith(".pddl")]
-            for i, problem_file in enumerate(self.problem_paths[domain_path]):
+            for i, problem_file in enumerate(self.feedback_problem_paths[domain_path]):
                 with open(problem_file, "r", encoding="utf-8") as f:
-                    self.problem_raws[problem_file] = f.read()
+                    self.feedback_problem_raws[problem_file] = f.read()
                 try:
                     problem = pddl.parse_problem(problem_file)
                 except Exception as e:
                     logging.error("Error parsing problem %s: %s", problem_file, e)
                     exit(1)
-                self.problems[problem_file] = problem
-                self.plan_paths[problem_file] = [os.path.join(problem_dir, f"plan-{i+1}-{j}.txt") for j in range(1, PLANS_PER_PROBLEM + 1)]
-                for plan_path in self.plan_paths[problem_file]:
+                self.feedback_problems[problem_file] = problem
+                self.feedback_plan_paths[problem_file] = [os.path.join(problem_dir, f"plan-{i+1}-{j}.txt") for j in range(1, PLANS_PER_PROBLEM + 1)]
+                for plan_path in self.feedback_plan_paths[problem_file]:
                     if os.path.exists(plan_path):
-                        self.plans[plan_path] = parse_plan(plan_path)
+                        self.feedback_plans[plan_path] = parse_plan(plan_path)
                         with open(plan_path, "r", encoding="utf-8") as f:
-                            self.plan_raws[plan_path] = f.read()
-            # Read the testing problems
-            problem_dir = os.path.join(TESTING_PROBLEM_DIR, domain.name)
-            self.testing_problem_paths[domain_path] = \
+                            self.feedback_plan_raws[plan_path] = f.read()
+            # Read the evaluation problems
+            problem_dir = os.path.join(EVALUATION_PROBLEM_DIR, domain.name)
+            self.evaluation_problem_paths[domain_path] = \
                 [os.path.join(problem_dir, f) for f in os.listdir(problem_dir) \
                  if f.endswith(".pddl")]
-            for i, problem_file in enumerate(self.testing_problem_paths[domain_path]):
+            for i, problem_file in enumerate(self.evaluation_problem_paths[domain_path]):
                 with open(problem_file, "r", encoding="utf-8") as f:
-                    self.testing_problem_raws[problem_file] = f.read()
-                self.testing_plan_paths[problem_file] = [os.path.join(problem_dir, f"plan-{i+1}-{j}.txt") for j in range(1, PLANS_PER_PROBLEM + 1)]
-                for plan_path in self.testing_plan_paths[problem_file]:
+                    self.evaluation_problem_raws[problem_file] = f.read()
+                self.evaluation_plan_paths[problem_file] = [os.path.join    (problem_dir, f"plan-{i+1}-{j}.txt") for j in range(1, PLANS_PER_PROBLEM + 1)]
+                for plan_path in self.evaluation_plan_paths[problem_file]:
                     if os.path.exists(plan_path):
-                        self.plans[plan_path] = parse_plan(plan_path)
+                        #self.evaluation_plans[plan_path] = parse_plan(plan_path)
                         with open(plan_path, "r", encoding="utf-8") as f:
-                            self.testing_plan_raws[plan_path] = f.read()
+                            self.evaluation_plan_raws[plan_path] = f.read()
 
             nl_file_path = os.path.join(domain_path, NL_FILE_NAME)
             with open(nl_file_path, "r", encoding="utf-8") as f:

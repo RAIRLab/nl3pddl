@@ -15,7 +15,6 @@ from datetime import datetime
 # External package imports
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-from tqdm import tqdm
 from typing_extensions import TypedDict
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, AIMessage
@@ -26,6 +25,7 @@ from langgraph.graph.message import add_messages
 # Internal package imports
 import nl3pddl as n3p
 from nl3pddl import Dataset, Params
+
 
 # This is a pydantic model that we force the LLM to output in
 # the form of during the action generation phase.
@@ -73,15 +73,63 @@ class State(TypedDict):
     actions : list[ActionSchema]
     # The domain we are currently working on is syntactically valid
     domain_syn_val: bool
-    # The domain we are currently working on is HDE
-    domain_hde_val: bool
+
     # Number of iterations we have done in the action generation phase
-    action_iterations : int
+    action_iterations : int 
+
+    # Exited without producing a valid action after exceeding the retry limit
+    action_timeout : bool = False 
+    action_timeout_cause : str = "" # Action that caused the timeout 
+
     # Number of iterations we have done in the HDE validation phase
     hde_iterations : int
+    
+    # Exited without producing a valid domain after exceeding the retry limit
+    hde_timeout : bool = False 
+
+    # The domain we are currently working on is HDE, and we can begin evaluating it.
+    domain_hde_val: bool
+
+    evals_passed: int = 0  # Number of evaluations passed
+    total_evals: int = 0  # Total number of evaluations attempted
+
+RESULTS_HEADER = [
+    "trial",
+    "domain_path",
+    "provider",
+    "model",
+    "give_pred_descriptions",
+    "desc_class",
+    "hde_runs",
+    "hde_timeout",
+    "action_timeout",
+    "action_timeout_cause",
+    "evals_passed",
+    "total_evals",
+]
+
+def gen_results(d : Dataset, p : Params, s : State) -> tuple:
+    """
+    Generates a tuple of results for the experiment, to be written to the
+    results file.
+    """
+    return (
+        s["run_id"],
+        p.domain_path,
+        p.provider,
+        p.model,
+        p.give_pred_descriptions,
+        p.desc_class,
+        s["hde_iterations"],
+        s["hde_timeout"],
+        s["action_timeout"],
+        s["action_timeout_cause"],
+        s["evals_passed"],
+        s["total_evals"]
+    )
 
 ACTION_THRESHOLD = 5
-VAL_THRESHOLD = 10
+HDE_THRESHOLD = 10
 
 def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     """
@@ -144,24 +192,43 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         res = n3p.check_domain_output(state["json_last"])
         return {
             "messages": [res] if res else [],
-            "domain_syn_val" : res is None
+            "domain_syn_val" : res is None,
+            "hde_iterations" : state["hde_iterations"] + 1
         }
 
     def validate(state: State):
-        res = n3p.val_all(d, p, state["json_last"].pddl_domain)
-        hde_iterations = state["hde_iterations"]
+        res = n3p.val_feedback(d, p, state["json_last"].pddl_domain)
         return {
             "messages": [res] if res else [],
             "domain_hde_val" : res is None,
-            "hde_iterations" : hde_iterations + 1
+        }
+        
+    def action_timeout_node(state: State):
+        actions_names = n3p.action_names(d, p)
+        failed_action_name = actions_names[state["action_index"]]
+        return {
+            "action_timeout": True,
+            "action_timeout_cause": failed_action_name,
+        }
+    
+    def hde_timeout_node(state: State):
+        return {
+            "hde_timeout": True
+        }
+    
+    def final_evaluation(state: State):
+        res = n3p.val_evaluate(d, p, state["json_last"].pddl_domain)
+        return {
+            "evals_passed": res[0],
+            "total_evals": res[1],
         }
 
     # Conditional Routing Helpers ==============================================
 
     def route_actions(state: State) ->\
-    Literal['__end__', 'next_action', 'call_action_model']:
+    Literal['action_timeout_node', 'next_action', 'call_action_model']:
         if state["action_iterations"] >= ACTION_THRESHOLD:
-            return END
+            return "action_timeout_node"
         elif state["action_valid"]:
             return "next_action"
         else:
@@ -175,15 +242,19 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             return "call_action_model"
 
     def route_domain_syn(state: State) ->\
-    Literal['validate', 'call_domain_model']:
-        if state["domain_syn_val"]:
+    Literal['validate', 'call_domain_model', 'hde_timeout_node']:
+        if state["hde_iterations"] >= HDE_THRESHOLD:
+            return "hde_timeout_node"
+        elif state["domain_syn_val"]:
             return "validate"
         else:
             return "call_domain_model"
 
-    def route_hde(state: State) -> Literal['call_domain_model', '__end__']:
+
+    def route_hde(state: State) ->\
+    Literal['call_domain_model', 'final_evaluation']:
         if state["domain_hde_val"]:
-            return END
+            return "final_evaluation"
         else:
             return "call_domain_model"
 
@@ -196,6 +267,9 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     graph_builder.add_node("call_domain_model", call_domain_model)
     graph_builder.add_node("check_domain", check_domain)
     graph_builder.add_node("validate", validate)
+    graph_builder.add_node("action_timeout_node", action_timeout_node)
+    graph_builder.add_node("hde_timeout_node", hde_timeout_node)
+    graph_builder.add_node("final_evaluation", final_evaluation)
 
     graph_builder.add_edge(START, "call_action_model")
     graph_builder.add_edge("call_action_model", "check_action")
@@ -206,6 +280,9 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     graph_builder.add_edge("call_domain_model", "check_domain")
     graph_builder.add_conditional_edges("check_domain", route_domain_syn)
     graph_builder.add_conditional_edges("validate", route_hde)
+    graph_builder.add_edge("action_timeout_node", END)
+    graph_builder.add_edge("hde_timeout_node", "final_evaluation")
+    graph_builder.add_edge("final_evaluation", END)
 
     return graph_builder.compile()
 
@@ -222,6 +299,8 @@ def run_experiment(
     """
     graph = create_langgraph(d, p)
 
+    graph.get_graph().draw_png("graph.png")
+
     initial_state = {
         "run_id": batch_id,
         "messages": n3p.init_msgs(d, p),
@@ -233,27 +312,29 @@ def run_experiment(
         "domain_syn_val": False,
         "domain_hde_val": False,
         "action_iterations" : 0,
-        "hde_iterations" : 0
+        "hde_iterations" : 0,
+        "action_timeout" : False,
+        "action_timeout_cause" : "",
+        "hde_timeout" : False,
+        "evals_passed": 0,
+        "total_evals": 0,
     }
+    step = initial_state
 
-    hde_iterations = 0
-    action_iterations = 0
+    # Set the recursion limit for the graph execution to be high enough to 
+    # accommodate the worst case scenario
+    # config = {
+    #     "recursion_limit": len(d.domains[p.domain_path].actions) * 2 * ACTION_THRESHOLD + HDE_THRESHOLD * 3 + 25,
+    # }
 
     try:
         logging.info("Running graph for %s", repr(p))
         for step in graph.stream(initial_state, stream_mode="values"):
-            #step["messages"][-1].pretty_print()
-            hde_iterations = step["hde_iterations"]
-            action_iterations = step["action_iterations"]
+            continue
     except Exception as e: # pylint: disable=broad-except
         print (f"Error: {e}")
-    res = n3p.params_as_dict(p, hde_iterations, action_iterations)
+    res = gen_results(d, p, step)
     return res
-    #results_lock.acquire()
-    #with open(results_path, 'a', encoding="utf-8") as res_file:
-    #csv_writer = csv.writer(res_file)
-    #csv_writer.writerow(res.values())
-    #results_lock.release()
 
 def run_experiment_star(
     args: tuple[Dataset, Params, str]  # Dataset, Params, Batch ID
@@ -285,15 +366,15 @@ def main() -> None:
     results_path = f'results/results-{date}.csv'
     with open(results_path, 'w', encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(n3p.params_header())
+        writer.writerow(RESULTS_HEADER)
 
     args = [(dataset, params, date) for params in n3p.param_grid(dataset)]
     with mp.Pool(processes=None) as pool:
-        res = list(tqdm(pool.imap(run_experiment_star, args), total=len(args)))
-        with open(results_path, 'w', encoding="utf-8") as res_file:
+        res = pool.imap(run_experiment_star, args)
+        with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
             for v in res:
-                csv_writer.writerow(v.values())
+                csv_writer.writerow(v)
     print("Successfully joined all processes.")
 
 

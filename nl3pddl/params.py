@@ -11,7 +11,8 @@ from .dataset import Dataset
 
 MODELS = {
     "openai" : {
-        "o4-mini", "gpt-4o-mini"
+        "o4-mini",
+        "gpt-4o-mini"
     },
     # "deepseek" : {
     #     "deepseek-chat"
@@ -24,7 +25,7 @@ DESC_CLASSES = [
     "detailed-first", "first"
 ]
 
-RUN_TRIALS = 20
+RUN_TRIALS = 10
 
 
 @dataclass

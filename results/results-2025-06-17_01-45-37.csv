@@ -1,0 +1,6 @@
+trial,domain_path,provider,model,give_pred_descriptions,desc_class,hde_runs,hde_timeout,action_timeout,action_timeout_cause,evals_passed,total_evals
+2025-06-17_01-45-37,data/domains/flow,openai,gpt-4o-mini,True,detailed-first,1,False,False,,20,20
+2025-06-17_01-45-37,data/domains/blocks,openai,gpt-4o-mini,True,detailed-first,52,True,False,,10,20
+2025-06-17_01-45-37,data/domains/miconic,openai,gpt-4o-mini,True,detailed-first,24,True,False,,19,20
+2025-06-17_01-45-37,data/domains/bookseller,openai,gpt-4o-mini,True,detailed-first,1,False,False,,20,20
+2025-06-17_01-45-37,data/domains/checkers-jumping,openai,gpt-4o-mini,True,detailed-first,3,False,False,,20,20
