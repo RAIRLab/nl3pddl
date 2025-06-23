@@ -2,5 +2,5 @@
 */__pycache__
 .env
 figs/
-data/gen_problems/*
+#data/gen_problems/*
 old-figs

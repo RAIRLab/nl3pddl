@@ -1,0 +1,2 @@
+(pick-up b2)
+(stack b2 b1)
