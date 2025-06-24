@@ -129,14 +129,14 @@ def gen_results(d : Dataset, p : Params, s : State) -> tuple:
     )
 
 ACTION_THRESHOLD = 5
-HDE_THRESHOLD = 10
+HDE_THRESHOLD = 5
 
 def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     """
     Creates a langgraph for a single experiment with the given
     experimental parameters.
     """
-    model = init_chat_model(p.model, model_provider=p.provider)
+    model = init_chat_model(p.model, model_provider=p.provider, timeout=60, max_retries=3)
     action_model = model.with_structured_output(ActionSchema)
     domain_model = model.with_structured_output(DomainSchema)
 
@@ -242,7 +242,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             return "call_action_model"
 
     def route_domain_syn(state: State) ->\
-    Literal['validate', 'call_domain_model', 'hde_timeout_node']:
+    Literal['hde_timeout_node', 'validate', 'call_domain_model']:
         if state["hde_iterations"] >= HDE_THRESHOLD:
             return "hde_timeout_node"
         elif state["domain_syn_val"]:
@@ -276,7 +276,6 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     graph_builder.add_conditional_edges("check_action", route_actions)
     graph_builder.add_conditional_edges("next_action", route_actions_done)
     graph_builder.add_edge("build_domain", "check_domain")
-    graph_builder.add_edge("check_domain", "validate")
     graph_builder.add_edge("call_domain_model", "check_domain")
     graph_builder.add_conditional_edges("check_domain", route_domain_syn)
     graph_builder.add_conditional_edges("validate", route_hde)
@@ -323,13 +322,13 @@ def run_experiment(
 
     # Set the recursion limit for the graph execution to be high enough to 
     # accommodate the worst case scenario
-    # config = {
-    #     "recursion_limit": len(d.domains[p.domain_path].actions) * 2 * ACTION_THRESHOLD + HDE_THRESHOLD * 3 + 25,
-    # }
+    config = {
+        "recursion_limit": len(d.domains[p.domain_path].actions) * ACTION_THRESHOLD + HDE_THRESHOLD * 3 + 25,
+    }
 
     try:
         logging.info("Running graph for %s", repr(p))
-        for step in graph.stream(initial_state, stream_mode="values"):
+        for step in graph.stream(initial_state, stream_mode="values", config=config):
             continue
     except Exception as e: # pylint: disable=broad-except
         print (f"Error: {e}")
@@ -370,10 +369,9 @@ def main() -> None:
 
     args = [(dataset, params, date) for params in n3p.param_grid(dataset)]
     with mp.Pool(processes=None) as pool:
-        res = pool.imap(run_experiment_star, args)
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
-            for v in res:
+            for v in pool.imap(run_experiment_star, args):
                 csv_writer.writerow(v)
     print("Successfully joined all processes.")
 

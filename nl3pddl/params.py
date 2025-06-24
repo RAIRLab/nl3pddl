@@ -25,7 +25,7 @@ DESC_CLASSES = [
     "detailed-first", "first"
 ]
 
-RUN_TRIALS = 10
+RUN_TRIALS = 15
 
 
 @dataclass
