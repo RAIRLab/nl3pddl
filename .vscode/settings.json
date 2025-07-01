@@ -2,6 +2,7 @@
     "cSpell.words": [
         "antivalidate",
         "AUTOINCREMENT",
+        "autopct",
         "blocksworld",
         "boxplots",
         "colorama",
@@ -48,6 +49,7 @@
         "reprompts",
         "reqo",
         "reso",
+        "startangle",
         "suptitle",
         "tqdm",
         "unloadbottom",
