@@ -9,24 +9,17 @@ from typing import Generator
 
 from .dataset import Dataset
 
-MODELS = {
-    "openai" : {
-        "o4-mini",
-        "gpt-4o-mini"
-    },
-    # "deepseek" : {
-    #     "deepseek-chat"
-    # }
-}
+import yaml
 
-GIVE_PRED_DESCRIPTIONS = [True]
+with open("experiment_config.yaml", "r") as f:
+    config = yaml.safe_load(f)
 
-DESC_CLASSES = [
-    "detailed-first", "first"
-]
-
-RUN_TRIALS = 15
-
+MODELS = config["models"]
+GIVE_PRED_DESCRIPTIONS = config["give-pred-description"]
+DESC_CLASSES = config["description-classes"]
+RUN_TRIALS = config["trials"]
+ACTION_THRESHOLD = config["action-threshold"]
+HDE_THRESHOLD = config["hde-threshold"]
 
 @dataclass
 class Params:
@@ -71,26 +64,14 @@ def domain_name(d : Dataset, h : Params) -> str:
     """
     return d.domains[h.domain_path].name
 
-def params_as_dict(p : Params, hde_runs: int, action_runs : int) -> dict:
+def get_hde_iteration_threshold() -> int:
     """
-    Returns the parameters as a dictionary
+    Returns the HDE iteration threshold for the experiment.
     """
-    return {
-        "trial": p.trial,
-        "domain_path": p.domain_path,
-        "provider": p.provider,
-        "model": p.model,
-        "give_pred_descriptions": p.give_pred_descriptions,
-        "desc_class": p.desc_class,
-        "hde_runs" : hde_runs,
-        "action_runs" : action_runs
-    }
+    return HDE_THRESHOLD
 
-def params_header () -> list[str]:
+def get_action_iteration_threshold() -> int:
     """
-    Returns the header for the parameters
+    Returns the action iteration threshold for the experiment.
     """
-    return [
-        "trial", "domain_path", "provider",
-        "model", "give_pred_descriptions",
-        "desc_class", "hde_runs", "action_runs"]
+    return ACTION_THRESHOLD

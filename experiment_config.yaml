@@ -1,0 +1,41 @@
+# This is the configuration file for the experiment, when running driver.py.
+# Domains are strictly determined by what is present in the data/domains folder
+# and it is assumed the data/gen_problems folder has been populated with
+# problems and plans for each domain via gen_problems.py.
+
+# Maximum number of reprompts to allow for each action generation step.
+action-threshold: 5
+
+# Maximum number of reprompts to refine the domain.
+hde-threshold: 10
+
+# How many times the entire parameter grid is repeated with randomized seeds 
+# for LLM generation. Used for statistical significance.
+trials: 20
+
+# Grid Parameters ==============================================================
+# The following parameters define a parameter grid to evaluate over.
+# Every possible combination of these parameters will be evaluated over
+# every single domain in the dataset/domains folder.
+
+# What models are we evaluating?
+# This can be any valid provider and model pair, assuming the API key is set in
+# the ENV file and passed in.
+models:
+    openai:
+        - o4-mini
+        - gpt-4o-mini
+    deepseek:
+        - deepseek-chat
+
+# Description classes to evaluate over, should correspond to the classes
+# present in the dataset/*/nl.json files.
+description-classes:
+    - first
+    - detailed-first
+
+# Should the model be presented with a description of predicates from the
+# problem set when initially generating the domain?
+give-pred-description: [true]
+
+

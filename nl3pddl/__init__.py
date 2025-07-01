@@ -15,8 +15,8 @@ from .params import (
     param_grid,
     action_names,
     domain_name,
-    params_as_dict,
-    params_header
+    get_action_iteration_threshold,
+    get_hde_iteration_threshold
 )
 
 # Natural Language Syntax and Semantic feedback

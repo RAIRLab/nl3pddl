@@ -655,6 +655,37 @@ unicode = ["unicodedata2 (>=15.1.0)"]
 woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
 
 [[package]]
+name = "forbiditerative"
+version = "1.1.3"
+description = "Forbid-Iterative (FI) Planner is an Automated PDDL based planner that includes planners for top-k, top-quality, and diverse computational tasks."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+files = [
+    {file = "forbiditerative-1.1.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:9f174fa02202cca0d5271ad5bc54ade7cfd1b70fc9312626a10fca3a8cb6fef0"},
+    {file = "forbiditerative-1.1.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:7c4d70df541e64d7184011353be0edbe01170091b0dc88a73713be7e4bb98aac"},
+    {file = "forbiditerative-1.1.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:acd2810ff9e0338df855c2992386d04c2300ec4e721c6418a3f59caa676b48ea"},
+    {file = "forbiditerative-1.1.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:600ebe5648a9c04bd800e8c80eddd143808a765be1f446fd50e2f95b071f638d"},
+    {file = "forbiditerative-1.1.3-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:d3a675d438ae85847cbf482bff3323d172c155dfb08a29f5027c584daa318c83"},
+    {file = "forbiditerative-1.1.3-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:d931b9ddd826c91557235fad7b697de068cedb4b6a91298819d4e9b1418ee0c7"},
+    {file = "forbiditerative-1.1.3-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3f176b261beb0f03222d3ae7d84f5495401cec6bddda53fe7247be91db849a05"},
+    {file = "forbiditerative-1.1.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ead3fc79b6d281014cbe9f8b56c2ca505ddf1ad8798c80072738e95febee1eb5"},
+    {file = "forbiditerative-1.1.3-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:87ca822b141f0f88b7fbef1813baf5683e7a6f4f3e00e46983f609d22f8173d6"},
+    {file = "forbiditerative-1.1.3-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:93a3e2834c547d5ed3cb9ed7f2a07be53bd90d743edb037c3e0dc32b9447924c"},
+    {file = "forbiditerative-1.1.3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:612d6127b9c5041799f1b74c4d9b95143ee6908072087331f7626f3253906af1"},
+    {file = "forbiditerative-1.1.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9bd4bdd26bf2a7e08ff811b87ba165d989e5cd5cffda22673e09e8d2715dea51"},
+    {file = "forbiditerative-1.1.3-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:f3d961a3a55ed55b447c82f80e62f3ee97fab62d675f36967c448427a2b66b23"},
+    {file = "forbiditerative-1.1.3-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:5658cccc7d10a226360fc52e86cc5d614e2882f4247cffe8aa6eb51d0835f967"},
+    {file = "forbiditerative-1.1.3-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a63c48df4c8753ed56be45934d60bd1e6839a90c955a2f357d8c4413034dc36a"},
+    {file = "forbiditerative-1.1.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:da88533334687825a034b56803cd8323e0881dba8122c61dcab44d513ec8f11d"},
+    {file = "forbiditerative-1.1.3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:cc275c56f107d56ed7969e521d06ec5a121898109e659d241aa9edc0a45eb3e1"},
+    {file = "forbiditerative-1.1.3-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:04a384acbeabc11e3951fc70be0c2ba90bec4d57b83f66e1cd4e1885f2f2305f"},
+    {file = "forbiditerative-1.1.3-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c13ecd6ab3eca5013d0f413464e3ed3b1a035196bc9268becf2d88b639ab0906"},
+    {file = "forbiditerative-1.1.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8a059cc8bf95f4b0eebfd8b09758980d2f33958a78d71a09611e1d22da37dd30"},
+]
+
+[[package]]
 name = "frozenlist"
 version = "1.6.0"
 description = "A list-like structure which implements collections.abc.MutableSequence"
@@ -3289,4 +3320,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "a12a2978bf71d242404c237a875d5ad62de1631f1523e4100d79eebb9a35d2c5"
+content-hash = "315638b9998849466623c0b2c0af30effaeab1af94382f92e8092be5d8a40454"

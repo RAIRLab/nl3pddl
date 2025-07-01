@@ -53,6 +53,7 @@ class DomainSchema(BaseModel):
         (:domain name :requirements (...) :types (...) :predicates (...)\
         :functions (...) :action (...))")
 
+# LangGraph State, this object keeps track of all state for a single experiment
 class State(TypedDict):
     """ The LangGraph application State"""
     #Run ID, identifier for the experiment run, allows us to filter in langsmith
@@ -93,6 +94,9 @@ class State(TypedDict):
     evals_passed: int = 0  # Number of evaluations passed
     total_evals: int = 0  # Total number of evaluations attempted
 
+# Results file generation helpers ==============================================
+
+# CSV header for the results file
 RESULTS_HEADER = [
     "trial",
     "domain_path",
@@ -128,8 +132,9 @@ def gen_results(d : Dataset, p : Params, s : State) -> tuple:
         s["total_evals"]
     )
 
-ACTION_THRESHOLD = 5
-HDE_THRESHOLD = 5
+# Experiments Helpers ==========================================================
+
+
 
 def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     """
@@ -227,7 +232,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def route_actions(state: State) ->\
     Literal['action_timeout_node', 'next_action', 'call_action_model']:
-        if state["action_iterations"] >= ACTION_THRESHOLD:
+        if state["action_iterations"] >= n3p.get_action_iteration_threshold():
             return "action_timeout_node"
         elif state["action_valid"]:
             return "next_action"
@@ -243,7 +248,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def route_domain_syn(state: State) ->\
     Literal['hde_timeout_node', 'validate', 'call_domain_model']:
-        if state["hde_iterations"] >= HDE_THRESHOLD:
+        if state["hde_iterations"] >= n3p.get_hde_iteration_threshold():
             return "hde_timeout_node"
         elif state["domain_syn_val"]:
             return "validate"
@@ -323,7 +328,10 @@ def run_experiment(
     # Set the recursion limit for the graph execution to be high enough to 
     # accommodate the worst case scenario
     config = {
-        "recursion_limit": len(d.domains[p.domain_path].actions) * ACTION_THRESHOLD + HDE_THRESHOLD * 3 + 25,
+        "recursion_limit": 
+            len(d.domains[p.domain_path].actions) * 
+            n3p.get_action_iteration_threshold() + 
+            n3p.get_hde_iteration_threshold() * 3 + 25,
     }
 
     try:
