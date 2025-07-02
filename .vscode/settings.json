@@ -50,6 +50,7 @@
         "reqo",
         "reso",
         "startangle",
+        "subfigs",
         "suptitle",
         "tqdm",
         "unloadbottom",

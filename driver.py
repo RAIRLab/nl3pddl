@@ -110,6 +110,7 @@ RESULTS_HEADER = [
     "action_timeout_cause",
     "evals_passed",
     "total_evals",
+    "domain_raw"
 ]
 
 def gen_results(d : Dataset, p : Params, s : State) -> tuple:
@@ -129,7 +130,8 @@ def gen_results(d : Dataset, p : Params, s : State) -> tuple:
         s["action_timeout"],
         s["action_timeout_cause"],
         s["evals_passed"],
-        s["total_evals"]
+        s["total_evals"],
+        s["json_last"].pddl_domain if s["json_last"] else ""
     )
 
 # Experiments Helpers ==========================================================
