@@ -12,6 +12,7 @@ import nl3pddl as n3p
 # but not -l and -r together
 # if no arguments are passed treat it as -r and run the experiment
 # if -i is passed, generate the graph image of the experiment
+# if -p is passed, plot all figures
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NL3PDDL Driver")
     parser.add_argument(
@@ -30,7 +31,11 @@ if __name__ == "__main__":
         "-i", "--image", action="store_true",
         help="Generate the graph image of the experiment"
     )
-    
+    parser.add_argument(
+        "-p", "--plot", action="store_true",
+        help="Plot all figures"
+    )
+
     args = parser.parse_args()
 
     if args.generate:
@@ -45,7 +50,10 @@ if __name__ == "__main__":
     if args.image:
         n3p.graph_pipeline_image()
 
-    if not (args.generate or args.landmarks or args.run or args.image):
+    if args.plot:
+        n3p.plot_all_figures()
+
+    if not (args.generate or args.landmarks or args.run or args.image or args.plot):
         print("No arguments passed, running the experiment by default.")
-        n3p.experiment()
+        n3p.run_experiment()
 

@@ -8,8 +8,10 @@ import os
 import shutil
 import tempfile
 import subprocess
+from pathlib import Path
 from subprocess import CalledProcessError
 
+from kstar_planner import planners
 from langchain.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage
 
@@ -19,7 +21,7 @@ from .logger import logger
 
 #The location of VAL relative to where this is being run from
 VAL_PATH = "submodules/VAL/build/bin/Validate"
-KSTAR_PATH = "submodules/kstar/build/bin/kstar"
+KSTAR_PATH = "submodules/kstar/builds/release/bin/downward"
 
 def new_pipe(tmpdir : str, pipe_name : str, contents : str) -> str:
     """
@@ -105,53 +107,71 @@ def val_evaluate(
             total_count += 1
     return valid_count, total_count
 
+# def raw_kstar(
+#     new_domain_str : str,
+#     problem_path : str,
+#     k : int = 1
+# ) -> str:
+#     """
+#     Given an original domain (path) and a new domain (string) problem,
+#     check if the the plan from the original can be used in
+#     the new domain. returns None if the plan is valid in the new domain,
+#     or an error message if it is not valid.
+#     """
+#     tmpdir = tempfile.mkdtemp()
+#     plan_pipe_path = os.path.join(tmpdir, 'plan.json')
+#     new_domain_path = new_pipe(tmpdir, 'new_domain.pddl', new_domain_str)
+#     args = [
+#         KSTAR_PATH,
+#         "--search-time-limit", f"{KSTAR_TIMEOUT}s",
+#         new_domain_path, problem_path,
+#         "--search", f"kstar(lmcut(),k={k},"
+#         + f"dump_plan_files=false,json_file_to_dump={plan_pipe_path})"
+#     ]
+#     try:
+#         _ = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+#         with open(plan_pipe_path, 'r', encoding="utf-8") as json_plan_pipe:
+#             plan_obj = json.loads(json_plan_pipe)
+#     except CalledProcessError as err:
+#         #These error codes from KStar seem to line up with the error codes
+#         #that FD uses, see: https://www.fast-downward.org/ExitCodes
+#         return_code = err.returncode
+#         #TODO add better error notification
+#         if return_code == 12: 
+#             #return "Search ended without finding a solution."
+#             return None
+#         elif return_code == 23:
+#             #return "Search Timed Out"
+#             return None
+#         elif return_code == 30:
+#             #return "malformed PDDL input"
+#             return None
+#         elif return_code == 34:
+#             #We get this if it tries to put a negated precondition in the STRIPS
+#             #return "Requested unsupported feature."
+#             return None
+#         else:
+#             return None
+#     except Exception as e:
+#         logger.error("Unexpected error occurred: %s", e)
+#         return None
+#     shutil.rmtree(tmpdir)
+#     return plan_obj
+
 def raw_kstar(
     new_domain_str : str,
     problem_path : str,
     k : int = 1
-) -> str:
-    """
-    Given an original domain (path) and a new domain (string) problem,
-    check if the the plan from the original can be used in
-    the new domain. returns None if the plan is valid in the new domain,
-    or an error message if it is not valid.
-    """
+) -> str | None:
     tmpdir = tempfile.mkdtemp()
-    plan_pipe_path = os.path.join(tmpdir, 'plan.json')
     new_domain_path = new_pipe(tmpdir, 'new_domain.pddl', new_domain_str)
-    args = [
-        KSTAR_PATH,
-        "--search-time-limit", f"{KSTAR_TIMEOUT}s",
-        new_domain_path, problem_path,
-        "--search", f"kstar(lmcut(),k={k},"
-        + f"dump_plan_files=false,json_file_to_dump={plan_pipe_path})"
-    ]
-    try:
-        _ = subprocess.check_output(args, stderr=subprocess.DEVNULL)
-        with open(plan_pipe_path, 'r', encoding="utf-8") as json_plan_pipe:
-            plan_obj = json.loads(json_plan_pipe)
-    except CalledProcessError as err:
-        #These error codes from KStar seem to line up with the error codes
-        #that FD uses, see: https://www.fast-downward.org/ExitCodes
-        return_code = err.returncode
-        #TODO add better error notification
-        if return_code == 12: 
-            #return "Search ended without finding a solution."
-            return None
-        elif return_code == 23:
-            #return "Search Timed Out"
-            return None
-        elif return_code == 30:
-            #return "malformed PDDL input"
-            return None
-        elif return_code == 34:
-            #We get this if it tries to put a negated precondition in the STRIPS
-            #return "Requested unsupported feature."
-            return None
-        else:
-            return None
-    shutil.rmtree(tmpdir)
-    return plan_obj
+    plans = planners.plan_topk(
+        domain_file=Path(new_domain_path), 
+        problem_file=Path(problem_path), 
+        number_of_plans_bound=k, 
+        timeout=KSTAR_TIMEOUT
+    )
+    return plans["plans"] if plans["plans"] else None
 
 def landmark_feedback(
     d : Dataset, 
@@ -163,7 +183,7 @@ def landmark_feedback(
     satisfied the original domain's landmarks for that problem. If the new domain is incompatible with the problem files, or the plan satisfies the landmarks returns None, otherwise if the landmarks are not satisfied, returns a message with the problem, landmark that was not satisfied.
     """
     # Get the new domain's landmarks
-    problem_paths = d.evaluation_problem_paths[p.domain_path]
+    problem_paths = d.feedback_problem_paths[p.domain_path]
     for problem_path in problem_paths:
         landmarks = d.landmarks[problem_path]
         plan_obj = raw_kstar(new_domain_str, problem_path)
@@ -174,14 +194,14 @@ def landmark_feedback(
             return None
         new_plan : str = json.dumps(plan_obj)
         for landmark in landmarks:
-            landmark_str = [f"({l})" for l in landmark].join(" or ")
+            landmark_str = " or ".join([f"({l})" for l in landmark])
             landmark_satisfied = False
             for landmark_disjunt in landmark:
                 if landmark_disjunt in new_plan:
                     landmark_satisfied = True
                     break
             if not landmark_satisfied:
-                problem_raw = d.evaluation_problem_raws[problem_path]
+                problem_raw = d.feedback_problem_raws[problem_path]
                 return HumanMessage(LANDMARK_PROMPT_TEMPLATE.format(
                     problem=problem_raw,
                     landmark=landmark_str,

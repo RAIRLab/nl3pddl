@@ -7,10 +7,12 @@
 # See https://docs.python.org/3/library/logging.html#logging-levels
 # 10 for DEBUG, which contains our lowest level of logging
 # 50 for CRITICAL, which contains no messages
-log-level: 30
+# log-level: 30
+log-level: 10
 
 # The maximum number of threads to use for parallel processing.
 # If set to 0 or less, it will default to the number of available CPU cores.
+#threads: 1
 threads: 0
 
 # Maximum number of reprompts to allow for each action generation step.
@@ -24,7 +26,7 @@ hde-threshold: 10
 trials: 10
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
-kstar-timeout: 10
+kstar-timeout: 5
 
 # Grid Parameters ==============================================================
 # The following parameters define a parameter grid to evaluate over.
@@ -36,7 +38,7 @@ kstar-timeout: 10
 # the ENV file and passed in.
 models:
     openai:
-        - o4-mini
+    #    - o4-mini
         - gpt-4o-mini     
     # deepseek:
     #     - deepseek-chat
@@ -52,8 +54,8 @@ description-classes:
 # TODO: currently the order of the stages is hardcoded, changing the order here
 # will not change the order of the stages in the pipeline.
 feedback-pipelines:
-    - validate: ["validate"]
-    - landmark-val: ["landmark", "validate"]
+    - ["validate"]
+    #- ["landmark", "validate"]
 
 
 # Should the model be presented with a description of predicates from the

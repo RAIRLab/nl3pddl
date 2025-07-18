@@ -1169,6 +1169,37 @@ files = [
 ]
 
 [[package]]
+name = "kstar-planner"
+version = "1.4.6"
+description = "Kstar Planner is an Automated PDDL based planner that includes planners for top-k and top-quality planning computational tasks."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+files = [
+    {file = "kstar_planner-1.4.6-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:8d9cce4ff760249223fdcf57eee4ab6c8fac55a29a5ad5c34aa8eab435f5a4b1"},
+    {file = "kstar_planner-1.4.6-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:2fa68a041bd015691d4fc7c18e00532d614c1e64c1e0aa02574ee30fe005660b"},
+    {file = "kstar_planner-1.4.6-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:83b5a5d281f5b377be96a2b90ae9e0f529aa7e6f08f33280468b78ecff22004c"},
+    {file = "kstar_planner-1.4.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:22792c643d0c04a560777131b533cf8316cd5b0cc35a97f455fe876794f35253"},
+    {file = "kstar_planner-1.4.6-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:a031ddd013d333fe357259d9ae53d1ef33d4eacb1ff94a6e9abb668a4f2be148"},
+    {file = "kstar_planner-1.4.6-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:27a1ea82c8f55ae183ed1885134f9a115ed16461af7d3a888bcb4f60f845acea"},
+    {file = "kstar_planner-1.4.6-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:fb27cc5753a2d3b471b12ca278ac1dbe1b1da7e376668f789dc7c216f223deb2"},
+    {file = "kstar_planner-1.4.6-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ff3914133f661aa003fa4ef73ff4a2c26246884de2bd6d40e5eda3c7be6306df"},
+    {file = "kstar_planner-1.4.6-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:d4c7cca0dcf4cd05d20fb1d1ab6b557be52b634d55be00e1581743e2b051d1a3"},
+    {file = "kstar_planner-1.4.6-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:2dbe43c80344eb08ec19f77cceae99b3659613f198406c05a52c9341d6f26b0c"},
+    {file = "kstar_planner-1.4.6-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d3aa922d393f7df07332f20bb2b9144aeb0c72b9b7154899b5fbe89fd6ab4dcb"},
+    {file = "kstar_planner-1.4.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:52f1cb6e4aa864a5837c2715e4696bdc17b60c04e40775b802cd985ae78d6c66"},
+    {file = "kstar_planner-1.4.6-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:f79b97d4ef2323a5360c8da93956daa2a983711d82db72feb17c8b9a55f0f82c"},
+    {file = "kstar_planner-1.4.6-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:1032589a73b9994880f133963f112b3f5ca2a6a3170e54361d8805da9dc7f905"},
+    {file = "kstar_planner-1.4.6-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f99112ecc25537315f7d1c43c35b5231bdd0f9ecb6f4c9b4a9c0398a46109eed"},
+    {file = "kstar_planner-1.4.6-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:99463361ce304025c998c5cdebcc00567e61362e32c4d834313ade26cc37e045"},
+    {file = "kstar_planner-1.4.6-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:d689f96b14fe7dba46232b77be857d169835299d654f3765b58b993e38aa3f06"},
+    {file = "kstar_planner-1.4.6-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:ea50af083ad4f9a059bbecbd39ba73cf270e44c71d4d85804267c0b97da3f100"},
+    {file = "kstar_planner-1.4.6-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d29be1111edffcf91d8203541561ec06a79db5f78928f94376aa575aa16e6462"},
+    {file = "kstar_planner-1.4.6-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d86a0812657c19d4c3dffe82b95b9abf0cd3171724709d82259fa5743f13b164"},
+]
+
+[[package]]
 name = "langchain"
 version = "0.3.25"
 description = "Building applications with LLMs through composability"
@@ -3320,4 +3351,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "315638b9998849466623c0b2c0af30effaeab1af94382f92e8092be5d8a40454"
+content-hash = "94857c10054fc17d25f47da87ec254ebe8ee5887fa9f9b00f903b8e2bad53626"

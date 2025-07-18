@@ -82,6 +82,9 @@ class State(TypedDict):
     action_timeout : bool = False 
     action_timeout_cause : str = "" # Action that caused the timeout 
 
+    # number of times we have actually given landmark feedback to the model
+    landmark_runs : int = 0
+
     # Landmark node passed
     landmark_passed: bool = False
 
@@ -108,13 +111,14 @@ RESULTS_HEADER = [
     "give_pred_descriptions",
     "desc_class",
     "feedback_pipeline",
+    "landmark_runs",
     "hde_runs",
     "hde_timeout",
     "action_timeout",
     "action_timeout_cause",
     "evals_passed",
     "total_evals",
-    "domain_raw"
+    #"domain_raw"
 ]
 
 def gen_results(d : Dataset, p : Params, s : State) -> tuple:
@@ -130,13 +134,14 @@ def gen_results(d : Dataset, p : Params, s : State) -> tuple:
         p.give_pred_descriptions,
         p.desc_class,
         feedback_pipeline_str(p),
+        s["landmark_runs"],
         s["hde_iterations"],
         s["hde_timeout"],
         s["action_timeout"],
         s["action_timeout_cause"],
         s["evals_passed"],
         s["total_evals"],
-        s["json_last"].pddl_domain if s["json_last"] else ""
+        #s["json_last"].pddl_domain if s["json_last"] else ""
     )
 
 # Experiments Helpers ==========================================================
@@ -233,6 +238,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             return {
                 "messages": [res] if res else [],
                 "landmark_passed": res is None,
+                "landmark_runs": state["landmark_runs"] + 1,
             }
         else:
             logger.debug("landmark check skipped, not in config")
@@ -388,6 +394,8 @@ def run_experiment_instance(
         "actions" : [],
         "domain_syntax_passed": False,
         "domain_hde_passed": False,
+        "landmark_passed": False,
+        "landmark_runs": 0,
         "action_iterations" : 0,
         "hde_iterations" : 0,
         "action_timeout" : False,
