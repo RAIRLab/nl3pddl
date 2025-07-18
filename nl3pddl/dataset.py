@@ -1,7 +1,6 @@
 """ Dataset class and loader for the NL3PDDL project. """
 
 import json
-import logging
 import os
 from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass
@@ -10,13 +9,15 @@ from tqdm import tqdm
 import pddl
 from pddl.core import Domain, Problem
 
+from .logger import logger
+
 #TODO: this should be moved to a config file, we redefine it in gen_problems.py
 PLANS_PER_PROBLEM = 2
 TEMPLATE_FILE_NAME = "template.pddl.txt"
 GROUND_TRUTH_FILE_NAME = "ground.pddl"
 NL_FILE_NAME = "nl.json"
-FEEDBACK_PROBLEM_DIR = "data/gen_problems/training"
-EVALUATION_PROBLEM_DIR = "data/gen_problems/testing"
+FEEDBACK_PROBLEM_DIR = "data/gen_problems/feedback"
+EVALUATION_PROBLEM_DIR = "data/gen_problems/evaluation"
 LANDMARK_PROBLEM_DIR = "data/gen_landmarks" #Landmarks are only for testing problems
 
 def domains() -> list[str]:
@@ -37,12 +38,6 @@ def get_new_domains() -> list[str]:
         domain_path = os.path.join("data/domains", domain)
         if os.path.isdir(domain_path):
             new_domains.append(domain_path)
-        else:
-            logging.warning(
-                "Domain path %s is listed as a new \
-                domain in data/config.json but does not exist.",
-                domain_path
-            )
     return new_domains
 
 def parse_plan(plan_path: str) -> List[Tuple[str, List[str]]]:
@@ -135,7 +130,7 @@ class Dataset:
             try:
                 domain = pddl.parse_domain(ground_path)
             except Exception as e:
-                logging.error("Error parsing domain %s: %s", ground_path, e)
+                logger.error("Error parsing domain %s: %s", ground_path, e)
                 exit(1)
 
             self.domains[domain_path] = domain
@@ -144,8 +139,8 @@ class Dataset:
             feedback_dir : str = os.path.join(FEEDBACK_PROBLEM_DIR, domain.name)
             landmark_dir : str = os.path.join(LANDMARK_PROBLEM_DIR, domain.name)
             feedback_problem_paths = \
-                [os.path.join(problem_dir, f) for f in os.listdir(problem_dir) \
-                 if f.endswith(".pddl")]
+                [os.path.join(feedback_dir, f) for f in
+                 os.listdir(feedback_dir) if f.endswith(".pddl")]
             self.feedback_problem_paths[domain_path] = feedback_problem_paths
 
             for i, problem_path in enumerate(feedback_problem_paths):
@@ -154,15 +149,15 @@ class Dataset:
                 try:
                     problem = pddl.parse_problem(problem_path)
                 except Exception as e:
-                    logging.error("Error parsing problem file %s: %s",
+                    logger.error("Error parsing problem file %s: %s",
                                    problem_path, e)
                     exit(1)
                 
                 self.feedback_problems[problem_path] = problem
                 self.feedback_plan_paths[problem_path] = \
-                    [os.path.join(problem_dir, f"plan-{i+1}-{j}.txt") for j in \
+                    [os.path.join(feedback_dir, f"plan-{i+1}-{j}.txt") for j in
                      range(1, PLANS_PER_PROBLEM + 1)]
-                for plan_path in self.feedback_plan_paths[problem_file]:
+                for plan_path in self.feedback_plan_paths[problem_path]:
                     if os.path.exists(plan_path):
                         self.feedback_plans[plan_path] = parse_plan(plan_path)
                         with open(plan_path, "r", encoding="utf-8") as f:
@@ -171,7 +166,7 @@ class Dataset:
                 problem_name = os.path.basename(problem_path)
                 problem_name = problem_name.replace(".pddl", ".json")
                 landmark_path = os.path.join(landmark_dir, problem_name)
-                with open(problem_path, "r", encoding="utf-8") as f:
+                with open(landmark_path, "r", encoding="utf-8") as f:
                     self.landmarks[problem_path] = json.load(f)["landmarks"]
 
             # Read the evaluation problems

@@ -37,13 +37,13 @@ if __name__ == "__main__":
         n3p.generate_problems()
     
     if args.landmarks:
-        n3p.landmark_feedback()
-    
+        n3p.generate_landmarks()
+
     if args.run:
-        n3p.experiment()
+        n3p.run_experiment()
 
     if args.image:
-        n3p.experiment_graph_image()
+        n3p.graph_pipeline_image()
 
     if not (args.generate or args.landmarks or args.run or args.image):
         print("No arguments passed, running the experiment by default.")

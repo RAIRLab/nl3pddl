@@ -7,7 +7,6 @@ import json
 import os
 import shutil
 import tempfile
-import logging
 import subprocess
 from subprocess import CalledProcessError
 
@@ -16,6 +15,7 @@ from langchain_core.messages import HumanMessage
 
 from .dataset import PipelineResult, Dataset
 from .params import Params, KSTAR_TIMEOUT
+from .logger import logger
 
 #The location of VAL relative to where this is being run from
 VAL_PATH = "submodules/VAL/build/bin/Validate"
@@ -98,7 +98,7 @@ def val_evaluate(
             if result is None:
                 valid_count += 1
             else:
-                logging.warning(
+                logger.warning(
                     "Plan %s for problem %s in domain %s is invalid: %s",
                     plan_path, problem_path, p.domain_path, result
                 )

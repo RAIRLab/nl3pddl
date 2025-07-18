@@ -6,7 +6,6 @@ This file contains the driver for the NL3PDDL project.
 import os
 import csv
 import json
-import logging
 from typing import Any, Literal, Annotated
 import multiprocessing as mp
 from datetime import datetime
@@ -24,13 +23,9 @@ from langgraph.graph.message import add_messages
 from .check_output import check_action_output, check_domain_syntax_output
 from .gen_prompts import action_message, domain_template, init_msgs
 from .dataset import Dataset
-from .params import Params, action_names, domain_name, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
+from .params import THREADS, Params, action_names, domain_name, feedback_pipeline_str, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
 from .feedback_eval import landmark_feedback, val_evaluate, val_feedback
-
-# Internal package imports
-# import nl3pddl as n3p
-# from nl3pddl import Dataset, Params
-
+from .logger import logger
 
 # This is a pydantic model that we force the LLM to output in
 # the form of during the action generation phase.
@@ -112,6 +107,7 @@ RESULTS_HEADER = [
     "model",
     "give_pred_descriptions",
     "desc_class",
+    "feedback_pipeline",
     "hde_runs",
     "hde_timeout",
     "action_timeout",
@@ -133,6 +129,7 @@ def gen_results(d : Dataset, p : Params, s : State) -> tuple:
         p.model,
         p.give_pred_descriptions,
         p.desc_class,
+        feedback_pipeline_str(p),
         s["hde_iterations"],
         s["hde_timeout"],
         s["action_timeout"],
@@ -157,11 +154,13 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     # Lang-graph nodes =========================================================
 
     def call_action_model(state: State):
+        logger.debug("Calling action model")
         json_obj = action_model.invoke(state["messages"])
         raw = json.dumps(json_obj.model_dump())
         return {"messages": [AIMessage(raw)], "json_last": json_obj}
 
     def call_domain_model(state: State):
+        logger.debug("Calling domain model")
         json_obj = domain_model.invoke(state["messages"])
         raw = json.dumps(json_obj.model_dump())
         return {"messages": [AIMessage(raw)], "json_last": json_obj}
@@ -171,12 +170,17 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         actions_names = action_names(d, p)
         actions = state["actions"]
         if action_index >= len(actions_names):
+            logger.debug(f"Done generating actions.")
             return {
                 "actions_done": True,
                 "actions" : actions + [state["json_last"]]
             }
         else:
             action_name = actions_names[action_index]
+            logger.debug(
+                "Starting Action %d/%d: %s",
+                action_index + 1, len(actions_names), action_name
+            )
             return {
                 "messages": [action_message(d, p, action_name)],
                 "action_index" : action_index + 1,
@@ -186,6 +190,10 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def check_action(state: State):
         res = check_action_output(state["json_last"])
+        logger.debug(
+            "Checking action... %s",
+            "valid" if res is None else "invalid"
+        )
         return {
             "messages": [res] if res else [],
             "action_valid" : res is None,
@@ -193,6 +201,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
 
     def build_domain(state: State):
+        logger.debug("Building domain from actions")
         full_domain_raw = domain_template(
             domain_name(d, p),
             state["actions"]
@@ -204,6 +213,10 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def check_domain_syntax(state: State):
         res = check_domain_syntax_output(state["json_last"])
+        logger.debug(
+            "Checking domain syntax... %s",
+            "valid" if res is None else "invalid"
+        )
         return {
             "messages": [res] if res else [],
             "domain_syntax_passed" : res is None,
@@ -213,11 +226,16 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     def landmark(state: State):
         if "landmark" in p.feedback_pipeline:
             res = landmark_feedback(d, p, state["json_last"].pddl_domain)
+            logger.debug(
+                "Checking landmarks... %s",
+                "passed" if res is None else "failed"
+            )
             return {
                 "messages": [res] if res else [],
                 "landmark_passed": res is None,
             }
         else:
+            logger.debug("landmark check skipped, not in config")
             return {
                 "messages": [],
                 "landmark_passed": True,
@@ -226,17 +244,23 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     def validate(state: State):
         if "validate" in p.feedback_pipeline:
             res = val_feedback(d, p, state["json_last"].pddl_domain)
+            logger.debug(
+                "Validating domain... %s",
+                "passed" if res is None else "failed"
+            )
             return {
                 "messages": [res] if res else [],
                 "domain_hde_passed": res is None,
             }
         else:
+            logger.debug("Validation check skipped, not in config")
             return {
                 "messages": [],
                 "domain_hde_passed": True,
             }
         
     def action_timeout_node(state: State):
+        logger.debug("Action timeout reached, exiting.")
         actions_names = action_names(d, p)
         failed_action_name = actions_names[state["action_index"]]
         return {
@@ -245,12 +269,17 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
     
     def hde_timeout_node(state: State):
+        logger.debug("HDE timeout reached.")
         return {
             "hde_timeout": True
         }
     
     def final_evaluation(state: State):
         res = val_evaluate(d, p, state["json_last"].pddl_domain)
+        logger.debug(
+            "Running evaluation of the domain. passed %d/%d",
+            res[0], res[1]
+        )
         return {
             "evals_passed": res[0],
             "total_evals": res[1],
@@ -329,14 +358,14 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     return graph_builder.compile()
 
-def experiment_graph_image(filename : str) -> None:
+def graph_pipeline_image() -> None:
     """
     Saves the graph as a PNG image to the given filename.
     """
     graph = create_langgraph(None, Params()) # Dummy dataset and params
-    graph.get_graph().draw_png(filename)
+    graph.get_graph().draw_png("results/pipeline.png")
 
-def run_experiment(
+def run_experiment_instance(
     d: Dataset,     # Dataset
     p: Params,      # Experiment Parameters
     #results_lock,   # Lock on results file for thread safety
@@ -348,8 +377,6 @@ def run_experiment(
     to the results file.
     """
     graph = create_langgraph(d, p)
-
-    graph.get_graph().draw_png("graph.png")
 
     initial_state = {
         "run_id": batch_id,
@@ -381,7 +408,7 @@ def run_experiment(
     }
 
     try:
-        logging.info("Running graph for %s", repr(p))
+        logger.info("Running graph for %s", repr(p))
         for step in graph.stream(initial_state, stream_mode="values", config=config):
             continue
     except Exception as e: # pylint: disable=broad-except
@@ -389,16 +416,16 @@ def run_experiment(
     res = gen_results(d, p, step)
     return res
 
-def run_experiment_star(
+def run_experiment_instance_star(
     args: tuple[Dataset, Params, str]  # Dataset, Params, Batch ID
 ) -> dict:
     """
     Wrapper for run_experiment to unpack the arguments.
     This is used for multiprocessing.
     """
-    return run_experiment(*args)
+    return run_experiment_instance(*args)
 
-def experiment() -> None:
+def run_experiment() -> None:
     """
     Driver, runs the experiments in parallel using the parameter grid
     """
@@ -411,20 +438,21 @@ def experiment() -> None:
         raise RuntimeError("DEEPEEK_API_KEY environment variable not set.\
                             Please set it in your .env file.")
 
-    logging.getLogger().setLevel(logging.INFO)
+    num_processes = THREADS if THREADS > 0 else None
 
     dataset = Dataset()
 
     date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
     results_path = f'results/results-{date}.csv'
     with open(results_path, 'w', encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(RESULTS_HEADER)
 
     args = [(dataset, params, date) for params in param_grid(dataset)]
-    with mp.Pool(processes=None) as pool:
+    with mp.Pool(processes=num_processes) as pool:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
-            for v in pool.imap(run_experiment_star, args):
+            for v in pool.imap(run_experiment_instance_star, args):
                 csv_writer.writerow(v)
     print("Successfully joined all processes.")

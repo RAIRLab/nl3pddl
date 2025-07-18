@@ -12,7 +12,7 @@ from subprocess import CalledProcessError
 import subprocess
 from typing import Any
 
-from problem_generators import PROBLEM_GENERATORS
+from .problem_generators import PROBLEM_GENERATORS
 
 NUM_PROBLEMS = 10
 PLANS_PER_PROBLEM = 2

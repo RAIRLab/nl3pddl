@@ -4,13 +4,13 @@ Utility functions for working with PDDL problems and domains.
 
 
 import json
-import logging
 import os
 from typing import List, Tuple
 
 from pddl.core import Problem
 
-from nl3pddl.dataset import Dataset
+from .dataset import Dataset
+from .logger import logger
 
 CONFIG_FILE_PATH = "data/config.json"
 
@@ -27,7 +27,7 @@ def get_new_domains() -> list[str]:
         if os.path.isdir(domain_path):
             new_domains.append(domain_path)
         else:
-            logging.warning("Domain path %s is listed as a new \
+            logger.warning("Domain path %s is listed as a new \
             domain in data/config.json but does not exist.", domain_path)
     return new_domains
 

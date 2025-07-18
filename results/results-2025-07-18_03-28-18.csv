@@ -1,0 +1,160 @@
+trial,domain_path,provider,model,give_pred_descriptions,desc_class,feedback_pipeline,hde_runs,hde_timeout,action_timeout,action_timeout_cause,evals_passed,total_evals,domain_raw
+2025-07-18_03-28-18,data/domains/flow,openai,gpt-4o-mini,True,first,validate,3,False,False,,20,20,"(define (domain flow)
+    (:requirements :strips :typing)
+    (:types color location)
+    (:predicates
+        (offboard)
+        (empty ?l - location)
+        (flow-complete ?c - color)
+        (adjacent ?l1 - location ?l2 - location)
+        (not-empty ?l - location)
+        (flow-end ?l - location ?c - color)
+    )
+
+    (:action draw-path
+        :parameters (?l1 ?l2 - location ?c - color)
+        :precondition (and (empty ?l1) (empty ?l2) (flow-end ?l1 ?c) (flow-end ?l2 ?c) (adjacent ?l1 ?l2))
+        :effect (and (not (empty ?l1)) (not (empty ?l2)) (not (flow-end ?l1 ?c)) (not (flow-end ?l2 ?c)) (not (flow-complete ?c)))
+    )
+
+    (:action begin-flow
+        :parameters (?l - location ?c - color)
+        :precondition (and (flow-end ?l ?c) (empty ?l))
+        :effect (and (not (empty ?l)) (not (flow-end ?l ?c)) (not (flow-complete ?c)))
+    )
+
+    (:action extend-flow
+        :parameters (?l1 ?l2 - location ?c - color)
+        :precondition (and (not (empty ?l1)) (empty ?l2) (adjacent ?l1 ?l2) (not (flow-complete ?c)))
+        :effect (and (not (empty ?l2)) (not (empty ?l1)) (not (flow-complete ?c)))
+    )
+
+    (:action complete-flow
+        :parameters (?l1 ?l2 - location ?c - color)
+        :precondition (and (not (empty ?l1)) (not (empty ?l2)) (flow-end ?l2 ?c) (adjacent ?l1 ?l2) (not (flow-complete ?c)))
+        :effect (and (flow-complete ?c) (not (empty ?l1)) (not (empty ?l2)) (not (flow-end ?l2 ?c)))
+    )
+)"
+2025-07-18_03-28-18,data/domains/flow,openai,gpt-4o-mini,True,first,landmark-val,1,False,False,,0,20,"
+        (define (domain flow)
+            (:requirements :strips :typing)
+            (:types color
+location)
+            (:predicates (offboard)
+(empty ?loc - location)
+(flow-complete ?c - color)
+(adjacent ?loc1 - location ?loc2 - location)
+(not-empty ?loc - location)
+(flow-end ?loc - location))
+
+            (:action connect :parameters (?loc1 - location ?loc2 - location ?c - color) :precondition (and (not (offboard)) (not (flow-complete ?c)) (adjacent ?loc1 ?loc2) (not (not-empty ?loc1)) (flow-end ?loc1) (empty ?loc2)) :effect (and (not (empty ?loc2)) (not (flow-end ?loc1)) (not (not-empty ?loc1)) (flow-complete ?c)))
+(:action begin-flow :parameters (?loc - location ?c - color) :precondition (and (flow-end ?loc) (empty ?loc) (not (offboard))) :effect (and (not (empty ?loc)) (not (flow-end ?loc)) (not (offboard)) (not (flow-complete ?c))) )
+(:action extend-flow :parameters (?current - location ?next - location ?c - color) :precondition (and (not (offboard)) (not (flow-complete ?c)) (flow-end ?current) (adjacent ?current ?next) (empty ?next)) :effect (and (not (empty ?next)) (not (flow-end ?current)) (not (offboard))))
+(:action complete-flow :parameters (?start - location ?end - location ?c - color) :precondition (and (flow-end ?start) (flow-end ?end) (not (offboard)) (adjacent ?start ?end) (not (flow-complete ?c))) :effect (and (flow-complete ?c) (not (empty ?start)) (not (empty ?end)) (not (not-empty ?start)) (not (not-empty ?end))))
+        )
+    "
+2025-07-18_03-28-18,data/domains/blocks,openai,gpt-4o-mini,True,first,validate,10,True,False,,10,20,"(define (domain blocks)
+    (:requirements :strips :typing)
+    (:types block)
+    (:predicates 
+        (handempty)
+        (on ?x - block ?y - block)
+        (ontable ?x - block)
+        (clear ?x - block)
+        (holding ?x - block)
+    )
+
+    (:action unstack 
+        :parameters (?x ?y - block) 
+        :precondition (and (on ?x ?y) (clear ?x) (not (handempty))) 
+        :effect (and (not (on ?x ?y)) (holding ?x) (handempty) (clear ?y))
+    )
+
+    (:action pick-up 
+        :parameters (?x - block) 
+        :precondition (and (ontable ?x) (clear ?x) (handempty)) 
+        :effect (and (not (ontable ?x)) (holding ?x) (not (handempty)) (not (clear ?x)))
+    )
+
+    (:action put-down 
+        :parameters (?x - block) 
+        :precondition (holding ?x) 
+        :effect (and (ontable ?x) (clear ?x) (not (holding ?x)) (handempty))
+    )
+
+    (:action stack 
+        :parameters (?x ?y - block) 
+        :precondition (and (holding ?x) (clear ?y)) 
+        :effect (and (on ?x ?y) (not (holding ?x)) (not (clear ?y)) (handempty))
+    )
+)"
+2025-07-18_03-28-18,data/domains/blocks,openai,gpt-4o-mini,True,first,landmark-val,1,False,False,,11,20,"
+        (define (domain blocks)
+            (:requirements :strips :typing)
+            (:types block)
+            (:predicates (handempty)
+(on ?x - block ?y - block)
+(ontable ?x - block)
+(clear ?x - block)
+(holding ?x - block))
+
+            (:action stack :parameters (?x ?y - block) :precondition (and (holding ?x) (clear ?y)) :effect (and (not (holding ?x)) (not (clear ?y)) (on ?x ?y) (handempty)))
+(:action pick-up :parameters (?x - block) :precondition (and (ontable ?x) (clear ?x) (handempty)) :effect (and (not (ontable ?x)) (holding ?x) (not (handempty)) (not (clear ?x))))
+(:action put-down :parameters (?x - block) :precondition (and (holding ?x)) :effect (and (ontable ?x) (not (holding ?x)) (handempty) (clear ?x)))
+(:action stack :parameters (?x ?y - block) :precondition (and (holding ?x) (clear ?y)) :effect (and (not (holding ?x)) (not (clear ?y)) (on ?x ?y) (handempty)))
+(:action unstack :parameters (?x ?y - block) :precondition (and (on ?x ?y) (clear ?x) (handempty)) :effect (and (not (on ?x ?y)) (holding ?x) (not (handempty)) (clear ?y)))
+        )
+    "
+2025-07-18_03-28-18,data/domains/miconic,openai,gpt-4o-mini,True,first,validate,10,True,False,,18,20,"(define (domain miconic)
+    (:requirements :strips :typing)
+    (:types passenger
+            floor)
+    (:predicates (lift-at ?f - floor)
+                 (not-served ?p - passenger)
+                 (origin ?p - passenger ?f - floor)
+                 (not-boarded ?p - passenger)
+                 (served ?p - passenger)
+                 (above ?f1 - floor ?f2 - floor)
+                 (destin ?p - passenger ?f - floor))
+
+    (:action board :parameters (?p - passenger ?f - floor) 
+        :precondition (and (lift-at ?f) (not-boarded ?p) (origin ?p ?f)) 
+        :effect (and (not (not-boarded ?p)) (served ?p) (not (origin ?p ?f))))
+
+    (:action depart :parameters (?p - passenger ?f - floor) 
+        :precondition (and (lift-at ?f) (served ?p) (destin ?p ?f)) 
+        :effect (and (not (served ?p)) (not (destin ?p ?f)) (not (lift-at ?f)) (not (not-served ?p))))
+
+    (:action move-up :parameters (?f1 ?f2 - floor) 
+        :precondition (and (lift-at ?f1) (above ?f2 ?f1)) 
+        :effect (and (not (lift-at ?f1)) (lift-at ?f2)))
+
+    (:action move-down :parameters (?f1 ?f2 - floor) 
+        :precondition (and (lift-at ?f1) (above ?f1 ?f2)) 
+        :effect (and (not (lift-at ?f1)) (lift-at ?f2)))
+)"
+2025-07-18_03-28-18,data/domains/miconic,openai,gpt-4o-mini,True,first,landmark-val,1,False,False,,18,20,"
+        (define (domain miconic)
+            (:requirements :strips :typing)
+            (:types passenger
+floor)
+            (:predicates (lift-at ?f - floor)
+(not-served ?p - passenger)
+(origin ?p - passenger ?f - floor)
+(not-boarded ?p - passenger)
+(served ?p - passenger)
+(above ?f1 - floor ?f2 - floor)
+(destin ?p - passenger ?f - floor))
+
+            (:action board :parameters (?p - passenger ?f - floor) :precondition (and (not-boarded ?p) (lift-at ?f) (origin ?p ?f)) :effect (and (not (not-boarded ?p)) (not (origin ?p ?f)) (destin ?p ?f))
+)
+(:action board :parameters (?p - passenger ?f - floor) :precondition (and (not-boarded ?p) (lift-at ?f) (origin ?p ?f)) :effect (and (not (not-boarded ?p)) (not (origin ?p ?f)) (destin ?p ?f))
+)
+(:action depart :parameters (?p - passenger ?f - floor) :precondition (and (served ?p) (lift-at ?f) (destin ?p ?f)) :effect (and (not (served ?p)) (not (destin ?p ?f)) (not (lift-at ?f)) (not (not-served ?p)))
+)
+(:action move-up :parameters (?f1 ?f2 - floor) :precondition (and (lift-at ?f1) (above ?f2 ?f1)) :effect (and (not (lift-at ?f1)) (lift-at ?f2))
+)
+(:action move-down :parameters (?f1 ?f2 - floor) :precondition (and (lift-at ?f1) (above ?f1 ?f2)) :effect (and (not (lift-at ?f1)) (lift-at ?f2))
+)
+        )
+    "

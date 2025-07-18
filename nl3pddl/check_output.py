@@ -168,7 +168,7 @@ def check_action_output(
         return HumanMessage(f"Unable to parse action ```{action_str}```\n\
         Error: {lark_err_str(e)} \nPlease revise the action and try again.")
 
-def check_domain_output(message : Any) -> None | str:
+def check_domain_syntax_output(message : Any) -> None | str:
     """
     Converts a pddl string to a PDDL domain object or returns an error
     """

@@ -1,11 +1,14 @@
 
 """
-This file provides a class wrapping the top level experimental parameters,
-as well as a function that generates a grid over these parameters.
+This file reads the config file and 
+provides a class wrapping the top level experimental parameters,
+as well as a function that generates a grid over these parameters,
+and some utility functions for the params.
 """
 
-from dataclasses import dataclass
 from typing import Generator
+from dataclasses import dataclass, field
+
 
 from .dataset import Dataset
 
@@ -41,7 +44,7 @@ class Params:
     give_pred_descriptions : bool   = True
     desc_class : str                = ""
     trial : int                     = 1
-    feedback_pipeline : list[str]   = []
+    feedback_pipeline : list[str]   = field(default_factory=lambda: [])
 
 def param_grid(d : Dataset) -> Generator[Params, None, None]:
     """
