@@ -7,4 +7,4 @@ The following incorrect plan succeeded but should not have:
 {plan}
 ```
 
-Please revise the pervious domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.

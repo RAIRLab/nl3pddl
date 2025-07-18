@@ -13,6 +13,9 @@ hde-threshold: 10
 # for LLM generation. Used for statistical significance.
 trials: 20
 
+# Timeout for KStar in seconds (Used during landmark evaluation)
+kstar-timeout: 30
+
 # Grid Parameters ==============================================================
 # The following parameters define a parameter grid to evaluate over.
 # Every possible combination of these parameters will be evaluated over

@@ -14,12 +14,14 @@ import yaml
 with open("experiment_config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
-MODELS = config["models"]
-GIVE_PRED_DESCRIPTIONS = config["give-pred-description"]
-DESC_CLASSES = config["description-classes"]
 RUN_TRIALS = config["trials"]
 ACTION_THRESHOLD = config["action-threshold"]
 HDE_THRESHOLD = config["hde-threshold"]
+KSTAR_TIMEOUT = config["kstar-timeout"]
+MODELS = config["models"]
+GIVE_PRED_DESCRIPTIONS = config["give-pred-description"]
+DESC_CLASSES = config["description-classes"]
+
 
 @dataclass
 class Params:

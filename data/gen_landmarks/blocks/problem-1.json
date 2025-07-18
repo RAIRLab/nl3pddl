@@ -1,0 +1,47 @@
+{
+    "domain": "blocks",
+    "problem": "problem-1.pddl",
+    "problem_num": 1,
+    "landmarks": [
+        [
+            "put-down b2"
+        ],
+        [
+            "unstack b1 b2",
+            "put-down b2",
+            "stack b2 b1"
+        ],
+        [
+            "stack b1 b2",
+            "pick-up b2"
+        ],
+        [
+            "pick-up b1",
+            "pick-up b2"
+        ],
+        [
+            "pick-up b2"
+        ],
+        [
+            "stack b1 b2",
+            "put-down b1",
+            "put-down b2",
+            "stack b2 b1"
+        ],
+        [
+            "stack b1 b2",
+            "put-down b1",
+            "unstack b2 b1"
+        ],
+        [
+            "put-down b1"
+        ],
+        [
+            "pick-up b1",
+            "stack b2 b1"
+        ],
+        [
+            "stack b2 b1"
+        ]
+    ]
+}

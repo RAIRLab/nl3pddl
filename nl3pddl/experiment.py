@@ -21,9 +21,16 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph.message import add_messages
 
+from nl3pddl.feedback_eval import val_evaluate, val_feedback
+
+from .check_output import check_action_output, check_domain_output
+from .gen_prompts import action_message, domain_template, init_msgs
+from .dataset import Dataset
+from .params import Params, action_names, domain_name, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
+
 # Internal package imports
-import nl3pddl as n3p
-from nl3pddl import Dataset, Params
+# import nl3pddl as n3p
+# from nl3pddl import Dataset, Params
 
 
 # This is a pydantic model that we force the LLM to output in
@@ -160,7 +167,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def next_action(state: State):
         action_index = state["action_index"]
-        actions_names = n3p.action_names(d, p)
+        actions_names = action_names(d, p)
         actions = state["actions"]
         if action_index >= len(actions_names):
             return {
@@ -170,14 +177,14 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         else:
             action_name = actions_names[action_index]
             return {
-                "messages": [n3p.action_message(d, p, action_name)],
+                "messages": [action_message(d, p, action_name)],
                 "action_index" : action_index + 1,
                 "actions" : actions + [state["json_last"]],
                 "action_iterations" : 0
             }
 
     def check_action(state: State):
-        res = n3p.check_action_output(state["json_last"])
+        res = check_action_output(state["json_last"])
         return {
             "messages": [res] if res else [],
             "action_valid" : res is None,
@@ -185,8 +192,8 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
 
     def build_domain(state: State):
-        full_domain_raw = n3p.domain_template(
-            n3p.domain_name(d, p),
+        full_domain_raw = domain_template(
+            domain_name(d, p),
             state["actions"]
         )
         return {
@@ -195,7 +202,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
 
     def check_domain(state: State):
-        res = n3p.check_domain_output(state["json_last"])
+        res = check_domain_output(state["json_last"])
         return {
             "messages": [res] if res else [],
             "domain_syn_val" : res is None,
@@ -203,14 +210,14 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
 
     def validate(state: State):
-        res = n3p.val_feedback(d, p, state["json_last"].pddl_domain)
+        res = val_feedback(d, p, state["json_last"].pddl_domain)
         return {
             "messages": [res] if res else [],
             "domain_hde_val" : res is None,
         }
         
     def action_timeout_node(state: State):
-        actions_names = n3p.action_names(d, p)
+        actions_names = action_names(d, p)
         failed_action_name = actions_names[state["action_index"]]
         return {
             "action_timeout": True,
@@ -223,7 +230,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
     
     def final_evaluation(state: State):
-        res = n3p.val_evaluate(d, p, state["json_last"].pddl_domain)
+        res = val_evaluate(d, p, state["json_last"].pddl_domain)
         return {
             "evals_passed": res[0],
             "total_evals": res[1],
@@ -233,7 +240,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def route_actions(state: State) ->\
     Literal['action_timeout_node', 'next_action', 'call_action_model']:
-        if state["action_iterations"] >= n3p.get_action_iteration_threshold():
+        if state["action_iterations"] >= get_action_iteration_threshold():
             return "action_timeout_node"
         elif state["action_valid"]:
             return "next_action"
@@ -249,7 +256,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def route_domain_syn(state: State) ->\
     Literal['hde_timeout_node', 'validate', 'call_domain_model']:
-        if state["hde_iterations"] >= n3p.get_hde_iteration_threshold():
+        if state["hde_iterations"] >= get_hde_iteration_threshold():
             return "hde_timeout_node"
         elif state["domain_syn_val"]:
             return "validate"
@@ -308,7 +315,7 @@ def run_experiment(
 
     initial_state = {
         "run_id": batch_id,
-        "messages": n3p.init_msgs(d, p),
+        "messages": init_msgs(d, p),
         "action_index": 0,
         "json_last": None,
         "action_valid": False,
@@ -331,8 +338,8 @@ def run_experiment(
     config = {
         "recursion_limit": 
             len(d.domains[p.domain_path].actions) * 
-            n3p.get_action_iteration_threshold() + 
-            n3p.get_hde_iteration_threshold() * 3 + 25,
+            get_action_iteration_threshold() + 
+            get_hde_iteration_threshold() * 3 + 25,
     }
 
     try:
@@ -353,9 +360,9 @@ def run_experiment_star(
     """
     return run_experiment(*args)
 
-def main() -> None:
+def experiment() -> None:
     """
-    Driver Main, runs the experiments in parallel using the parameter grid
+    Driver, runs the experiments in parallel using the parameter grid
     """
     load_dotenv()
 
@@ -368,7 +375,7 @@ def main() -> None:
 
     logging.getLogger().setLevel(logging.INFO)
 
-    dataset = n3p.Dataset()
+    dataset = Dataset()
 
     date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     results_path = f'results/results-{date}.csv'
@@ -376,17 +383,10 @@ def main() -> None:
         writer = csv.writer(f)
         writer.writerow(RESULTS_HEADER)
 
-    args = [(dataset, params, date) for params in n3p.param_grid(dataset)]
+    args = [(dataset, params, date) for params in param_grid(dataset)]
     with mp.Pool(processes=None) as pool:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
             for v in pool.imap(run_experiment_star, args):
                 csv_writer.writerow(v)
     print("Successfully joined all processes.")
-
-
-if __name__ == "__main__":
-    main()
-else:
-    raise RuntimeError("This file is a driver for the NL3PDDL project. \
-                        It should be run as a script, not imported.")

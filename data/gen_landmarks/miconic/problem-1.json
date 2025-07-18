@@ -1,0 +1,34 @@
+{
+    "domain": "miconic",
+    "problem": "problem-1.pddl",
+    "problem_num": 1,
+    "landmarks": [
+        [
+            "board f3 p3"
+        ],
+        [],
+        [
+            "up f1 f3",
+            "up f2 f3"
+        ],
+        [
+            "board f3 p1"
+        ],
+        [
+            "depart f1 p2"
+        ],
+        [
+            "depart f1 p3"
+        ],
+        [
+            "down f2 f1",
+            "down f3 f1"
+        ],
+        [
+            "board f3 p2"
+        ],
+        [
+            "depart f1 p1"
+        ]
+    ]
+}

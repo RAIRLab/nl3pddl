@@ -17,6 +17,7 @@ GROUND_TRUTH_FILE_NAME = "ground.pddl"
 NL_FILE_NAME = "nl.json"
 FEEDBACK_PROBLEM_DIR = "data/gen_problems/training"
 EVALUATION_PROBLEM_DIR = "data/gen_problems/testing"
+LANDMARK_PROBLEM_DIR = "data/gen_landmarks" #Landmarks are only for testing problems
 
 def domains() -> list[str]:
     """returns a list of paths of folders in data/domains"""
@@ -121,6 +122,9 @@ class Dataset:
     # NL descriptions of the predicates and actions in the domain
     nl_json : Dict[str, Any] = {}
 
+    # Landmark actions, maps a problem path to a landmark which is a list of lists of disjunctive actions that must be satisfied for the problem to be solved.
+    landmarks: Dict[str, List[List[str]]] = {}
+
     def __init__(self):
         """ Reads the dataset from the data/domains folder and parses it into
             the internal data structures of the Dataset class.
@@ -136,27 +140,40 @@ class Dataset:
 
             self.domains[domain_path] = domain
 
-            #TODO: duplicate code, refactor to a function
-            # Read the training problems
-            problem_dir = os.path.join(FEEDBACK_PROBLEM_DIR, domain.name)
-            self.feedback_problem_paths[domain_path] = \
+            # Read the feedback problems
+            feedback_dir : str = os.path.join(FEEDBACK_PROBLEM_DIR, domain.name)
+            landmark_dir : str = os.path.join(LANDMARK_PROBLEM_DIR, domain.name)
+            feedback_problem_paths = \
                 [os.path.join(problem_dir, f) for f in os.listdir(problem_dir) \
                  if f.endswith(".pddl")]
-            for i, problem_file in enumerate(self.feedback_problem_paths[domain_path]):
-                with open(problem_file, "r", encoding="utf-8") as f:
-                    self.feedback_problem_raws[problem_file] = f.read()
+            self.feedback_problem_paths[domain_path] = feedback_problem_paths
+
+            for i, problem_path in enumerate(feedback_problem_paths):
+                with open(problem_path, "r", encoding="utf-8") as f:
+                    self.feedback_problem_raws[problem_path] = f.read()
                 try:
-                    problem = pddl.parse_problem(problem_file)
+                    problem = pddl.parse_problem(problem_path)
                 except Exception as e:
-                    logging.error("Error parsing problem %s: %s", problem_file, e)
+                    logging.error("Error parsing problem file %s: %s",
+                                   problem_path, e)
                     exit(1)
-                self.feedback_problems[problem_file] = problem
-                self.feedback_plan_paths[problem_file] = [os.path.join(problem_dir, f"plan-{i+1}-{j}.txt") for j in range(1, PLANS_PER_PROBLEM + 1)]
+                
+                self.feedback_problems[problem_path] = problem
+                self.feedback_plan_paths[problem_path] = \
+                    [os.path.join(problem_dir, f"plan-{i+1}-{j}.txt") for j in \
+                     range(1, PLANS_PER_PROBLEM + 1)]
                 for plan_path in self.feedback_plan_paths[problem_file]:
                     if os.path.exists(plan_path):
                         self.feedback_plans[plan_path] = parse_plan(plan_path)
                         with open(plan_path, "r", encoding="utf-8") as f:
                             self.feedback_plan_raws[plan_path] = f.read()
+                
+                problem_name = os.path.basename(problem_path)
+                problem_name = problem_name.replace(".pddl", ".json")
+                landmark_path = os.path.join(landmark_dir, problem_name)
+                with open(problem_path, "r", encoding="utf-8") as f:
+                    self.landmarks[problem_path] = json.load(f)["landmarks"]
+
             # Read the evaluation problems
             problem_dir = os.path.join(EVALUATION_PROBLEM_DIR, domain.name)
             self.evaluation_problem_paths[domain_path] = \

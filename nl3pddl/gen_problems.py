@@ -1,3 +1,7 @@
+'''
+This script functions as the driver for the problem_generators module,
+which creates generates randomized problems at various levels of difficulty for the domains we evaluate over. 
+'''
 
 import os
 import sys
@@ -14,9 +18,8 @@ NUM_PROBLEMS = 10
 PLANS_PER_PROBLEM = 2
 KSTAR_REL_PATH = "submodules/kstar/fast-downward.py"
 GENERATED_PROBLEMS_DIR = "data/gen_problems"
-TRAINING_PROBLEMS_DIR = os.path.join(GENERATED_PROBLEMS_DIR, "training")
-TESTING_PROBLEMS_DIR = os.path.join(GENERATED_PROBLEMS_DIR, "testing")
-
+FEEDBACK_PROBLEMS_DIR = os.path.join(GENERATED_PROBLEMS_DIR, "feedback")
+EVAL_PROBLEMS_DIR = os.path.join(GENERATED_PROBLEMS_DIR, "evaluation")
 
 def new_pipe(tmpdir : str, pipe_name : str, contents : str) -> str:
     """
@@ -90,11 +93,14 @@ if __name__ == "__main__":
             f"Domain file {domain_file} does not exist. " \
             "Please ensure the domain is generated first."
         #Create problems director if it doesn't exist
-        training_problems_dir = os.path.join(TRAINING_PROBLEMS_DIR, domain_name)
-        os.makedirs(training_problems_dir)
+        feedback_problems_dir = os.path.join(FEEDBACK_PROBLEMS_DIR, domain_name)
+        os.makedirs(feedback_problems_dir)
         # Generate NUM_PROBLEMS training problems for each domain
         for i in range(1, NUM_PROBLEMS + 1):
-            problem_file = os.path.join(training_problems_dir, f"problem-{i}.pddl")
+            problem_file = os.path.join(
+                feedback_problems_dir, 
+                f"problem-{i}.pddl"
+            )
             generator(i, problem_file)
             print(f"Generated {problem_file}")
             # Generate the top 2 plans for each problem
@@ -108,15 +114,18 @@ if __name__ == "__main__":
             for j, plan in enumerate(plans):
                 print(f"Generated plan for {problem_file}: {plan}")
                 plan_str = plan_to_string(plan)
-                plan_path = os.path.join(training_problems_dir, f"plan-{i}-{j}.txt")
+                plan_path = os.path.join(
+                    feedback_problems_dir, 
+                    f"plan-{i}-{j}.txt"
+                )
                 with open(plan_path, 'w', encoding='utf-8') as file:
                     file.write(plan_str)
-        # Create testing problems directory
-        testing_problems_dir = os.path.join(TESTING_PROBLEMS_DIR, domain_name)
-        os.makedirs(testing_problems_dir, exist_ok=True)
+        # Create evaluation problems directory
+        evaluation_problems_dir = os.path.join(EVAL_PROBLEMS_DIR, domain_name)
+        os.makedirs(evaluation_problems_dir, exist_ok=True)
         #TODO: duplicate code, refactor to a function
         for i in range(1, NUM_PROBLEMS + 1):
-            problem_file = os.path.join(testing_problems_dir, f"problem-{i}.pddl")
+            problem_file = os.path.join(evaluation_problems_dir, f"problem-{i}.pddl")
             generator(i, problem_file)
             print(f"Generated {problem_file}")
             # Generate the top 2 plans for each problem
@@ -133,6 +142,9 @@ if __name__ == "__main__":
                     continue
                 print(f"Generated plan for {problem_file}: {plan}")
                 plan_str = plan_to_string(plan)
-                plan_path = os.path.join(testing_problems_dir, f"plan-{i}-{j}.txt")
+                plan_path = os.path.join(
+                    evaluation_problems_dir, 
+                    f"plan-{i}-{j}.txt"
+                )
                 with open(plan_path, 'w', encoding='utf-8') as file:
                     file.write(plan_str)

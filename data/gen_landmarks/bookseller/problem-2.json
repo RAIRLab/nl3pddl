@@ -1,0 +1,409 @@
+{
+    "domain": "bookseller",
+    "problem": "problem-2.pddl",
+    "problem_num": 2,
+    "landmarks": [
+        [
+            "loadfirst drone2 book4 loc2",
+            "loadfirst drone1 book4 loc2"
+        ],
+        [
+            "loadfirst drone1 book3 loc5",
+            "loadfirst drone2 book3 loc5"
+        ],
+        [
+            "unloadfinal drone1 book2 loc1",
+            "unloadbottom drone1 book2 book1 loc1",
+            "unloadbottom drone1 book2 book4 loc1",
+            "unloadbottom drone2 book2 book1 loc1",
+            "unloadbottom drone2 book2 book3 loc1",
+            "unloadbottom drone2 book2 book4 loc1",
+            "unloadbottom drone1 book2 book3 loc1",
+            "unloadfinal drone2 book2 loc1",
+            "unloadbottom drone2 book2 book2 loc1",
+            "unloadbottom drone1 book2 book2 loc1"
+        ],
+        [
+            "flydrone drone1 loc1 loc5"
+        ],
+        [
+            "unloadbottom drone1 book4 book2 loc1",
+            "unloadbottom drone1 book4 book2 loc2",
+            "unloadbottom drone1 book4 book2 loc3",
+            "unloadbottom drone2 book4 book2 loc4",
+            "unloadbottom drone1 book4 book2 loc5",
+            "unloadbottom drone2 book4 book2 loc1",
+            "unloadbottom drone1 book4 book2 loc4",
+            "unloadbottom drone2 book4 book2 loc2",
+            "unloadbottom drone2 book4 book2 loc3",
+            "unloadbottom drone2 book4 book2 loc5"
+        ],
+        [
+            "unloadbottom drone1 book1 book4 loc5",
+            "unloadbottom drone1 book1 book4 loc4",
+            "unloadbottom drone2 book1 book4 loc2",
+            "unloadbottom drone1 book1 book4 loc2",
+            "unloadbottom drone2 book1 book4 loc3",
+            "unloadbottom drone2 book1 book4 loc5",
+            "unloadbottom drone1 book1 book4 loc3",
+            "unloadbottom drone2 book1 book4 loc1",
+            "unloadbottom drone1 book1 book4 loc1",
+            "unloadbottom drone2 book1 book4 loc4"
+        ],
+        [
+            "loadfirst drone2 book3 loc1",
+            "loadfirst drone1 book3 loc1"
+        ],
+        [
+            "loadfirst drone2 book4 loc5",
+            "loadfirst drone1 book4 loc5"
+        ],
+        [
+            "unloadbottom drone1 book2 book3 loc3",
+            "unloadbottom drone1 book2 book3 loc5",
+            "unloadbottom drone2 book2 book3 loc5",
+            "unloadbottom drone2 book2 book3 loc4",
+            "unloadbottom drone2 book2 book3 loc2",
+            "unloadbottom drone1 book2 book3 loc2",
+            "unloadbottom drone2 book2 book3 loc1",
+            "unloadbottom drone1 book2 book3 loc1",
+            "unloadbottom drone1 book2 book3 loc4",
+            "unloadbottom drone2 book2 book3 loc3"
+        ],
+        [
+            "loadfirst drone1 book1 loc5",
+            "loadfirst drone2 book1 loc5"
+        ],
+        [
+            "unloadbottom drone1 book3 book4 loc2",
+            "unloadbottom drone2 book3 book4 loc1",
+            "unloadbottom drone2 book3 book4 loc5",
+            "unloadbottom drone1 book3 book4 loc3",
+            "unloadbottom drone1 book3 book4 loc5",
+            "unloadbottom drone1 book3 book4 loc1",
+            "unloadbottom drone2 book3 book4 loc2",
+            "unloadbottom drone2 book3 book4 loc3",
+            "unloadbottom drone2 book3 book4 loc4",
+            "unloadbottom drone1 book3 book4 loc4"
+        ],
+        [
+            "unloadbottom drone1 book4 book4 loc4",
+            "unloadbottom drone1 book4 book4 loc1",
+            "unloadbottom drone1 book4 book4 loc2",
+            "unloadbottom drone2 book4 book4 loc5",
+            "unloadbottom drone2 book4 book4 loc3",
+            "unloadbottom drone2 book4 book4 loc4",
+            "unloadbottom drone1 book4 book4 loc3",
+            "unloadbottom drone1 book4 book4 loc5",
+            "unloadbottom drone2 book4 book4 loc2",
+            "unloadbottom drone2 book4 book4 loc1"
+        ],
+        [
+            "unloadbottom drone2 book1 book2 loc5",
+            "unloadbottom drone2 book1 book2 loc1",
+            "unloadbottom drone1 book1 book2 loc5",
+            "unloadbottom drone1 book1 book2 loc3",
+            "unloadbottom drone1 book1 book2 loc1",
+            "unloadbottom drone1 book1 book2 loc4",
+            "unloadbottom drone2 book1 book2 loc3",
+            "unloadbottom drone2 book1 book2 loc2",
+            "unloadbottom drone1 book1 book2 loc2",
+            "unloadbottom drone2 book1 book2 loc4"
+        ],
+        [
+            "unloadbottom drone2 book3 book3 loc3",
+            "unloadbottom drone2 book3 book3 loc4",
+            "unloadbottom drone1 book3 book3 loc3",
+            "unloadbottom drone2 book3 book3 loc2",
+            "unloadbottom drone1 book3 book3 loc5",
+            "unloadbottom drone1 book3 book3 loc4",
+            "unloadbottom drone2 book3 book3 loc1",
+            "unloadbottom drone2 book3 book3 loc5",
+            "unloadbottom drone1 book3 book3 loc1",
+            "unloadbottom drone1 book3 book3 loc2"
+        ],
+        [
+            "unloadbottom drone1 book1 book4 loc4",
+            "unloadbottom drone1 book1 book2 loc4",
+            "unloadbottom drone2 book1 book1 loc4",
+            "unloadbottom drone2 book1 book3 loc4",
+            "unloadfinal drone2 book1 loc4",
+            "unloadbottom drone1 book1 book1 loc4",
+            "unloadfinal drone1 book1 loc4",
+            "unloadbottom drone2 book1 book2 loc4",
+            "unloadbottom drone1 book1 book3 loc4",
+            "unloadbottom drone2 book1 book4 loc4"
+        ],
+        [
+            "loadfirst drone2 book1 loc1",
+            "loadfirst drone1 book1 loc1"
+        ],
+        [
+            "unloadbottom drone1 book3 book2 loc2",
+            "unloadbottom drone1 book3 book4 loc2",
+            "unloadbottom drone2 book3 book1 loc2",
+            "unloadfinal drone1 book3 loc2",
+            "unloadbottom drone2 book3 book2 loc2",
+            "unloadbottom drone1 book3 book1 loc2",
+            "unloadbottom drone2 book3 book3 loc2",
+            "unloadfinal drone2 book3 loc2",
+            "unloadbottom drone2 book3 book4 loc2",
+            "unloadbottom drone1 book3 book3 loc2"
+        ],
+        [
+            "unloadbottom drone1 book4 book4 loc4",
+            "unloadfinal drone1 book4 loc4",
+            "unloadbottom drone1 book4 book1 loc4",
+            "unloadbottom drone2 book4 book3 loc4",
+            "unloadbottom drone1 book4 book3 loc4",
+            "unloadbottom drone2 book4 book2 loc4",
+            "unloadbottom drone1 book4 book2 loc4",
+            "unloadbottom drone2 book4 book4 loc4",
+            "unloadbottom drone2 book4 book1 loc4",
+            "unloadfinal drone2 book4 loc4"
+        ],
+        [
+            "loadfirst drone1 book3 loc3",
+            "loadfirst drone2 book3 loc3"
+        ],
+        [
+            "unloadbottom drone2 book3 book4 loc5",
+            "unloadfinal drone2 book3 loc5",
+            "unloadbottom drone1 book3 book2 loc5",
+            "unloadbottom drone1 book3 book1 loc5",
+            "unloadbottom drone2 book3 book2 loc5",
+            "unloadfinal drone1 book3 loc5",
+            "unloadbottom drone1 book3 book4 loc5",
+            "unloadbottom drone1 book3 book3 loc5",
+            "unloadbottom drone2 book3 book3 loc5",
+            "unloadbottom drone2 book3 book1 loc5"
+        ],
+        [
+            "loadfirst drone2 book4 loc1",
+            "loadfirst drone1 book4 loc1"
+        ],
+        [
+            "unloadbottom drone2 book4 book1 loc5",
+            "unloadbottom drone1 book4 book1 loc5",
+            "unloadbottom drone1 book4 book1 loc4",
+            "unloadbottom drone1 book4 book1 loc3",
+            "unloadbottom drone1 book4 book1 loc2",
+            "unloadbottom drone2 book4 book1 loc4",
+            "unloadbottom drone2 book4 book1 loc2",
+            "unloadbottom drone1 book4 book1 loc1",
+            "unloadbottom drone2 book4 book1 loc3",
+            "unloadbottom drone2 book4 book1 loc1"
+        ],
+        [
+            "unloadbottom drone2 book1 book1 loc3",
+            "unloadbottom drone2 book1 book4 loc3",
+            "unloadfinal drone1 book1 loc3",
+            "unloadbottom drone1 book1 book4 loc3",
+            "unloadbottom drone1 book1 book2 loc3",
+            "unloadbottom drone2 book1 book2 loc3",
+            "unloadfinal drone2 book1 loc3",
+            "unloadbottom drone2 book1 book3 loc3",
+            "unloadbottom drone1 book1 book3 loc3",
+            "unloadbottom drone1 book1 book1 loc3"
+        ],
+        [
+            "unloadbottom drone1 book2 book4 loc3",
+            "unloadbottom drone2 book2 book4 loc3",
+            "unloadbottom drone1 book2 book4 loc5",
+            "unloadbottom drone1 book2 book4 loc1",
+            "unloadbottom drone2 book2 book4 loc4",
+            "unloadbottom drone2 book2 book4 loc1",
+            "unloadbottom drone2 book2 book4 loc2",
+            "unloadbottom drone1 book2 book4 loc4",
+            "unloadbottom drone1 book2 book4 loc2",
+            "unloadbottom drone2 book2 book4 loc5"
+        ],
+        [
+            "loadfirst drone2 book2 loc4",
+            "loadfirst drone1 book2 loc4"
+        ],
+        [
+            "unloadbottom drone1 book3 book1 loc3",
+            "unloadbottom drone2 book3 book1 loc2",
+            "unloadbottom drone2 book3 book1 loc4",
+            "unloadbottom drone1 book3 book1 loc5",
+            "unloadbottom drone1 book3 book1 loc2",
+            "unloadbottom drone1 book3 book1 loc1",
+            "unloadbottom drone2 book3 book1 loc3",
+            "unloadbottom drone1 book3 book1 loc4",
+            "unloadbottom drone2 book3 book1 loc5",
+            "unloadbottom drone2 book3 book1 loc1"
+        ],
+        [
+            "unloadbottom drone2 book1 book3 loc2",
+            "unloadbottom drone2 book1 book3 loc3",
+            "unloadbottom drone2 book1 book3 loc5",
+            "unloadbottom drone1 book1 book3 loc1",
+            "unloadbottom drone2 book1 book3 loc4",
+            "unloadbottom drone1 book1 book3 loc5",
+            "unloadbottom drone1 book1 book3 loc2",
+            "unloadbottom drone2 book1 book3 loc1",
+            "unloadbottom drone1 book1 book3 loc3",
+            "unloadbottom drone1 book1 book3 loc4"
+        ],
+        [
+            "loadfirst drone1 book3 loc4",
+            "loadfirst drone2 book3 loc4"
+        ],
+        [
+            "unloadbottom drone1 book4 book3 loc2",
+            "unloadbottom drone2 book4 book3 loc4",
+            "unloadbottom drone1 book4 book3 loc4",
+            "unloadbottom drone2 book4 book3 loc2",
+            "unloadbottom drone2 book4 book3 loc5",
+            "unloadbottom drone1 book4 book3 loc1",
+            "unloadbottom drone2 book4 book3 loc3",
+            "unloadbottom drone1 book4 book3 loc5",
+            "unloadbottom drone1 book4 book3 loc3",
+            "unloadbottom drone2 book4 book3 loc1"
+        ],
+        [
+            "flydrone drone2 loc1 loc5"
+        ],
+        [
+            "unloadbottom drone1 book4 book1 loc3",
+            "unloadfinal drone1 book4 loc3",
+            "unloadfinal drone2 book4 loc3",
+            "unloadbottom drone1 book4 book2 loc3",
+            "unloadbottom drone2 book4 book4 loc3",
+            "unloadbottom drone2 book4 book3 loc3",
+            "unloadbottom drone1 book4 book4 loc3",
+            "unloadbottom drone1 book4 book3 loc3",
+            "unloadbottom drone2 book4 book1 loc3",
+            "unloadbottom drone2 book4 book2 loc3"
+        ],
+        [
+            "loadfirst drone2 book2 loc5",
+            "loadfirst drone1 book2 loc5"
+        ],
+        [
+            "unloadbottom drone2 book1 book1 loc3",
+            "unloadbottom drone2 book1 book1 loc4",
+            "unloadbottom drone1 book1 book1 loc5",
+            "unloadbottom drone1 book1 book1 loc2",
+            "unloadbottom drone2 book1 book1 loc5",
+            "unloadbottom drone2 book1 book1 loc2",
+            "unloadbottom drone1 book1 book1 loc4",
+            "unloadbottom drone1 book1 book1 loc1",
+            "unloadbottom drone2 book1 book1 loc1",
+            "unloadbottom drone1 book1 book1 loc3"
+        ],
+        [
+            "unloadbottom drone2 book2 book2 loc5",
+            "unloadbottom drone1 book2 book2 loc5",
+            "unloadbottom drone1 book2 book2 loc4",
+            "unloadbottom drone2 book2 book2 loc1",
+            "unloadbottom drone2 book2 book2 loc2",
+            "unloadbottom drone2 book2 book2 loc3",
+            "unloadbottom drone2 book2 book2 loc4",
+            "unloadbottom drone1 book2 book2 loc2",
+            "unloadbottom drone1 book2 book2 loc3",
+            "unloadbottom drone1 book2 book2 loc1"
+        ],
+        [
+            "unloadbottom drone2 book2 book1 loc2",
+            "unloadbottom drone2 book2 book3 loc2",
+            "unloadbottom drone1 book2 book3 loc2",
+            "unloadfinal drone2 book2 loc2",
+            "unloadbottom drone1 book2 book1 loc2",
+            "unloadbottom drone2 book2 book2 loc2",
+            "unloadfinal drone1 book2 loc2",
+            "unloadbottom drone2 book2 book4 loc2",
+            "unloadbottom drone1 book2 book2 loc2",
+            "unloadbottom drone1 book2 book4 loc2"
+        ],
+        [
+            "loadfirst drone1 book1 loc2",
+            "loadfirst drone2 book1 loc2"
+        ],
+        [
+            "unloadfinal drone1 book3 loc2",
+            "unloadfinal drone1 book3 loc4",
+            "unloadfinal drone1 book1 loc5",
+            "unloadfinal drone1 book2 loc4",
+            "unloadfinal drone1 book4 loc3",
+            "unloadfinal drone1 book2 loc5",
+            "unloadfinal drone1 book3 loc5",
+            "unloadfinal drone1 book2 loc2",
+            "unloadfinal drone1 book3 loc1",
+            "unloadfinal drone1 book1 loc3",
+            "unloadfinal drone1 book2 loc1",
+            "unloadfinal drone1 book4 loc5",
+            "unloadfinal drone1 book3 loc3",
+            "unloadfinal drone1 book4 loc1",
+            "unloadfinal drone1 book1 loc2",
+            "unloadfinal drone1 book2 loc3",
+            "unloadfinal drone1 book4 loc4",
+            "unloadfinal drone1 book4 loc2",
+            "unloadfinal drone1 book1 loc4",
+            "unloadfinal drone1 book1 loc1"
+        ],
+        [
+            "unloadfinal drone2 book4 loc1",
+            "unloadfinal drone2 book1 loc2",
+            "unloadfinal drone2 book4 loc5",
+            "unloadfinal drone2 book1 loc1",
+            "unloadfinal drone2 book1 loc5",
+            "unloadfinal drone2 book1 loc4",
+            "unloadfinal drone2 book4 loc2",
+            "unloadfinal drone2 book3 loc1",
+            "unloadfinal drone2 book2 loc3",
+            "unloadfinal drone2 book3 loc2",
+            "unloadfinal drone2 book3 loc4",
+            "unloadfinal drone2 book4 loc4",
+            "unloadfinal drone2 book2 loc4",
+            "unloadfinal drone2 book3 loc5",
+            "unloadfinal drone2 book2 loc2",
+            "unloadfinal drone2 book2 loc5",
+            "unloadfinal drone2 book4 loc3",
+            "unloadfinal drone2 book1 loc3",
+            "unloadfinal drone2 book2 loc1",
+            "unloadfinal drone2 book3 loc3"
+        ],
+        [
+            "loadfirst drone1 book2 loc1",
+            "loadfirst drone2 book2 loc1"
+        ],
+        [
+            "unloadbottom drone1 book2 book1 loc4",
+            "unloadbottom drone1 book2 book1 loc1",
+            "unloadbottom drone2 book2 book1 loc2",
+            "unloadbottom drone1 book2 book1 loc5",
+            "unloadbottom drone2 book2 book1 loc1",
+            "unloadbottom drone2 book2 book1 loc3",
+            "unloadbottom drone1 book2 book1 loc2",
+            "unloadbottom drone2 book2 book1 loc5",
+            "unloadbottom drone1 book2 book1 loc3",
+            "unloadbottom drone2 book2 book1 loc4"
+        ],
+        [
+            "loadfirst drone1 book1 loc3",
+            "loadfirst drone2 book1 loc3"
+        ],
+        [
+            "loadfirst drone1 book2 loc3",
+            "loadfirst drone2 book2 loc3"
+        ],
+        [
+            "unloadbottom drone1 book3 book2 loc1",
+            "unloadbottom drone1 book3 book2 loc2",
+            "unloadbottom drone1 book3 book2 loc4",
+            "unloadbottom drone2 book3 book2 loc2",
+            "unloadbottom drone1 book3 book2 loc5",
+            "unloadbottom drone1 book3 book2 loc3",
+            "unloadbottom drone2 book3 book2 loc1",
+            "unloadbottom drone2 book3 book2 loc5",
+            "unloadbottom drone2 book3 book2 loc3",
+            "unloadbottom drone2 book3 book2 loc4"
+        ],
+        [
+            "loadfirst drone2 book4 loc3",
+            "loadfirst drone1 book4 loc3"
+        ]
+    ]
+}
