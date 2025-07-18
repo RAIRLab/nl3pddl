@@ -21,12 +21,11 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph.message import add_messages
 
-from nl3pddl.feedback_eval import val_evaluate, val_feedback
-
-from .check_output import check_action_output, check_domain_output
+from .check_output import check_action_output, check_domain_syntax_output
 from .gen_prompts import action_message, domain_template, init_msgs
 from .dataset import Dataset
 from .params import Params, action_names, domain_name, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
+from .feedback_eval import landmark_feedback, val_evaluate, val_feedback
 
 # Internal package imports
 # import nl3pddl as n3p
@@ -79,7 +78,7 @@ class State(TypedDict):
     # the action generation phase
     actions : list[ActionSchema]
     # The domain we are currently working on is syntactically valid
-    domain_syn_val: bool
+    domain_syntax_passed: bool
 
     # Number of iterations we have done in the action generation phase
     action_iterations : int 
@@ -88,6 +87,9 @@ class State(TypedDict):
     action_timeout : bool = False 
     action_timeout_cause : str = "" # Action that caused the timeout 
 
+    # Landmark node passed
+    landmark_passed: bool = False
+
     # Number of iterations we have done in the HDE validation phase
     hde_iterations : int
     
@@ -95,7 +97,7 @@ class State(TypedDict):
     hde_timeout : bool = False 
 
     # The domain we are currently working on is HDE, and we can begin evaluating it.
-    domain_hde_val: bool
+    domain_hde_passed: bool = False
 
     evals_passed: int = 0  # Number of evaluations passed
     total_evals: int = 0  # Total number of evaluations attempted
@@ -141,7 +143,6 @@ def gen_results(d : Dataset, p : Params, s : State) -> tuple:
     )
 
 # Experiments Helpers ==========================================================
-
 
 
 def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
@@ -201,20 +202,39 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             "json_last": DomainSchema(**{"pddl_domain":full_domain_raw})
         }
 
-    def check_domain(state: State):
-        res = check_domain_output(state["json_last"])
+    def check_domain_syntax(state: State):
+        res = check_domain_syntax_output(state["json_last"])
         return {
             "messages": [res] if res else [],
-            "domain_syn_val" : res is None,
+            "domain_syntax_passed" : res is None,
             "hde_iterations" : state["hde_iterations"] + 1
         }
 
+    def landmark(state: State):
+        if "landmark" in p.feedback_pipeline:
+            res = landmark_feedback(d, p, state["json_last"].pddl_domain)
+            return {
+                "messages": [res] if res else [],
+                "landmark_passed": res is None,
+            }
+        else:
+            return {
+                "messages": [],
+                "landmark_passed": True,
+            }
+
     def validate(state: State):
-        res = val_feedback(d, p, state["json_last"].pddl_domain)
-        return {
-            "messages": [res] if res else [],
-            "domain_hde_val" : res is None,
-        }
+        if "validate" in p.feedback_pipeline:
+            res = val_feedback(d, p, state["json_last"].pddl_domain)
+            return {
+                "messages": [res] if res else [],
+                "domain_hde_passed": res is None,
+            }
+        else:
+            return {
+                "messages": [],
+                "domain_hde_passed": True,
+            }
         
     def action_timeout_node(state: State):
         actions_names = action_names(d, p)
@@ -238,7 +258,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     # Conditional Routing Helpers ==============================================
 
-    def route_actions(state: State) ->\
+    def route_check_action(state: State) ->\
     Literal['action_timeout_node', 'next_action', 'call_action_model']:
         if state["action_iterations"] >= get_action_iteration_threshold():
             return "action_timeout_node"
@@ -247,26 +267,32 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         else:
             return "call_action_model"
 
-    def route_actions_done(state: State) ->\
+    def route_next_action(state: State) ->\
     Literal['build_domain', 'call_action_model']:
         if state["actions_done"]:
             return "build_domain"
         else:
             return "call_action_model"
 
-    def route_domain_syn(state: State) ->\
-    Literal['hde_timeout_node', 'validate', 'call_domain_model']:
+    def route_check_domain_syntax(state: State) ->\
+    Literal['hde_timeout_node', 'landmark', 'call_domain_model']:
         if state["hde_iterations"] >= get_hde_iteration_threshold():
             return "hde_timeout_node"
-        elif state["domain_syn_val"]:
+        elif state["domain_syntax_passed"]:
+            return "landmark"
+        else:
+            return "call_domain_model"
+        
+    def route_landmark(state: State) ->\
+    Literal['validate', 'call_domain_model']:
+        if state["landmark_passed"]:
             return "validate"
         else:
             return "call_domain_model"
 
-
     def route_hde(state: State) ->\
     Literal['call_domain_model', 'final_evaluation']:
-        if state["domain_hde_val"]:
+        if state["domain_hde_passed"]:
             return "final_evaluation"
         else:
             return "call_domain_model"
@@ -278,7 +304,8 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     graph_builder.add_node("next_action", next_action)
     graph_builder.add_node("build_domain", build_domain)
     graph_builder.add_node("call_domain_model", call_domain_model)
-    graph_builder.add_node("check_domain", check_domain)
+    graph_builder.add_node("check_domain_syntax", check_domain_syntax)
+    graph_builder.add_node("landmark", landmark)
     graph_builder.add_node("validate", validate)
     graph_builder.add_node("action_timeout_node", action_timeout_node)
     graph_builder.add_node("hde_timeout_node", hde_timeout_node)
@@ -286,17 +313,28 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     graph_builder.add_edge(START, "call_action_model")
     graph_builder.add_edge("call_action_model", "check_action")
-    graph_builder.add_conditional_edges("check_action", route_actions)
-    graph_builder.add_conditional_edges("next_action", route_actions_done)
-    graph_builder.add_edge("build_domain", "check_domain")
-    graph_builder.add_edge("call_domain_model", "check_domain")
-    graph_builder.add_conditional_edges("check_domain", route_domain_syn)
+    graph_builder.add_conditional_edges("check_action", route_check_action)
+    graph_builder.add_conditional_edges("next_action", route_next_action)
+    graph_builder.add_edge("build_domain", "check_domain_syntax")
+    graph_builder.add_edge("call_domain_model", "check_domain_syntax")
+    graph_builder.add_conditional_edges(
+        "check_domain_syntax", 
+        route_check_domain_syntax
+    )
+    graph_builder.add_conditional_edges("landmark", route_landmark)
     graph_builder.add_conditional_edges("validate", route_hde)
     graph_builder.add_edge("action_timeout_node", END)
     graph_builder.add_edge("hde_timeout_node", "final_evaluation")
     graph_builder.add_edge("final_evaluation", END)
 
     return graph_builder.compile()
+
+def experiment_graph_image(filename : str) -> None:
+    """
+    Saves the graph as a PNG image to the given filename.
+    """
+    graph = create_langgraph(None, Params()) # Dummy dataset and params
+    graph.get_graph().draw_png(filename)
 
 def run_experiment(
     d: Dataset,     # Dataset
@@ -321,8 +359,8 @@ def run_experiment(
         "action_valid": False,
         "actions_done": False,
         "actions" : [],
-        "domain_syn_val": False,
-        "domain_hde_val": False,
+        "domain_syntax_passed": False,
+        "domain_hde_passed": False,
         "action_iterations" : 0,
         "hde_iterations" : 0,
         "action_timeout" : False,

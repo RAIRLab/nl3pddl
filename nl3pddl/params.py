@@ -18,6 +18,9 @@ RUN_TRIALS = config["trials"]
 ACTION_THRESHOLD = config["action-threshold"]
 HDE_THRESHOLD = config["hde-threshold"]
 KSTAR_TIMEOUT = config["kstar-timeout"]
+THREADS = config["threads"]
+FEEDBACK_PIPELINES = config["feedback-pipelines"]
+
 MODELS = config["models"]
 GIVE_PRED_DESCRIPTIONS = config["give-pred-description"]
 DESC_CLASSES = config["description-classes"]
@@ -30,13 +33,15 @@ class Params:
     It is distinct from the Dataset class, which contains the fixed dataset
     used by all experiments, but does contain some flags specifying what 
     parts of the dataset should be used, i.e. what description class etc.
+    Default values are provided to create a dummy Params object.
     """
-    domain_path : str
-    provider : str
-    model : str
-    give_pred_descriptions : bool
-    desc_class : str
-    trial : int
+    domain_path : str               = ""
+    provider : str                  = "openai"
+    model : str                     = "gpt-4o"
+    give_pred_descriptions : bool   = True
+    desc_class : str                = ""
+    trial : int                     = 1
+    feedback_pipeline : list[str]   = []
 
 def param_grid(d : Dataset) -> Generator[Params, None, None]:
     """
@@ -48,10 +53,15 @@ def param_grid(d : Dataset) -> Generator[Params, None, None]:
                 for domain_path in d.domain_paths:
                     for give_pred_desc in GIVE_PRED_DESCRIPTIONS:
                         for desc_class in DESC_CLASSES:
-                            yield Params(
-                                domain_path, provider, model,
-                                give_pred_desc, desc_class, trial
-                            )
+                            for feedback_pipeline in FEEDBACK_PIPELINES:
+                                yield Params(
+                                    domain_path,
+                                    provider, model,
+                                    give_pred_desc,
+                                    desc_class,
+                                    trial,
+                                    feedback_pipeline
+                                )
 
 
 def action_names(d : Dataset, h : Params) -> list[str]:
@@ -77,3 +87,9 @@ def get_action_iteration_threshold() -> int:
     Returns the action iteration threshold for the experiment.
     """
     return ACTION_THRESHOLD
+
+def feedback_pipeline_str(p : Params) -> str:
+    """
+    Returns a string representation of the feedback pipeline.
+    """
+    return "-".join(p.feedback_pipeline)

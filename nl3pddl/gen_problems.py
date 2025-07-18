@@ -84,7 +84,7 @@ def plan_to_string(plan_obj : dict[str, Any]) -> str:
         result_plan_string += "(" + action_str + ")\n"
     return result_plan_string
 
-if __name__ == "__main__":
+def generate_problems() -> None:
     if os.path.exists(GENERATED_PROBLEMS_DIR):
         shutil.rmtree(GENERATED_PROBLEMS_DIR)
     for domain_name, generator in PROBLEM_GENERATORS.items():

@@ -30,7 +30,7 @@ Fill out this file with relevant API keys
 
 Run the driver script to produce a `results.csv` file
 Experiment parameters and grid can be tweaked in the
-`nl3pddl/params.py` file.
+`experiment_config.yaml` file.
 ```
 python driver.py
 ```

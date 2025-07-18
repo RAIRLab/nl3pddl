@@ -1,7 +1,11 @@
-# This is the configuration file for the experiment, when running driver.py.
-# Domains are strictly determined by what is present in the data/domains folder
-# and it is assumed the data/gen_problems folder has been populated with
-# problems and plans for each domain via gen_problems.py.
+# This is the configuration file for the experiment
+# Domains are strictly determined by what is present in the data/domains folder!
+
+# General Config Parameters ============================================================
+
+# The maximum number of threads to use for parallel processing.
+# If set to 0 or less, it will default to the number of available CPU cores.
+threads: 1
 
 # Maximum number of reprompts to allow for each action generation step.
 action-threshold: 5
@@ -11,7 +15,7 @@ hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 20
+trials: 5
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 30
@@ -36,6 +40,15 @@ models:
 description-classes:
     - first
     - detailed-first
+
+# list of feedback pipelines to evaluate. Pipeline stage names correspond to 
+# langgraph node names in the experiment.py file.
+# TODO: currently the order of the stages is hardcoded, changing the order here
+# will not change the order of the stages in the pipeline.
+feedback-pipelines:
+    - validate: ["validate"]
+    - landmark-val: ["landmark", "validate"]
+
 
 # Should the model be presented with a description of predicates from the
 # problem set when initially generating the domain?

@@ -24,7 +24,7 @@ def extract_domain_name(domain_path):
     return os.path.basename(os.path.dirname(domain_path))
 
 # Generates landmarks in the form of {"facts": ["Atom ontable(b2)"], "disjunctive": "False", "first_achievers": ["put-down b2"]}
-def generate_landmarks(domain_file, problem_file):
+def generate_landmarks_for(domain_file, problem_file):
     try:
         domain_path = Path(domain_file)
         problem_path = Path(problem_file)
@@ -49,40 +49,43 @@ def gen_action_landmarks(json):
     return action_landmarks
     
 
-# Find all domain and problem files
-all_data = []
-domain_files = glob.glob(f"{DOMAINS_PATH}/*/ground.pddl")
+def generate_landmarks():
+    """Generates landmarks for all domains and problems in the specified directories.
+    """
+    # Find all domain and problem files
+    all_data = []
+    domain_files = glob.glob(f"{DOMAINS_PATH}/*/ground.pddl")
 
-for domain_file in domain_files:
-    domain_name = extract_domain_name(domain_file)
-    # Look for problems like problem-1.pddl, problem-2.pddl, problem-3.pddl, etc.
-    problem_pattern = os.path.join(PROBLEMS_PATH, domain_name, "problem-*.pddl")
-    problem_files = glob.glob(problem_pattern)
-    
-    # # If no problems found, try looking in a subdirectory with the domain name
-    # if not problem_files:
-    #     problem_pattern = os.path.join(PROBLEMS_PATH, domain_name, domain_name, "p*.pddl")
-    #     problem_files = glob.glob(problem_pattern)
-    
-    # If still no problems found, print a warning
-    if not problem_files:
-        print(f"Warning: No problem files found for domain {domain_name}")
-    
-    print(f"Processing domain: {domain_name} with {len(problem_files)} problems")
-    # Create output directory for the domain if it doesn't exist
-    os.makedirs(f"{OUTPUT_DIR}/{domain_name}", exist_ok=True)
-    
-    for problem_file in problem_files:
-        problem_name = os.path.basename(problem_file)
-        problem_num = int(re.search(r'problem-(\d+)', problem_name).group(1))
-        output_file = f"{OUTPUT_DIR}/{domain_name}/{problem_name.replace('.pddl', '.json')}"
+    for domain_file in domain_files:
+        domain_name = extract_domain_name(domain_file)
+        # Look for problems like problem-1.pddl, problem-2.pddl, problem-3.pddl, etc.
+        problem_pattern = os.path.join(PROBLEMS_PATH, domain_name, "problem-*.pddl")
+        problem_files = glob.glob(problem_pattern)
+        
+        # # If no problems found, try looking in a subdirectory with the domain name
+        # if not problem_files:
+        #     problem_pattern = os.path.join(PROBLEMS_PATH, domain_name, domain_name, "p*.pddl")
+        #     problem_files = glob.glob(problem_pattern)
+        
+        # If still no problems found, print a warning
+        if not problem_files:
+            print(f"Warning: No problem files found for domain {domain_name}")
+        
+        print(f"Processing domain: {domain_name} with {len(problem_files)} problems")
+        # Create output directory for the domain if it doesn't exist
+        os.makedirs(f"{OUTPUT_DIR}/{domain_name}", exist_ok=True)
+        
+        for problem_file in problem_files:
+            problem_name = os.path.basename(problem_file)
+            problem_num = int(re.search(r'problem-(\d+)', problem_name).group(1))
+            output_file = f"{OUTPUT_DIR}/{domain_name}/{problem_name.replace('.pddl', '.json')}"
 
-        success = generate_landmarks(domain_file, problem_file)
+            success = generate_landmarks_for(domain_file, problem_file)
 
-        json.dump({
-            'domain': domain_name,
-            'problem': problem_name,
-            'problem_num': problem_num,
-            'landmarks': list(gen_action_landmarks(success))
-        }, open(output_file, 'w'), indent=4)
+            json.dump({
+                'domain': domain_name,
+                'problem': problem_name,
+                'problem_num': problem_num,
+                'landmarks': list(gen_action_landmarks(success))
+            }, open(output_file, 'w'), indent=4)
     
