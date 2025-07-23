@@ -7,10 +7,8 @@ import logging
 
 import yaml
 
-with open("experiment_config.yaml", "r") as f:
-    config = yaml.safe_load(f)
+from nl3pddl.config import LOG_LEVEL
 
-LOG_LEVEL = config["log-level"]
 
 logging.basicConfig(level=logging.INFO)
 

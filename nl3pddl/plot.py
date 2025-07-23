@@ -55,9 +55,9 @@ def plt_average_feedback_steps(ndf, model, pipeline):
     plt.tight_layout()
     plt.savefig(f'figs/avgHDEbM-D-{model}-{pipeline}.png')
 
-def plt_average_action_steps(ndf, model, pipeline):
+def plt_average_eval(ndf, model, pipeline):
     # Only that made it to the evaluation stage
-    ndf = ndf[ndf['total_evals'] > 0]
+    # ndf = ndf[ndf['total_evals'] > 0]
 
     # map domain paths to domain names
     ndf['domain_path'] = ndf['domain_path'].apply(
@@ -111,14 +111,15 @@ def plt_domain_failure_mode(ndf, model, pipeline):
         successful_count = len(subset) - action_timeout_count - hde_timeout_count
 
         sizes = [successful_count, action_timeout_count, hde_timeout_count]
-        labels = ['Successful', 'Action Timeout', 'HDE Timeout']
         colors = ['#66c2a5', '#fc8d62', '#8da0cb']
 
-        ax.pie(sizes, labels=labels, autopct='%1.1f%%',
+        ax.pie(sizes, labels=None, autopct='%1.1f%%',
                startangle=90, colors=colors)
         ax.set_title(f'{model} - {d}')
     plt.tight_layout()
-    plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.5), ncol=1)
+    labels = ['No Feedback Left', 'Action Timeout', 'Feedback Timeout']
+    #plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.5), ncol=1, labels=labels)
+    plt.legend(labels=labels, loc='lower center')
     plt.savefig(f'figs/pie-{model}-{pipeline}.png')
 
 
@@ -172,5 +173,5 @@ def plot_all_figures(results_file = None):
               df[(df['model'] == model) & (df['feedback_pipeline'] == pipeline)]
             ndf.rename(columns={'hde_runs': 'hde_steps'}, inplace=True)
             plt_average_feedback_steps(ndf.copy(deep=True), model, pipeline)
-            plt_average_action_steps(ndf.copy(deep=True), model, pipeline)
+            plt_average_eval(ndf.copy(deep=True), model, pipeline)
             plt_domain_failure_mode(ndf.copy(deep=True), model, pipeline)

@@ -235,7 +235,9 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         return {
             "messages": [res] if res else [],
             "domain_syntax_passed" : res is None,
-            "hde_iterations" : state["hde_iterations"] + 1
+            "hde_iterations" : state["hde_iterations"] + 1,
+            "landmark_passed": False,
+            "domain_hde_passed": False,
         }
 
     def landmark(state: State):
@@ -248,7 +250,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             return {
                 "messages": [res] if res else [],
                 "landmark_passed": res is None,
-                "landmark_runs": state["landmark_runs"] + 1,
+                "landmark_runs": state["landmark_runs"] + 1 if res is not None else state["landmark_runs"],
             }
         else:
             logger.debug("landmark check skipped, not in config")
@@ -267,7 +269,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             return {
                 "messages": [res] if res else [],
                 "domain_hde_passed": res is None,
-                "val_runs": state["val_runs"] + 1
+                "val_runs": state["val_runs"] + 1 if res is not None else state["val_runs"],
             }
         else:
             logger.debug("Validation check skipped, not in config")
@@ -322,7 +324,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def route_check_domain_syntax(state: State) ->\
     Literal['hde_timeout_node', 'landmark', 'validate', 'call_domain_model']:
-        if state["hde_iterations"] >= get_hde_iteration_threshold():
+        if state["hde_iterations"] >= get_hde_iteration_threshold() * len(p.feedback_pipeline):
             return "hde_timeout_node"
         elif state["domain_syntax_passed"]:
             if state["hde_iterations"] % 2 == 0 :
