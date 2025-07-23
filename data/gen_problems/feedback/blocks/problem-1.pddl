@@ -4,18 +4,25 @@
   (:objects
     b1 - block
     b2 - block
+    b3 - block
+    b4 - block
   )
 
   (:init
+    (ontable b4)
+    (on b1 b4)
+    (ontable b3)
     (ontable b2)
-    (ontable b1)
-    (clear b2)
     (clear b1)
+    (clear b3)
+    (clear b2)
     (handempty)
   )
 
   (:goal (and
-    (ontable b1)
-    (on b2 b1)
+    (ontable b2)
+    (on b3 b2)
+    (on b4 b3)
+    (on b1 b4)
   ))
 )

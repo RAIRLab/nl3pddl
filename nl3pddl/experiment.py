@@ -20,10 +20,11 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph.message import add_messages
 
+from .config import THREADS
 from .check_output import check_action_output, check_domain_syntax_output
 from .gen_prompts import action_message, domain_template, init_msgs
 from .dataset import Dataset
-from .params import THREADS, Params, action_names, domain_name, feedback_pipeline_str, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
+from .params import Params, action_names, domain_name, feedback_pipeline_str, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
 from .feedback_eval import landmark_feedback, val_evaluate, val_feedback
 from .logger import logger
 
@@ -85,10 +86,17 @@ class State(TypedDict):
     # number of times we have actually given landmark feedback to the model
     landmark_runs : int = 0
 
+    # number of times we have given val feedback to the model
+    val_runs : int = 0
+
     # Landmark node passed
     landmark_passed: bool = False
 
-    # Number of iterations we have done in the HDE validation phase
+    # Total Number of iterations we have done in the HDE validation phase
+    # This *actually* is a measure of how many times we have hit the 
+    # domain syntax validator node, which is the number of times we have called
+    # the language model + 1, see val_runs and landmark_runs for specific 
+    # counts of types of feedback
     hde_iterations : int
     
     # Exited without producing a valid domain after exceeding the retry limit
@@ -112,6 +120,7 @@ RESULTS_HEADER = [
     "desc_class",
     "feedback_pipeline",
     "landmark_runs",
+    "val_runs",
     "hde_runs",
     "hde_timeout",
     "action_timeout",
@@ -135,6 +144,7 @@ def gen_results(d : Dataset, p : Params, s : State) -> tuple:
         p.desc_class,
         feedback_pipeline_str(p),
         s["landmark_runs"],
+        s["val_runs"],
         s["hde_iterations"],
         s["hde_timeout"],
         s["action_timeout"],
@@ -257,6 +267,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             return {
                 "messages": [res] if res else [],
                 "domain_hde_passed": res is None,
+                "val_runs": state["val_runs"] + 1
             }
         else:
             logger.debug("Validation check skipped, not in config")
@@ -310,25 +321,34 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             return "call_action_model"
 
     def route_check_domain_syntax(state: State) ->\
-    Literal['hde_timeout_node', 'landmark', 'call_domain_model']:
+    Literal['hde_timeout_node', 'landmark', 'validate', 'call_domain_model']:
         if state["hde_iterations"] >= get_hde_iteration_threshold():
             return "hde_timeout_node"
         elif state["domain_syntax_passed"]:
-            return "landmark"
+            if state["hde_iterations"] % 2 == 0 :
+                return "landmark"
+            else:
+                return "validate"
         else:
             return "call_domain_model"
         
     def route_landmark(state: State) ->\
-    Literal['validate', 'call_domain_model']:
+    Literal['validate', 'final_evaluation', 'call_domain_model']:
         if state["landmark_passed"]:
-            return "validate"
+            if state["hde_iterations"] % 2 == 0 :
+                return "validate"
+            else:
+                return "final_evaluation"
         else:
             return "call_domain_model"
 
     def route_hde(state: State) ->\
-    Literal['call_domain_model', 'final_evaluation']:
+    Literal['call_domain_model', 'landmark', 'final_evaluation']:
         if state["domain_hde_passed"]:
-            return "final_evaluation"
+            if state["hde_iterations"] % 2 != 0 :
+                return "landmark"
+            else:
+                return "final_evaluation"
         else:
             return "call_domain_model"
 
@@ -396,6 +416,7 @@ def run_experiment_instance(
         "domain_hde_passed": False,
         "landmark_passed": False,
         "landmark_runs": 0,
+        "val_runs": 0,
         "action_iterations" : 0,
         "hde_iterations" : 0,
         "action_timeout" : False,

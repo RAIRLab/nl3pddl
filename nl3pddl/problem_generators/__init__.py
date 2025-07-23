@@ -10,7 +10,7 @@ from .bookseller import generate_problem as generate_bookseller_problem
 PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
     "blocks": generate_blocks_problem,
     "checkers-jumping": generate_checkers_problem,
-    "elevators": generate_elevators_problem,
+    "miconic": generate_elevators_problem,
     "flow": generate_flow_problem,
     "bookseller": generate_bookseller_problem
 }

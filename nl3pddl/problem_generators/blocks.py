@@ -11,7 +11,7 @@ import textwrap
 
 def generate_problem(n, output_file, seed=None):
 
-    num_blocks = 2 * n
+    num_blocks = n + 3
 
     if seed is not None:
         random.seed(seed)

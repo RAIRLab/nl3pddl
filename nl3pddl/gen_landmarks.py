@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 # Define paths
 DOMAINS_PATH = "data/domains"
-PROBLEMS_PATH = "data/gen_problems/testing"
+PROBLEMS_PATH = "data/gen_problems/feedback"
 OUTPUT_DIR = "data/gen_landmarks"
 
 # Create output directory if it doesn't exist
@@ -74,7 +74,12 @@ def generate_landmarks():
         print(f"Processing domain: {domain_name} with {len(problem_files)} problems")
         # Create output directory for the domain if it doesn't exist
         os.makedirs(f"{OUTPUT_DIR}/{domain_name}", exist_ok=True)
-        
+
+        #Wipe the directory files
+        for file in glob.glob(f"{OUTPUT_DIR}/{domain_name}/*"):
+            os.remove(file)
+
+        # Generate landmarks for each problem file
         for problem_file in problem_files:
             problem_name = os.path.basename(problem_file)
             problem_num = int(re.search(r'problem-(\d+)', problem_name).group(1))

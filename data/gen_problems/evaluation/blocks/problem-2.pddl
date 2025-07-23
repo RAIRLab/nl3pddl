@@ -6,21 +6,25 @@
     b2 - block
     b3 - block
     b4 - block
+    b5 - block
   )
 
   (:init
+    (ontable b4)
+    (on b5 b4)
+    (on b1 b5)
     (ontable b3)
     (on b2 b3)
-    (on b1 b2)
-    (on b4 b1)
-    (clear b4)
+    (clear b1)
+    (clear b2)
     (handempty)
   )
 
   (:goal (and
-    (ontable b2)
+    (ontable b3)
+    (on b2 b3)
+    (ontable b5)
     (ontable b1)
     (ontable b4)
-    (ontable b3)
   ))
 )

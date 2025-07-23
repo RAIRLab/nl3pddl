@@ -2,9 +2,8 @@
 (define (problem flow_5_5) (:domain flow)
 (:objects 
     c_1
-	c_3
 	c_2
-	c_4 - color
+	c_3 - color
     p_0_0
 	p_0_1
 	p_0_2
@@ -139,14 +138,12 @@
 	(adjacent p_4_3 p_4_2)
 	(adjacent p_4_4 p_3_4)
 	(adjacent p_4_4 p_4_3)
-    (flow-end p_1_1 c_1)
-	(flow-end p_3_2 c_1)
-	(flow-end p_1_4 c_3)
-	(flow-end p_4_2 c_3)
+    (flow-end p_0_4 c_1)
+	(flow-end p_4_1 c_1)
 	(flow-end p_2_2 c_2)
-	(flow-end p_3_1 c_2)
-	(flow-end p_2_4 c_4)
-	(flow-end p_4_3 c_4)
+	(flow-end p_4_2 c_2)
+	(flow-end p_3_2 c_3)
+	(flow-end p_4_4 c_3)
 )
 
 (:goal (and
@@ -155,9 +152,8 @@
     ;(forall (?c - color) (flow-complete ?c))
     ;(forall (?l - location) (not-empty ?l))
     (flow-complete c_1)
-	(flow-complete c_3)
 	(flow-complete c_2)
-	(flow-complete c_4)
+	(flow-complete c_3)
     (not-empty p_0_0)
 	(not-empty p_0_1)
 	(not-empty p_0_2)

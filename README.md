@@ -31,10 +31,13 @@ Fill out this file with relevant API keys
 Run the driver script to produce a `results.csv` file
 Experiment parameters and grid can be tweaked in the
 `experiment_config.yaml` file.
-```
+```bash
 python driver.py
 ```
 
-Once the experiments have been run, you can generate figures using the
-`plot.py` script. You may need to create a fig folder.
+Once the experiments have been run, you can generate figures using the driver
+with a `-p` flag. This will use the latest `results.csv` file.
+```bash
+python driver.py
+```
 

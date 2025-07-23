@@ -9,33 +9,30 @@
     b5 - block
     b6 - block
     b7 - block
-    b8 - block
   )
 
   (:init
-    (ontable b7)
-    (on b2 b7)
-    (ontable b5)
-    (on b6 b5)
     (ontable b1)
-    (on b4 b1)
-    (ontable b8)
-    (on b3 b8)
-    (clear b2)
+    (on b3 b1)
+    (ontable b7)
+    (on b6 b7)
+    (ontable b5)
+    (on b4 b5)
+    (ontable b2)
+    (clear b3)
     (clear b6)
     (clear b4)
-    (clear b3)
+    (clear b2)
     (handempty)
   )
 
   (:goal (and
-    (ontable b6)
-    (on b2 b6)
-    (ontable b3)
-    (on b4 b3)
     (ontable b1)
-    (on b7 b1)
-    (ontable b5)
-    (on b8 b5)
+    (on b3 b1)
+    (on b5 b3)
+    (on b7 b5)
+    (on b6 b7)
+    (on b4 b6)
+    (on b2 b4)
   ))
 )

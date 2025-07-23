@@ -9,24 +9,10 @@ and some utility functions for the params.
 from typing import Generator
 from dataclasses import dataclass, field
 
+from nl3pddl.config import ACTION_THRESHOLD, DESC_CLASSES, FEEDBACK_PIPELINES, GIVE_PRED_DESCRIPTIONS, HDE_THRESHOLD, MODELS, RUN_TRIALS
+
 
 from .dataset import Dataset
-
-import yaml
-
-with open("experiment_config.yaml", "r") as f:
-    config = yaml.safe_load(f)
-
-RUN_TRIALS = config["trials"]
-ACTION_THRESHOLD = config["action-threshold"]
-HDE_THRESHOLD = config["hde-threshold"]
-KSTAR_TIMEOUT = config["kstar-timeout"]
-THREADS = config["threads"]
-FEEDBACK_PIPELINES = config["feedback-pipelines"]
-
-MODELS = config["models"]
-GIVE_PRED_DESCRIPTIONS = config["give-pred-description"]
-DESC_CLASSES = config["description-classes"]
 
 
 @dataclass

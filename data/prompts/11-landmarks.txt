@@ -2,7 +2,11 @@ Given the above domain you just generated, attempting to use it with the followi
 ```
 {problem}
 ```
-We expected that the following action {landmark} would be executed in the following plan:
+We expected that the one of the following actions: 
+```
+{landmark} 
+```
+would be executed in the following plan:
 ```
 {plan}
 ```
