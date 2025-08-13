@@ -20,7 +20,7 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph.message import add_messages
 
-from .config import THREADS
+from .config import THREADS, ALTERNATION_STEPS
 from .check_output import check_action_output, check_domain_syntax_output
 from .gen_prompts import action_message, domain_template, init_msgs
 from .dataset import Dataset
@@ -82,6 +82,11 @@ class State(TypedDict):
     # Exited without producing a valid action after exceeding the retry limit
     action_timeout : bool = False 
     action_timeout_cause : str = "" # Action that caused the timeout 
+
+    # feedback mode keeps track of what type of feedback we are
+    # giving right now
+    feedback_index : int = 0
+    feedback_cycles : int = 0
 
     # number of times we have actually given landmark feedback to the model
     landmark_runs : int = 0
@@ -155,7 +160,6 @@ def gen_results(d : Dataset, p : Params, s : State) -> tuple:
     )
 
 # Experiments Helpers ==========================================================
-
 
 def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     """
@@ -232,12 +236,22 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             "Checking domain syntax... %s",
             "valid" if res is None else "invalid"
         )
+        feedback_index = state["feedback_index"]
+        feedback_cycles = state["feedback_cycles"]
+        # TODO: This logic really shouldn't be in here, move it to its own
+        # selection node
+        if state["feedback_cycles"] > ALTERNATION_STEPS:
+            feedback_cycles = 0
+            feedback_index = (state["feedback_index"] + 1) % len(p.feedback_pipeline)
+        else:
+            feedback_cycles = state["feedback_cycles"] + 1
+        
         return {
             "messages": [res] if res else [],
             "domain_syntax_passed" : res is None,
             "hde_iterations" : state["hde_iterations"] + 1,
-            "landmark_passed": False,
-            "domain_hde_passed": False,
+            "feedback_index": feedback_index,
+            "feedback_cycles": feedback_cycles
         }
 
     def landmark(state: State):
@@ -247,15 +261,21 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
                 "Checking landmarks... %s",
                 "passed" if res is None else "failed"
             )
+            feedback_index = state["feedback_index"]
+            feedback_cycles = state["feedback_cycles"]
+            if res is None:
+                feedback_cycles = 0
+                feedback_index = (state["feedback_index"] + 1) % len(p.feedback_pipeline)
             return {
                 "messages": [res] if res else [],
                 "landmark_passed": res is None,
                 "landmark_runs": state["landmark_runs"] + 1 if res is not None else state["landmark_runs"],
+                "feedback_index": feedback_index,
+                "feedback_cycles": feedback_cycles 
             }
         else:
             logger.debug("landmark check skipped, not in config")
             return {
-                "messages": [],
                 "landmark_passed": True,
             }
 
@@ -266,15 +286,22 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
                 "Validating domain... %s",
                 "passed" if res is None else "failed"
             )
+            feedback_index = state["feedback_index"]
+            feedback_cycles = state["feedback_cycles"]
+            if res is None:
+                feedback_cycles = 0
+                feedback_index = (state["feedback_index"] + 1) % len(p.feedback_pipeline)
             return {
                 "messages": [res] if res else [],
                 "domain_hde_passed": res is None,
                 "val_runs": state["val_runs"] + 1 if res is not None else state["val_runs"],
+                "feedback_index": feedback_index,
+                "feedback_cycles": feedback_cycles
             }
         else:
             logger.debug("Validation check skipped, not in config")
             return {
-                "messages": [],
+                #"messages": [],
                 "domain_hde_passed": True,
             }
         
@@ -327,30 +354,25 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         if state["hde_iterations"] >= get_hde_iteration_threshold() * len(p.feedback_pipeline):
             return "hde_timeout_node"
         elif state["domain_syntax_passed"]:
-            if state["hde_iterations"] % 2 == 0 :
-                return "landmark"
-            else:
-                return "validate"
+            return p.feedback_pipeline[state["feedback_index"] % len(p.feedback_pipeline)] 
         else:
             return "call_domain_model"
         
     def route_landmark(state: State) ->\
-    Literal['validate', 'final_evaluation', 'call_domain_model']:
-        if state["landmark_passed"]:
-            if state["hde_iterations"] % 2 == 0 :
-                return "validate"
-            else:
-                return "final_evaluation"
+    Literal['check_domain_syntax', 'final_evaluation', 'call_domain_model']:
+        if state["landmark_passed"] and state["domain_hde_passed"]:
+            return "final evaluation"
+        elif state['landmark_passed']:
+            return "check_domain_syntax" #check domain contains the routing logic, we don't actually want to call the model again
         else:
             return "call_domain_model"
 
     def route_hde(state: State) ->\
-    Literal['call_domain_model', 'landmark', 'final_evaluation']:
-        if state["domain_hde_passed"]:
-            if state["hde_iterations"] % 2 != 0 :
-                return "landmark"
-            else:
-                return "final_evaluation"
+    Literal['call_domain_model', 'check_domain_syntax', 'final_evaluation']:
+        if state["landmark_passed"] and state["domain_hde_passed"]:
+            return "final evaluation"
+        elif state['domain_hde_passed']:
+            return "check_domain_syntax" #check domain contains the routing logic, we don't actually want to call the model again
         else:
             return "call_domain_model"
 
@@ -390,6 +412,7 @@ def graph_pipeline_image() -> None:
     """
     Saves the graph as a PNG image to the given filename.
     """
+    experiment_init()
     graph = create_langgraph(None, Params()) # Dummy dataset and params
     graph.get_graph().draw_png("results/pipeline.png")
 
@@ -416,6 +439,8 @@ def run_experiment_instance(
         "actions" : [],
         "domain_syntax_passed": False,
         "domain_hde_passed": False,
+        "feedback_index": 0,
+        "feedback_cycles": 0,
         "landmark_passed": False,
         "landmark_runs": 0,
         "val_runs": 0,
@@ -456,10 +481,7 @@ def run_experiment_instance_star(
     """
     return run_experiment_instance(*args)
 
-def run_experiment() -> None:
-    """
-    Driver, runs the experiments in parallel using the parameter grid
-    """
+def experiment_init() -> None:
     load_dotenv()
 
     if not os.environ.get("OPENAI_API_KEY"):
@@ -468,6 +490,12 @@ def run_experiment() -> None:
     if not os.environ.get("DEEPSEEK_API_KEY"):
         raise RuntimeError("DEEPEEK_API_KEY environment variable not set.\
                             Please set it in your .env file.")
+
+def run_experiment() -> None:
+    """
+    Driver, runs the experiments in parallel using the parameter grid
+    """
+    experiment_init()
 
     num_processes = THREADS if THREADS > 0 else None
 

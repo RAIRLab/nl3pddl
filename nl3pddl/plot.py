@@ -16,7 +16,7 @@ pd.options.mode.copy_on_write = True
 def plt_average_feedback_steps(ndf, model, pipeline):
     # Only that made it to the evaluation stage
     ndf = ndf[ndf['action_timeout'] == False]
-    ndf = ndf[ndf['hde_timeout'] == False]
+    #ndf = ndf[ndf['hde_timeout'] == False]
 
     # map domain paths to domain names
     ndf['domain_path'] = ndf['domain_path'].apply(

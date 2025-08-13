@@ -7,11 +7,11 @@
   )
 
   (:init
-    (origin p1 f4)
-    (destin p1 f2)
+    (origin p1 f2)
+    (destin p1 f4)
     (not-boarded p1)
     (not-served p1)
-    (origin p2 f3)
+    (origin p2 f2)
     (destin p2 f1)
     (not-boarded p2)
     (not-served p2)
@@ -29,7 +29,7 @@
     (above f2 f3)
     (above f2 f4)
     (above f3 f4)
-    (lift-at f1)
+    (lift-at f4)
   )
 
   (:goal (and

@@ -159,7 +159,7 @@ def landmark_feedback(
             # By dumping the plan to a string, we can check if an action is satisfied just by checking if the action is in the string.
             new_plan = json.dumps(new_plan)
             for landmark in landmarks:
-                landmark_str = " or ".join([f"({l})" for l in landmark])
+                landmark_str = "\n".join([f"({l})" for l in landmark])
                 landmark_satisfied = False
                 for landmark_disjunt in landmark:
                     if landmark_disjunt in new_plan:
@@ -170,6 +170,6 @@ def landmark_feedback(
                     return HumanMessage(LANDMARK_PROMPT_TEMPLATE.format(
                         problem=problem_raw,
                         landmark=landmark_str,
-                        new_plan=new_plan
+                        plan=new_plan
                     ))
     return None
