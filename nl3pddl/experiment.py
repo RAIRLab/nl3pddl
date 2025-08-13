@@ -11,11 +11,13 @@ import multiprocessing as mp
 from datetime import datetime
 
 # External package imports
+from pddl.parser.domain import DomainParser
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from typing_extensions import TypedDict
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.load import dumps
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph.message import add_messages
@@ -59,6 +61,8 @@ class State(TypedDict):
     """ The LangGraph application State"""
     #Run ID, identifier for the experiment run, allows us to filter in langsmith
     run_id: str
+    # Experiment parameters, should not be modified during the run
+    PARAMS: Params
     #LLM Message History
     messages: Annotated[list, add_messages]
     # The json object of the message returned by the model
@@ -135,19 +139,21 @@ RESULTS_HEADER = [
     #"domain_raw"
 ]
 
-def gen_results(d : Dataset, p : Params, s : State) -> tuple:
+def gen_csv_results(s : State) -> tuple:
     """
     Generates a tuple of results for the experiment, to be written to the
-    results file.
+    results file, Requires that the experiment has completed successfully.
+    needs to match the RESULTS_HEADER.
     """
     return (
-        s["run_id"],
-        p.domain_path,
-        p.provider,
-        p.model,
-        p.give_pred_descriptions,
-        p.desc_class,
-        feedback_pipeline_str(p),
+        #s["run_id"],
+        s["PARAMS"].trial,
+        s["PARAMS"].domain_path,
+        s["PARAMS"].provider,
+        s["PARAMS"].model,
+        s["PARAMS"].give_pred_descriptions,
+        s["PARAMS"].desc_class,
+        feedback_pipeline_str(s["PARAMS"]),
         s["landmark_runs"],
         s["val_runs"],
         s["hde_iterations"],
@@ -158,6 +164,47 @@ def gen_results(d : Dataset, p : Params, s : State) -> tuple:
         s["total_evals"],
         #s["json_last"].pddl_domain if s["json_last"] else ""
     )
+
+def write_message_log(s : State, results_dir : str) -> None:
+    """
+    Writes the message log to a file in the results directory.
+    """
+    domain_path = s['PARAMS'].domain_path.split("/")[-1]
+    log_path = os.path.join(results_dir, f"""{s['PARAMS'].provider}_{s['PARAMS'].model}_{domain_path}_{s['PARAMS'].desc_class}_{s['PARAMS'].trial}_{feedback_pipeline_str(s['PARAMS'])}_messages.log""")
+    with open(log_path, 'w', encoding="utf-8") as f:
+
+        f.write("NON VAR INFO =========================================\n\n")
+        #f.write(f"RUN ID: {s['run_id']}\n")
+        f.write(f"TRIAL: {s['PARAMS'].trial}\n")
+        f.write("\nExperiment Params ====================================\n\n")
+        f.write(f"PROVIDER: {s['PARAMS'].provider}\n")
+        f.write(f"MODEL: {s['PARAMS'].model}\n")
+        f.write(f"DOMAIN PATH: {s['PARAMS'].domain_path}\n")
+        f.write(f"DESC CLASS: {s['PARAMS'].desc_class}\n")
+        f.write(f"FEEDBACK PIPELINE: {feedback_pipeline_str(s['PARAMS'])}\n")
+        f.write(f"GIVE PRED DESCRIPTIONS: {s['PARAMS'].give_pred_descriptions}\n")
+        f.write("\nEXPERIMENT RESULTS ===================================\n\n")
+        f.write(f"LANDMARK RUNS: {s['landmark_runs']}\n")
+        f.write(f"VAL RUNS: {s['val_runs']}\n")
+        f.write(f"HDE ITERATIONS: {s['hde_iterations']}\n")
+        f.write(f"HDE TIMEOUT: {s['hde_timeout']}\n")
+        f.write(f"ACTION TIMEOUT: {s['action_timeout']}\n")
+        f.write(f"ACTION TIMEOUT CAUSE: {s['action_timeout_cause']}\n")
+        f.write(f"EVALS PASSED: {s['evals_passed']}\n")
+        f.write(f"TOTAL EVALS: {s['total_evals']}\n")
+        
+        f.write("\nFINAL DOMAIN =====================================\n\n")
+        try:
+            domain_str = DomainParser()(s["json_last"].pddl_domain if s["json_last"] else "")
+            f.write(str(domain_str))
+        except Exception as e:
+            f.write("Domain Error: " + str(e) + "\n")
+
+        f.write("\nMessages ===========================================\n\n\n")
+        for msg in s["messages"]:
+            f.write(msg.type.upper() + "\n\n")
+            f.write(msg.content + "\n\n\n")
+        
 
 # Experiments Helpers ==========================================================
 
@@ -422,15 +469,17 @@ def run_experiment_instance(
     #results_lock,   # Lock on results file for thread safety
     batch_id : str,  # Identifier for the batch of experiments
     #results_path: str  # File to write results to
-) -> dict:
+) -> tuple[bool, State]:
     """
-    Executes a LangGraph for a single experiment, and writes results
-    to the results file.
+    Executes a LangGraph for a single experiment, returns a bool indicating
+    if the experiment ran without errors, and the final state of the experiment
+    (in the event of an error, the final state before failure).
     """
     graph = create_langgraph(d, p)
 
-    initial_state = {
+    initial_state : State = {
         "run_id": batch_id,
+        "PARAMS": p,
         "messages": init_msgs(d, p),
         "action_index": 0,
         "json_last": None,
@@ -452,10 +501,13 @@ def run_experiment_instance(
         "evals_passed": 0,
         "total_evals": 0,
     }
-    step = initial_state
+
+    # Langgraph experiment state
+    state : State = initial_state
 
     # Set the recursion limit for the graph execution to be high enough to 
     # accommodate the worst case scenario
+    #TODO: occasionally seems to fail, investigate
     config = {
         "recursion_limit": 
             len(d.domains[p.domain_path].actions) * 
@@ -463,14 +515,16 @@ def run_experiment_instance(
             get_hde_iteration_threshold() * 3 + 25,
     }
 
+    # Run the graph
     try:
         logger.info("Running graph for %s", repr(p))
-        for step in graph.stream(initial_state, stream_mode="values", config=config):
+        for state in graph.stream(initial_state, stream_mode="values", config=config):
             continue
+        return True, state
     except Exception as e: # pylint: disable=broad-except
         print (f"Error: {e}")
-    res = gen_results(d, p, step)
-    return res
+        return False, state
+    
 
 def run_experiment_instance_star(
     args: tuple[Dataset, Params, str]  # Dataset, Params, Batch ID
@@ -497,21 +551,30 @@ def run_experiment() -> None:
     """
     experiment_init()
 
+    # Number of experiments we run in parallel, None means core count
     num_processes = THREADS if THREADS > 0 else None
 
+    # Load the PDDL dataset
     dataset = Dataset()
 
-    date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
-    results_path = f'results/results-{date}.csv'
+    # Prepare the results output file and dir
+    date_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    results_dir = os.path.join("results", date_time)
+    os.makedirs(results_dir)
+    results_path = os.path.join(results_dir, "results.csv")
     with open(results_path, 'w', encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(RESULTS_HEADER)
 
-    args = [(dataset, params, date) for params in param_grid(dataset)]
+    # Run the experiments in parallel and write the results
+    args = [(dataset, params, date_time) for params in param_grid(dataset)]
     with mp.Pool(processes=num_processes) as pool:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
-            for v in pool.imap(run_experiment_instance_star, args):
-                csv_writer.writerow(v)
+            for res in pool.imap_unordered(run_experiment_instance_star, args):
+                (success, state) = res
+                if success:
+                    csv_results_row = gen_csv_results(state)
+                    csv_writer.writerow(csv_results_row)
+                    write_message_log(state, results_dir)
     print("Successfully joined all processes.")

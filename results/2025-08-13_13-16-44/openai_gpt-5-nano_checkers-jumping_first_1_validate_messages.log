@@ -1,0 +1,205 @@
+NON VAR INFO =========================================
+
+RUN ID: 2025-08-13_13-16-44
+TRIAL: 1
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: gpt-5-nano
+DOMAIN PATH: data/domains/checkers-jumping
+DESC CLASS: first
+FEEDBACK PIPELINE: validate
+GIVE PRED DESCRIPTIONS: True
+
+EXPERIMENT RESULTS ===================================
+
+LANDMARK RUNS: 0
+VAL RUNS: 0
+HDE ITERATIONS: 10
+HDE TIMEOUT: True
+ACTION TIMEOUT: False
+ACTION TIMEOUT CAUSE: 
+EVALS PASSED: 10
+TOTAL EVALS: 10
+
+ FINAL DOMAIN =====================================
+
+Domain Error: '<' not supported between instances of 'Variable' and 'Variable'
+
+Messages ===========================================
+
+
+SYSTEM
+
+You will be given a natural language description of an a Planning Domain Definition Language (PDDL) domain along with a set of types and predicates you are allowed to use. You will then be given a description of each action in the domain, including its parameter count and types. With this, your goal is to generate a PDDL action for this description filling in the preconditions and effects. You are allowed to create new predicates and types as needed but must include the set of all predicates and types you used in the output. For your output please provide a JSON object with the following felids: 
+1. A string containing a raw PDDL action 
+2. A list of predicates used so far with all parameters and types
+3. A list of types used so far, we assume there is no type hierarchy.
+
+The JSON object should be formatted as follows:
+{
+    "pddl_action": "(:action <action_name> ...)",
+    "predicates": ["(pred1 ?param1 - type1 ?param2 - type2)", ...]
+    "types" : ["type1", "type2", ...]
+}
+
+If you mess up the formatting or output invalid PDDL, you will receive a message instructing you on what is wrong and how you may fix it, at which point you should try to generate the PDDL action again, you will be requested to fix the issue until you generate a valid PDDL action.
+
+
+HUMAN
+
+The following is a natural language description of a PDDL domain:
+
+The domain assumes a world where there are a set of blocks that can be stacked on top of each other, an arm that can hold one block at a time, and a table where blocks can be placed.
+
+To start you may use the following predicates but are free to add more:
+
+["(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)"]
+
+You may also use the following types:
+
+["block"]
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a desc described action in the above described domain. 
+
+The pick-up action represents the action of a robot arm picking up a single block from the table
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{ 
+    "pddl_action": "(:action pick-up :parameters (?x - block) :precondition (and (ontable ?x) (clear ?x) (handempty)) :effect (and (not (ontable ?x)) (holding ?x) (not (handempty)) (not (clear ?x)))\n)",
+    "predicates": ["(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)"],
+    "types": ["block"]
+}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need, generate a desc described action in the above described domain. 
+
+The Stack action represents the action of stacking a block on top of another block. 
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{
+    "pddl_action": "(:action stack :parameters (?x ?y - block) :precondition (and (clear ?y) (on ?x) (handempty)) :effect (and (not (on ?x)) (not (handempty)) (stacked ?x ?y) (not (clear ?y)))\n)",
+    "predicates": [(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)]
+    "types": ["block"]
+}
+
+
+HUMAN
+
+The following is a natural language description of a PDDL domain:
+
+
+
+To start you may use the following types but are free to add more:
+
+[checker, space]                                         
+
+To start you may use the following predicates but are free to add more:
+
+[is-red: A checker is red., right-of: A square is to the right of another square., left-of: A square is to the left of another square., is-blue: A checker is blue., empty: A square is empty., at: A checker is at a square.]
+
+
+AI
+
+{"pddl_action": "(:action move :parameters (?c - checker ?s1 - space ?s2 - space) :precondition (and (at ?c ?s1) (empty ?s2)) :effect (and (not (at ?c ?s1)) (not (empty ?s2)) (at ?c ?s2) (empty ?s1))\n)", "predicates": ["(is-red ?c - checker)", "(is-blue ?c - checker)", "(right-of ?c1 - checker ?c2 - checker)", "(left-of ?c1 - checker ?c2 - checker)", "(empty ?s - space)", "(at ?c - checker ?s - space)"], "types": ["checker", "space"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+move a red checker to an adjacent empty square
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action move-red :parameters (?c - checker ?s1 - space ?s2 - space) :precondition (and (at ?c ?s1) (empty ?s2) (adjacent ?s1 ?s2) (is-red ?c)) :effect (and (not (at ?c ?s1)) (at ?c ?s2) (not (empty ?s2)) (empty ?s1)))", "predicates": ["(is-red ?c - checker)", "(is-blue ?c - checker)", "(right-of ?s1 - space ?s2 - space)", "(left-of ?s1 - space ?s2 - space)", "(empty ?s - space)", "(at ?c - checker ?s - space)", "(adjacent ?s1 - space ?s2 - space)"], "types": ["checker", "space"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+move a blue checker to an adjacent empty square
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action move-blue :parameters (?c - checker ?s1 - space ?s2 - space) :precondition (and (at ?c ?s1) (empty ?s2) (adjacent ?s1 ?s2) (is-blue ?c)) :effect (and (not (at ?c ?s1)) (at ?c ?s2) (not (empty ?s2)) (empty ?s1))\n)", "predicates": ["(is-red ?c - checker)", "(is-blue ?c - checker)", "(right-of ?s1 - space ?s2 - space)", "(left-of ?s1 - space ?s2 - space)", "(empty ?s - space)", "(at ?c - checker ?s - space)", "(adjacent ?s1 - space ?s2 - space)"], "types": ["checker", "space"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+jump over an adjacent checker to an empty square
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action jump-over :parameters (?c - checker ?s1 - space ?c2 - checker ?s2 - space ?s3 - space) :precondition (and (at ?c ?s1) (at ?c2 ?s2) (adjacent ?s1 ?s2) (adjacent ?s2 ?s3) (empty ?s3)) :effect (and (not (at ?c ?s1)) (at ?c ?s3) (not (empty ?s3)) (empty ?s1)))\n", "predicates": ["(is-red ?c - checker)", "(is-blue ?c - checker)", "(right-of ?s1 - space ?s2 - space)", "(left-of ?s1 - space ?s2 - space)", "(empty ?s - space)", "(at ?c - checker ?s - space)", "(adjacent ?s1 - space ?s2 - space)", "(adjacent ?s2 - space ?s3 - space)"], "types": ["checker", "space"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+jump over an adjacent checker to an empty square
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action jump-over :parameters (?c - checker ?s1 - space ?s2 - space ?c2 - checker ?s3 - space) :precondition (and (at ?c ?s1) (at ?c2 ?s2) (adjacent ?s1 ?s2) (adjacent ?s2 ?s3) (empty ?s3)) :effect (and (not (at ?c ?s1)) (at ?c ?s3) (not (empty ?s3)) (empty ?s1))\n)", "predicates": ["(is-red ?c - checker)", "(is-blue ?c - checker)", "(right-of ?s1 - space ?s2 - space)", "(left-of ?s1 - space ?s2 - space)", "(empty ?s - space)", "(at ?c - checker ?s - space)", "(adjacent ?s1 - space ?s2 - space)", "(adjacent ?s2 - space ?s3 - space)"], "types": ["checker", "space"]}
+
+
+HUMAN
+
+
+        (define (domain checkers-jumping)
+            (:requirements :strips :typing)
+            (:types checker
+space)
+            (:predicates (is-red ?c - checker)
+(is-blue ?c - checker)
+(right-of ?s1 - space ?s2 - space)
+(left-of ?s1 - space ?s2 - space)
+(empty ?s - space)
+(at ?c - checker ?s - space)
+(adjacent ?s1 - space ?s2 - space)
+(adjacent ?s2 - space ?s3 - space))
+
+            (:action move :parameters (?c - checker ?s1 - space ?s2 - space) :precondition (and (at ?c ?s1) (empty ?s2)) :effect (and (not (at ?c ?s1)) (not (empty ?s2)) (at ?c ?s2) (empty ?s1))
+)
+(:action move-red :parameters (?c - checker ?s1 - space ?s2 - space) :precondition (and (at ?c ?s1) (empty ?s2) (adjacent ?s1 ?s2) (is-red ?c)) :effect (and (not (at ?c ?s1)) (at ?c ?s2) (not (empty ?s2)) (empty ?s1)))
+(:action move-blue :parameters (?c - checker ?s1 - space ?s2 - space) :precondition (and (at ?c ?s1) (empty ?s2) (adjacent ?s1 ?s2) (is-blue ?c)) :effect (and (not (at ?c ?s1)) (at ?c ?s2) (not (empty ?s2)) (empty ?s1))
+)
+(:action jump-over :parameters (?c - checker ?s1 - space ?c2 - checker ?s2 - space ?s3 - space) :precondition (and (at ?c ?s1) (at ?c2 ?s2) (adjacent ?s1 ?s2) (adjacent ?s2 ?s3) (empty ?s3)) :effect (and (not (at ?c ?s1)) (at ?c ?s3) (not (empty ?s3)) (empty ?s1)))
+
+(:action jump-over :parameters (?c - checker ?s1 - space ?s2 - space ?c2 - checker ?s3 - space) :precondition (and (at ?c ?s1) (at ?c2 ?s2) (adjacent ?s1 ?s2) (adjacent ?s2 ?s3) (empty ?s3)) :effect (and (not (at ?c ?s1)) (at ?c ?s3) (not (empty ?s3)) (empty ?s1))
+)
+        )
+    
+
+

@@ -1,4 +1,4 @@
-Using the current list of predicates and any new predicates you feel you need,generate for the described action in the above described domain. 
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
 
 {action_nl}
 
