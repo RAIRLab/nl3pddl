@@ -17,14 +17,13 @@ from pydantic import BaseModel, Field
 from typing_extensions import TypedDict
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, AIMessage
-from langchain_core.load import dumps
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph.message import add_messages
 
 from .config import THREADS, ALTERNATION_STEPS
 from .check_output import check_action_output, check_domain_syntax_output
-from .gen_prompts import action_message, domain_template, init_msgs
+from .gen_prompts import action_message, domain_template, init_msgs, raw_domain_msg
 from .dataset import Dataset
 from .params import Params, action_names, domain_name, feedback_pipeline_str, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
 from .feedback_eval import landmark_feedback, val_evaluate, val_feedback
@@ -98,6 +97,9 @@ class State(TypedDict):
     # number of times we have given val feedback to the model
     val_runs : int = 0
 
+    # The number of times we loop exclusively on syntax issues
+    domain_check_runs : int = 0
+
     # Landmark node passed
     landmark_passed: bool = False
 
@@ -112,10 +114,13 @@ class State(TypedDict):
     hde_timeout : bool = False 
 
     # The domain we are currently working on is HDE, and we can begin evaluating it.
-    domain_hde_passed: bool = False
+    val_passed: bool = False
 
     evals_passed: int = 0  # Number of evaluations passed
     total_evals: int = 0  # Total number of evaluations attempted
+
+    # Path of nodes taken through the langgraph, for debugging
+    langgraph_path : list[str] = [] 
 
 # Results file generation helpers ==============================================
 
@@ -165,7 +170,7 @@ def gen_csv_results(s : State) -> tuple:
         #s["json_last"].pddl_domain if s["json_last"] else ""
     )
 
-def write_message_log(s : State, results_dir : str) -> None:
+def write_message_log(s : State, err_msg : str, results_dir : str) -> None:
     """
     Writes the message log to a file in the results directory.
     """
@@ -183,7 +188,14 @@ def write_message_log(s : State, results_dir : str) -> None:
         f.write(f"DESC CLASS: {s['PARAMS'].desc_class}\n")
         f.write(f"FEEDBACK PIPELINE: {feedback_pipeline_str(s['PARAMS'])}\n")
         f.write(f"GIVE PRED DESCRIPTIONS: {s['PARAMS'].give_pred_descriptions}\n")
+
+        if err_msg != "":
+            f.write("\nERROR MESSAGE ======================================\n\n")
+            f.write(err_msg + "\n")
+            return
+        
         f.write("\nEXPERIMENT RESULTS ===================================\n\n")
+        f.write(f"DOMAIN CHECK RUNS: {s['domain_check_runs']}\n")
         f.write(f"LANDMARK RUNS: {s['landmark_runs']}\n")
         f.write(f"VAL RUNS: {s['val_runs']}\n")
         f.write(f"HDE ITERATIONS: {s['hde_iterations']}\n")
@@ -192,6 +204,7 @@ def write_message_log(s : State, results_dir : str) -> None:
         f.write(f"ACTION TIMEOUT CAUSE: {s['action_timeout_cause']}\n")
         f.write(f"EVALS PASSED: {s['evals_passed']}\n")
         f.write(f"TOTAL EVALS: {s['total_evals']}\n")
+        f.write("LANGGRAPH PATH:\n\t" + '->\n\t'.join(s['langgraph_path']) + "\n")
         
         f.write("\nFINAL DOMAIN =====================================\n\n")
         try:
@@ -223,13 +236,27 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         logger.debug("Calling action model")
         json_obj = action_model.invoke(state["messages"])
         raw = json.dumps(json_obj.model_dump())
-        return {"messages": [AIMessage(raw)], "json_last": json_obj}
+        return {
+            "messages": [AIMessage(raw)],
+            "json_last": json_obj,
+            "langgraph_path": state["langgraph_path"] + ["call_action_model"]
+        }
 
     def call_domain_model(state: State):
-        logger.debug("Calling domain model")
-        json_obj = domain_model.invoke(state["messages"])
-        raw = json.dumps(json_obj.model_dump())
-        return {"messages": [AIMessage(raw)], "json_last": json_obj}
+        try: 
+            logger.debug("Calling domain model")
+            json_obj = domain_model.invoke(state["messages"])
+            raw = json.dumps(json_obj.model_dump())
+        except Exception as e:
+            # TODO: Fix
+            msg = f"Error during feedback generation: {str(e)}" 
+            logger.error(msg)
+            raise RuntimeError(f"Failed to call domain model: {msg}")
+        return {
+            "messages": [AIMessage(raw)],
+            "json_last": json_obj,
+            "langgraph_path": state["langgraph_path"] + ["call_domain_model"]
+        }
 
     def next_action(state: State):
         action_index = state["action_index"]
@@ -239,7 +266,8 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             logger.debug(f"Done generating actions.")
             return {
                 "actions_done": True,
-                "actions" : actions + [state["json_last"]]
+                "actions" : actions + [state["json_last"]],
+                "langgraph_path": state["langgraph_path"] + ["next_action"]
             }
         else:
             action_name = actions_names[action_index]
@@ -251,7 +279,8 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
                 "messages": [action_message(d, p, action_name)],
                 "action_index" : action_index + 1,
                 "actions" : actions + [state["json_last"]],
-                "action_iterations" : 0
+                "action_iterations" : 0,
+                "langgraph_path": state["langgraph_path"] + ["next_action"]
             }
 
     def check_action(state: State):
@@ -263,7 +292,8 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         return {
             "messages": [res] if res else [],
             "action_valid" : res is None,
-            "action_iterations" : state["action_iterations"] + 1
+            "action_iterations" : state["action_iterations"] + 1,
+            "langgraph_path": state["langgraph_path"] + ["check_action"]
         }
 
     def build_domain(state: State):
@@ -273,84 +303,125 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             state["actions"]
         )
         return {
-            "messages" : [HumanMessage(full_domain_raw)],
-            "json_last": DomainSchema(**{"pddl_domain":full_domain_raw})
+            "messages" : [raw_domain_msg(full_domain_raw)],
+            "json_last": DomainSchema(**{"pddl_domain":full_domain_raw}),
+            "langgraph_path": state["langgraph_path"] + ["build_domain"]
         }
 
     def check_domain_syntax(state: State):
-        res = check_domain_syntax_output(state["json_last"])
-        logger.debug(
-            "Checking domain syntax... %s",
-            "valid" if res is None else "invalid"
-        )
-        feedback_index = state["feedback_index"]
-        feedback_cycles = state["feedback_cycles"]
-        # TODO: This logic really shouldn't be in here, move it to its own
-        # selection node
-        if state["feedback_cycles"] > ALTERNATION_STEPS:
-            feedback_cycles = 0
-            feedback_index = (state["feedback_index"] + 1) % len(p.feedback_pipeline)
-        else:
-            feedback_cycles = state["feedback_cycles"] + 1
-        
+        try:
+            res = check_domain_syntax_output(state["json_last"])
+            logger.debug(
+                "Checking domain syntax... %s",
+                "valid" if res is None else "invalid"
+            )
+            # feedback_index = state["feedback_index"]
+            # feedback_cycles = state["feedback_cycles"]
+            # # TODO: This logic really shouldn't be in here, move it to its own
+            # # selection node
+            # if state["feedback_cycles"] > ALTERNATION_STEPS:
+            #     feedback_cycles = 0
+            #     feedback_index = (state["feedback_index"] + 1) % len(p.feedback_pipeline)
+            # else:
+            #     feedback_cycles = state["feedback_cycles"] + 1
+        except Exception as e:
+            msg = f"Error during domain syntax check: {str(e)}"
+            raise RuntimeError(msg)
         return {
             "messages": [res] if res else [],
             "domain_syntax_passed" : res is None,
             "hde_iterations" : state["hde_iterations"] + 1,
-            "feedback_index": feedback_index,
-            "feedback_cycles": feedback_cycles
+            "domain_check_runs" : state["domain_check_runs"] + (0 if res is None else 1),
+            # "feedback_index": feedback_index,
+            # "feedback_cycles": feedback_cycles,
+            "langgraph_path": state["langgraph_path"] + ["check_domain_syntax"]
+        }
+    
+    def feedback(state: State):
+        landmark_feedback_msg : HumanMessage | None = None
+        val_feedback_msg : HumanMessage | None = None
+        try:
+            if "landmark" in p.feedback_pipeline:
+                landmark_feedback_msg = landmark_feedback(d, p, state["json_last"].pddl_domain)
+                logger.debug(
+                    "Checking landmarks... %s",
+                    "passed" if landmark_feedback_msg is None else "failed"
+                )
+            if "validate" in p.feedback_pipeline:
+                val_feedback_msg = val_feedback(d, p, state["json_last"].pddl_domain)
+                logger.debug(
+                    "Validating domain... %s",
+                    "passed" if val_feedback_msg is None else "failed"
+                )
+        except Exception as e:
+            # TODO: Fix
+            msg = f"Error during feedback generation: {str(e)}" 
+            logger.error(msg)
+            landmark_feedback_msg = HumanMessage(msg)
+            val_feedback_msg = HumanMessage(msg)
+        return {
+            "messages": [msg for msg in [landmark_feedback_msg, val_feedback_msg] if msg],
+            "landmark_passed": landmark_feedback_msg is None, 
+            "val_passed": val_feedback_msg is None,
+            "landmark_runs": state["landmark_runs"] + (1 if landmark_feedback_msg is not None else 0),
+            "val_runs": state["val_runs"] + (1 if val_feedback_msg is not None else 0),
+            "langgraph_path": state["langgraph_path"] + ["feedback"]
         }
 
-    def landmark(state: State):
-        if "landmark" in p.feedback_pipeline:
-            res = landmark_feedback(d, p, state["json_last"].pddl_domain)
-            logger.debug(
-                "Checking landmarks... %s",
-                "passed" if res is None else "failed"
-            )
-            feedback_index = state["feedback_index"]
-            feedback_cycles = state["feedback_cycles"]
-            if res is None:
-                feedback_cycles = 0
-                feedback_index = (state["feedback_index"] + 1) % len(p.feedback_pipeline)
-            return {
-                "messages": [res] if res else [],
-                "landmark_passed": res is None,
-                "landmark_runs": state["landmark_runs"] + 1 if res is not None else state["landmark_runs"],
-                "feedback_index": feedback_index,
-                "feedback_cycles": feedback_cycles 
-            }
-        else:
-            logger.debug("landmark check skipped, not in config")
-            return {
-                "landmark_passed": True,
-            }
+    # def landmark(state: State):
+    #     if "landmark" in p.feedback_pipeline:
+    #         res = landmark_feedback(d, p, state["json_last"].pddl_domain)
+    #         logger.debug(
+    #             "Checking landmarks... %s",
+    #             "passed" if res is None else "failed"
+    #         )
+    #         feedback_index = state["feedback_index"]
+    #         feedback_cycles = state["feedback_cycles"]
+    #         if res is None:
+    #             feedback_cycles = 0
+    #             feedback_index = (state["feedback_index"] + 1) % len(p.feedback_pipeline)
+    #         return {
+    #             "messages": [res] if res else [],
+    #             "landmark_passed": res is None,
+    #             "landmark_runs": state["landmark_runs"] + 1 if res is not None else state["landmark_runs"],
+    #             "feedback_index": feedback_index,
+    #             "feedback_cycles": feedback_cycles,
+    #             "langgraph_path": state["langgraph_path"] + ["landmark"] 
+    #         }
+    #     else:
+    #         logger.debug("landmark check skipped, not in config")
+    #         return {
+    #             "landmark_passed": True,
+    #             "langgraph_path": state["langgraph_path"] + ["landmark"]
+    #         }
 
-    def validate(state: State):
-        if "validate" in p.feedback_pipeline:
-            res = val_feedback(d, p, state["json_last"].pddl_domain)
-            logger.debug(
-                "Validating domain... %s",
-                "passed" if res is None else "failed"
-            )
-            feedback_index = state["feedback_index"]
-            feedback_cycles = state["feedback_cycles"]
-            if res is None:
-                feedback_cycles = 0
-                feedback_index = (state["feedback_index"] + 1) % len(p.feedback_pipeline)
-            return {
-                "messages": [res] if res else [],
-                "domain_hde_passed": res is None,
-                "val_runs": state["val_runs"] + 1 if res is not None else state["val_runs"],
-                "feedback_index": feedback_index,
-                "feedback_cycles": feedback_cycles
-            }
-        else:
-            logger.debug("Validation check skipped, not in config")
-            return {
-                #"messages": [],
-                "domain_hde_passed": True,
-            }
+    # def validate(state: State):
+    #     if "validate" in p.feedback_pipeline:
+    #         res = val_feedback(d, p, state["json_last"].pddl_domain)
+    #         logger.debug(
+    #             "Validating domain... %s",
+    #             "passed" if res is None else "failed"
+    #         )
+    #         feedback_index = state["feedback_index"]
+    #         feedback_cycles = state["feedback_cycles"]
+    #         if res is None:
+    #             feedback_cycles = 0
+    #             feedback_index = (state["feedback_index"] + 1) % len(p.feedback_pipeline)
+    #         return {
+    #             "messages": [res] if res else [],
+    #             "val_passed": res is None,
+    #             "val_runs": state["val_runs"] + 1 if res is not None else state["val_runs"],
+    #             "feedback_index": feedback_index,
+    #             "feedback_cycles": feedback_cycles,
+    #             "langgraph_path": state["langgraph_path"] + ["validate"]
+    #         }
+    #     else:
+    #         logger.debug("Validation check skipped, not in config")
+    #         return {
+    #             #"messages": [],
+    #             "val_passed": True,
+    #             "langgraph_path": state["langgraph_path"] + ["validate"]
+    #         }
         
     def action_timeout_node(state: State):
         logger.debug("Action timeout reached, exiting.")
@@ -359,12 +430,14 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         return {
             "action_timeout": True,
             "action_timeout_cause": failed_action_name,
+            "langgraph_path": state["langgraph_path"] + ["action_timeout_node"]
         }
     
     def hde_timeout_node(state: State):
         logger.debug("HDE timeout reached.")
         return {
-            "hde_timeout": True
+            "hde_timeout": True,
+            "langgraph_path": state["langgraph_path"] + ["hde_timeout_node"]
         }
     
     def final_evaluation(state: State):
@@ -376,6 +449,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         return {
             "evals_passed": res[0],
             "total_evals": res[1],
+            "langgraph_path": state["langgraph_path"] + ["final_evaluation"]
         }
 
     # Conditional Routing Helpers ==============================================
@@ -397,31 +471,39 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             return "call_action_model"
 
     def route_check_domain_syntax(state: State) ->\
-    Literal['hde_timeout_node', 'landmark', 'validate', 'call_domain_model']:
-        if state["hde_iterations"] >= get_hde_iteration_threshold() * len(p.feedback_pipeline):
+    Literal['hde_timeout_node', "feedback", 'call_domain_model']:
+        if state["hde_iterations"] >= get_hde_iteration_threshold():
             return "hde_timeout_node"
         elif state["domain_syntax_passed"]:
-            return p.feedback_pipeline[state["feedback_index"] % len(p.feedback_pipeline)] 
+            #return p.feedback_pipeline[state["feedback_index"] % len(p.feedback_pipeline)]
+            return "feedback"
         else:
             return "call_domain_model"
-        
-    def route_landmark(state: State) ->\
-    Literal['check_domain_syntax', 'final_evaluation', 'call_domain_model']:
-        if state["landmark_passed"] and state["domain_hde_passed"]:
-            return "final evaluation"
-        elif state['landmark_passed']:
-            return "check_domain_syntax" #check domain contains the routing logic, we don't actually want to call the model again
+    
+    def route_feedback(state: State) ->\
+    Literal['final_evaluation', 'call_domain_model']:
+        if state["landmark_passed"] and state["val_passed"]:
+            return "final_evaluation"
         else:
             return "call_domain_model"
 
-    def route_hde(state: State) ->\
-    Literal['call_domain_model', 'check_domain_syntax', 'final_evaluation']:
-        if state["landmark_passed"] and state["domain_hde_passed"]:
-            return "final evaluation"
-        elif state['domain_hde_passed']:
-            return "check_domain_syntax" #check domain contains the routing logic, we don't actually want to call the model again
-        else:
-            return "call_domain_model"
+    # def route_landmark(state: State) ->\
+    # Literal['check_domain_syntax', 'final_evaluation', 'call_domain_model']:
+    #     if state["landmark_passed"] and state["val_passed"]:
+    #         return "final evaluation"
+    #     elif state['landmark_passed']:
+    #         return "check_domain_syntax" #check domain contains the routing logic, we don't actually want to call the model again
+    #     else:
+    #         return "call_domain_model"
+
+    # def route_hde(state: State) ->\
+    # Literal['call_domain_model', 'check_domain_syntax', 'final_evaluation']:
+    #     if state["landmark_passed"] and state["val_passed"]:
+    #         return "final evaluation"
+    #     elif state['val_passed']:
+    #         return "check_domain_syntax" #check domain contains the routing logic, we don't actually want to call the model again
+    #     else:
+    #         return "call_domain_model"
 
     # Create the graph =========================================================
     graph_builder = StateGraph(State)
@@ -431,8 +513,9 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     graph_builder.add_node("build_domain", build_domain)
     graph_builder.add_node("call_domain_model", call_domain_model)
     graph_builder.add_node("check_domain_syntax", check_domain_syntax)
-    graph_builder.add_node("landmark", landmark)
-    graph_builder.add_node("validate", validate)
+    # graph_builder.add_node("landmark", landmark)
+    # graph_builder.add_node("validate", validate)
+    graph_builder.add_node("feedback", feedback)
     graph_builder.add_node("action_timeout_node", action_timeout_node)
     graph_builder.add_node("hde_timeout_node", hde_timeout_node)
     graph_builder.add_node("final_evaluation", final_evaluation)
@@ -447,8 +530,9 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         "check_domain_syntax", 
         route_check_domain_syntax
     )
-    graph_builder.add_conditional_edges("landmark", route_landmark)
-    graph_builder.add_conditional_edges("validate", route_hde)
+    # graph_builder.add_conditional_edges("landmark", route_landmark)
+    # graph_builder.add_conditional_edges("validate", route_hde)
+    graph_builder.add_conditional_edges("feedback", route_feedback)
     graph_builder.add_edge("action_timeout_node", END)
     graph_builder.add_edge("hde_timeout_node", "final_evaluation")
     graph_builder.add_edge("final_evaluation", END)
@@ -469,7 +553,7 @@ def run_experiment_instance(
     #results_lock,   # Lock on results file for thread safety
     batch_id : str,  # Identifier for the batch of experiments
     #results_path: str  # File to write results to
-) -> tuple[bool, State]:
+) -> tuple[bool, str, State]:
     """
     Executes a LangGraph for a single experiment, returns a bool indicating
     if the experiment ran without errors, and the final state of the experiment
@@ -487,12 +571,13 @@ def run_experiment_instance(
         "actions_done": False,
         "actions" : [],
         "domain_syntax_passed": False,
-        "domain_hde_passed": False,
+        "val_passed": False,
         "feedback_index": 0,
         "feedback_cycles": 0,
         "landmark_passed": False,
         "landmark_runs": 0,
         "val_runs": 0,
+        "domain_check_runs": 0,
         "action_iterations" : 0,
         "hde_iterations" : 0,
         "action_timeout" : False,
@@ -500,6 +585,7 @@ def run_experiment_instance(
         "hde_timeout" : False,
         "evals_passed": 0,
         "total_evals": 0,
+        "langgraph_path": []
     }
 
     # Langgraph experiment state
@@ -520,15 +606,13 @@ def run_experiment_instance(
         logger.info("Running graph for %s", repr(p))
         for state in graph.stream(initial_state, stream_mode="values", config=config):
             continue
-        return True, state
+        return True, "", state
     except Exception as e: # pylint: disable=broad-except
-        print (f"Error: {e}")
-        return False, state
-    
+        return False, f"Error: {type(e).__name__}, {e}", state
 
 def run_experiment_instance_star(
     args: tuple[Dataset, Params, str]  # Dataset, Params, Batch ID
-) -> dict:
+) -> tuple[bool, str, State]:
     """
     Wrapper for run_experiment to unpack the arguments.
     This is used for multiprocessing.
@@ -572,9 +656,10 @@ def run_experiment() -> None:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
             for res in pool.imap_unordered(run_experiment_instance_star, args):
-                (success, state) = res
+                (success, err_msg, state) = res
+                write_message_log(state, err_msg, results_dir)
                 if success:
                     csv_results_row = gen_csv_results(state)
                     csv_writer.writerow(csv_results_row)
-                    write_message_log(state, results_dir)
+                    
     print("Successfully joined all processes.")

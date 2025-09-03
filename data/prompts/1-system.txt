@@ -11,3 +11,5 @@ The JSON object should be formatted as follows:
 }
 
 If you mess up the formatting or output invalid PDDL, you will receive a message instructing you on what is wrong and how you may fix it, at which point you should try to generate the PDDL action again, you will be requested to fix the issue until you generate a valid PDDL action.
+
+Do not refuse to answer and do not ask any questions to the user, since the user is an automated tool that can not respond as a human would. If you are unsure about something, make a reasonable assumption and proceed.

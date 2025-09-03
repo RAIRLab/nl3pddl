@@ -55,6 +55,6 @@ if __name__ == "__main__":
 
     if not (args.generate or args.landmarks or args.run or args.image or args.plot):
         print("No arguments passed, running the experiment by default.")
-        #n3p.run_experiment()
-        n3p.plot_all_figures()
+        n3p.run_experiment()
+        #n3p.plot_all_figures()
 

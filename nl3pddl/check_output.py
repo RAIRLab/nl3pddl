@@ -139,7 +139,7 @@ bad_pred_list_template = PromptTemplate(template="""
 
 def check_action_output(
     message : Any
-) -> None | str:
+) -> None | HumanMessage:
     """
     Converts a pddl string to a PDDL action object or returns an error
     """
@@ -157,9 +157,9 @@ def check_action_output(
     # Check if the action string is valid
     res = action_syntax_check(action_str)
     if isinstance(res, PipelineResult):
-        return res.message
+        return HumanMessage(res.message)
 
-    #return None
+    #return None if the action is valid, else error message
     action_domain = action_domain_template(types, preds, action_str)
     try:
         _ = DOMAIN_PARSER(action_domain)
@@ -168,7 +168,7 @@ def check_action_output(
         return HumanMessage(f"Unable to parse action ```{action_str}```\n\
         Error: {lark_err_str(e)} \nPlease revise the action and try again.")
 
-def check_domain_syntax_output(message : Any) -> None | str:
+def check_domain_syntax_output(message : Any) -> None | HumanMessage:
     """
     Converts a pddl string to a PDDL domain object or returns an error
     """

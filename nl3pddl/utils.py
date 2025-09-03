@@ -8,6 +8,7 @@ import os
 from typing import List, Tuple
 
 from pddl.core import Problem
+from pddl.core import Predicate
 
 from .dataset import Dataset
 from .logger import logger
@@ -108,3 +109,15 @@ def get_all_type_names_domain(d : Dataset, domain_path: str) -> set[str]:
         problem_types = get_all_type_names(d.feedback_problems[problem_path])
         all_type_names = all_type_names.union(problem_types)
     return all_type_names
+
+def pred_to_str(p : Predicate) -> str:
+    """
+    Converts a Predicate object to a string representation.
+    Assumes only one type per argument.
+    """
+    name = p.name
+    vars = [t.name for t in p.terms]
+    types = [[tag for tag in t.type_tags][0] for t in p.terms]
+
+    args = [f"?{var} - {type_}" for var, type_ in zip(vars, types)]
+    return f"({name} {' '.join(args)})"

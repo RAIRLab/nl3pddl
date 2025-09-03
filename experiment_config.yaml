@@ -34,7 +34,7 @@ hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 5
+trials: 10
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5

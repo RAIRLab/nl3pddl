@@ -1,0 +1,5 @@
+Based on the actions you have given, the full domain is as follows:
+
+{full_domain}
+
+Now you will receive a list of issues with the domain, one at a time. For each issue, generate a corrected version of the full domain that addresses the issue.

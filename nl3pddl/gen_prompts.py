@@ -19,7 +19,8 @@ from nl3pddl.params import Params
 from nl3pddl.dataset import Dataset
 from nl3pddl.utils import (
     get_all_type_names_domain,
-    get_all_pred_signatures_domain
+    get_all_pred_signatures_domain,
+    pred_to_str
 )
 
 PROMPT_DIR = "data/prompts"
@@ -47,6 +48,9 @@ INIT_PROMPT_TEMPLATE = PromptTemplate(template=load_prompt("7-domain.txt"))
 
 ACTION_PROMPT_TEMPLATE = PromptTemplate(template=load_prompt("8-action.txt"))
 
+FULL_DOMAIN_PROMPT_TEMPLATE = PromptTemplate(
+    template=load_prompt("full_domain.txt")
+)
 
 def init_msgs(d: Dataset, p : Params) -> list[BaseMessage]:
     """
@@ -64,19 +68,22 @@ def init_msgs(d: Dataset, p : Params) -> list[BaseMessage]:
     predicates_nl = None
     # Change the initial prompt based off of whether we
     # want to include pred descriptions or not
+    # TODO: Unsupported for now
     if p.give_pred_descriptions:
         description_pairs = []
-        pred_sigs = get_all_pred_signatures_domain(d, p.domain_path)
-        names = {pred_sig.split("(")[0] for pred_sig in pred_sigs}
-        for pred_name in names:
+        pred_sigs = [pred_to_str(pred) for pred in d.domains[p.domain_path].predicates]
+        pred_names = [pred_sig[1:-1].split(" ")[0] for pred_sig in pred_sigs]
+        for pred_sig, pred_name in zip(pred_sigs, pred_names):
+            # "(pred ?a1 - t1) : description1, ..."
             description_pairs.append((
-                pred_name,
+                pred_sig,
                 d.nl_json[p.domain_path]["predicates"][pred_name][p.desc_class])
             )
         predicates_nl = ", ".join([f"{pred_name}: {pred_desc}"
                               for pred_name, pred_desc in description_pairs])
         predicates_nl = "[" + predicates_nl + "]"
     else:
+        #TODO: unsupported for now
         pred_sigs = get_all_pred_signatures_domain(d, p.domain_path)
         predicates_nl = ", ".join(pred_sigs)
         predicates_nl = "[" + predicates_nl + "]"
@@ -98,10 +105,6 @@ def action_message(d : Dataset, h : Params, action_name : str) -> HumanMessage:
         action_nl=action_desc
     ))
 
-Part2 = HumanMessage("""
-You have completed the following domain:                       
-""")
-
 def domain_template(domain_name : str, outputs: list[Any]) -> str:
     """
     Given the components of the domain, types & preds & action,
@@ -119,3 +122,11 @@ def domain_template(domain_name : str, outputs: list[Any]) -> str:
             {actions}
         )
     """
+
+def raw_domain_msg(raw_domain : str) -> HumanMessage:
+    """
+    Given a raw domain string, return a human message
+    """
+    return HumanMessage(FULL_DOMAIN_PROMPT_TEMPLATE.format(
+        full_domain=raw_domain
+    ))

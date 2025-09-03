@@ -4,6 +4,7 @@
         "AUTOINCREMENT",
         "autopct",
         "blocksworld",
+        "bnew",
         "boxplots",
         "colorama",
         "curpos",
@@ -34,11 +35,13 @@
         "loadfirst",
         "matplotlib",
         "miconic",
+        "midc",
         "ncol",
         "nextpos",
         "nopep",
         "numberlink",
         "ontable",
+        "ontop",
         "pathing",
         "Precond",
         "preds",
@@ -56,6 +59,7 @@
         "suptitle",
         "tqdm",
         "unloadbottom",
+        "unloadfinal",
         "valw",
         "venv",
         "visitall",
@@ -80,6 +84,6 @@
         }
     ],
     "editor.wordWrap": "wordWrapColumn",
-    "editor.wordWrapColumn": 80,
+    //"editor.wordWrapColumn": 80,
     "search.useIgnoreFiles": true
 }

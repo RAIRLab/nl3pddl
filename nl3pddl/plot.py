@@ -126,7 +126,7 @@ def plt_domain_failure_mode(ndf, model, pipeline):
 def get_latest_results_file():
     import glob
     import os
-    files = glob.glob("results/results-*.csv")
+    files = glob.glob("results/*/results.csv")
     if not files:
         raise FileNotFoundError("No results files found.")
     latest_file = max(files, key=os.path.getctime)
