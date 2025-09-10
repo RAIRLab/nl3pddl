@@ -728,7 +728,7 @@ We expected that the one of the following actions:
 (move p_0_4 p_0_3 c_2)
 (move p_1_3 p_0_3 c_1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 25, "actions": ["start-flow p_0_4 c_3", "extend-flow p_0_4 p_0_3 c_3", "complete-flow p_0_3 p_0_2 c_3", "start-flow p_1_3 c_6", "extend-flow p_1_3 p_1_4 c_6", "complete-flow p_1_4 p_2_4 c_6", "start-flow p_3_0 c_2", "extend-flow p_3_0 p_4_0 c_2", "complete-flow p_4_0 p_4_1 c_2", "start-flow p_2_2 c_5", "extend-flow p_2_2 p_2_3 c_5", "complete-flow p_2_3 p_3_3 c_5", "start-flow p_3_4 c_4", "extend-flow p_3_4 p_4_4 c_4", "extend-flow p_4_4 p_4_3 c_4", "extend-flow p_4_3 p_4_2 c_4", "extend-flow p_4_2 p_3_2 c_4", "extend-flow p_3_2 p_3_1 c_4", "extend-flow p_3_1 p_2_1 c_4", "extend-flow p_2_1 p_1_1 c_4", "complete-flow p_1_1 p_1_2 c_4", "start-flow p_2_0 c_1", "extend-flow p_2_0 p_1_0 c_1", "extend-flow p_1_0 p_0_0 c_1", "complete-flow p_0_0 p_0_1 c_1"]}
 ```
@@ -954,7 +954,7 @@ We expected that the one of the following actions:
 (move p_4_4 p_4_3 c_1)
 (move p_4_4 p_4_3 c_2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 25, "actions": ["start-flow p_0_4 c_3", "move p_0_4 p_0_3 c_3", "complete-flow p_0_3 p_0_2 c_3", "start-flow p_1_3 c_6", "move p_1_3 p_1_4 c_6", "complete-flow p_1_4 p_2_4 c_6", "start-flow p_3_0 c_2", "move p_3_0 p_4_0 c_2", "complete-flow p_4_0 p_4_1 c_2", "start-flow p_2_2 c_5", "move p_2_2 p_2_3 c_5", "complete-flow p_2_3 p_3_3 c_5", "start-flow p_3_4 c_4", "move p_3_4 p_4_4 c_4", "move p_4_4 p_4_3 c_4", "move p_4_3 p_4_2 c_4", "move p_4_2 p_3_2 c_4", "move p_3_2 p_3_1 c_4", "move p_3_1 p_2_1 c_4", "move p_2_1 p_1_1 c_4", "complete-flow p_1_1 p_1_2 c_4", "start-flow p_2_0 c_1", "move p_2_0 p_1_0 c_1", "move p_1_0 p_0_0 c_1", "complete-flow p_0_0 p_0_1 c_1"]}
 ```
@@ -1180,7 +1180,7 @@ We expected that the one of the following actions:
 (move p_4_4 p_4_3 c_1)
 (move p_4_4 p_4_3 c_2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 25, "actions": ["start-flow p_0_4 c_3", "move p_0_4 p_0_3 c_3", "complete-flow p_0_3 p_0_2 c_3", "start-flow p_1_3 c_6", "move p_1_3 p_1_4 c_6", "complete-flow p_1_4 p_2_4 c_6", "start-flow p_3_0 c_2", "move p_3_0 p_4_0 c_2", "complete-flow p_4_0 p_4_1 c_2", "start-flow p_2_2 c_5", "move p_2_2 p_2_3 c_5", "complete-flow p_2_3 p_3_3 c_5", "start-flow p_3_4 c_4", "move p_3_4 p_4_4 c_4", "move p_4_4 p_4_3 c_4", "move p_4_3 p_4_2 c_4", "move p_4_2 p_3_2 c_4", "move p_3_2 p_3_1 c_4", "move p_3_1 p_2_1 c_4", "move p_2_1 p_1_1 c_4", "complete-flow p_1_1 p_1_2 c_4", "start-flow p_2_0 c_1", "move p_2_0 p_1_0 c_1", "move p_1_0 p_0_0 c_1", "complete-flow p_0_0 p_0_1 c_1"]}
 ```
@@ -1406,7 +1406,7 @@ We expected that the one of the following actions:
 (move p_0_4 p_0_3 c_2)
 (move p_1_3 p_0_3 c_1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 25, "actions": ["start-flow p_0_4 c_3", "extend-flow p_0_4 p_0_3 c_3", "complete-flow p_0_3 p_0_2 c_3", "start-flow p_1_3 c_6", "extend-flow p_1_3 p_1_4 c_6", "complete-flow p_1_4 p_2_4 c_6", "start-flow p_4_1 c_2", "extend-flow p_4_1 p_4_0 c_2", "complete-flow p_4_0 p_3_0 c_2", "start-flow p_3_3 c_5", "extend-flow p_3_3 p_2_3 c_5", "complete-flow p_2_3 p_2_2 c_5", "start-flow p_3_4 c_4", "extend-flow p_3_4 p_4_4 c_4", "extend-flow p_4_4 p_4_3 c_4", "extend-flow p_4_3 p_4_2 c_4", "extend-flow p_4_2 p_3_2 c_4", "extend-flow p_3_2 p_3_1 c_4", "extend-flow p_3_1 p_2_1 c_4", "extend-flow p_2_1 p_1_1 c_4", "complete-flow p_1_1 p_1_2 c_4", "start-flow p_2_0 c_1", "extend-flow p_2_0 p_1_0 c_1", "extend-flow p_1_0 p_0_0 c_1", "complete-flow p_0_0 p_0_1 c_1"]}
 ```
@@ -1632,7 +1632,7 @@ We expected that the one of the following actions:
 (move p_0_4 p_0_3 c_2)
 (move p_1_3 p_0_3 c_1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 25, "actions": ["start-flow p_0_4 c_3", "extend-flow p_0_4 p_0_3 c_3", "complete-flow p_0_3 p_0_2 c_3", "start-flow p_1_3 c_6", "extend-flow p_1_3 p_1_4 c_6", "complete-flow p_1_4 p_2_4 c_6", "start-flow p_3_0 c_2", "extend-flow p_3_0 p_4_0 c_2", "complete-flow p_4_0 p_4_1 c_2", "start-flow p_2_2 c_5", "extend-flow p_2_2 p_2_3 c_5", "complete-flow p_2_3 p_3_3 c_5", "start-flow p_3_4 c_4", "extend-flow p_3_4 p_4_4 c_4", "extend-flow p_4_4 p_4_3 c_4", "extend-flow p_4_3 p_4_2 c_4", "extend-flow p_4_2 p_3_2 c_4", "extend-flow p_3_2 p_3_1 c_4", "extend-flow p_3_1 p_2_1 c_4", "extend-flow p_2_1 p_1_1 c_4", "complete-flow p_1_1 p_1_2 c_4", "start-flow p_2_0 c_1", "extend-flow p_2_0 p_1_0 c_1", "extend-flow p_1_0 p_0_0 c_1", "complete-flow p_0_0 p_0_1 c_1"]}
 ```
@@ -1858,7 +1858,7 @@ We expected that the one of the following actions:
 (move p_0_4 p_0_3 c_2)
 (move p_1_3 p_0_3 c_1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 25, "actions": ["start-flow p_3_0 c_2", "extend-flow p_3_0 p_4_0 c_2", "complete-flow p_4_0 p_4_1 c_2", "start-flow p_2_2 c_5", "extend-flow p_2_2 p_2_3 c_5", "complete-flow p_2_3 p_3_3 c_5", "start-flow p_3_4 c_4", "extend-flow p_3_4 p_4_4 c_4", "extend-flow p_4_4 p_4_3 c_4", "extend-flow p_4_3 p_4_2 c_4", "extend-flow p_4_2 p_3_2 c_4", "extend-flow p_3_2 p_3_1 c_4", "extend-flow p_3_1 p_2_1 c_4", "extend-flow p_2_1 p_1_1 c_4", "complete-flow p_1_1 p_1_2 c_4", "start-flow p_1_3 c_6", "extend-flow p_1_3 p_1_4 c_6", "complete-flow p_1_4 p_2_4 c_6", "start-flow p_0_4 c_3", "extend-flow p_0_4 p_0_3 c_3", "complete-flow p_0_3 p_0_2 c_3", "start-flow p_2_0 c_1", "extend-flow p_2_0 p_1_0 c_1", "extend-flow p_1_0 p_0_0 c_1", "complete-flow p_0_0 p_0_1 c_1"]}
 ```
@@ -2084,7 +2084,7 @@ We expected that the one of the following actions:
 (move p_4_4 p_4_3 c_1)
 (move p_4_4 p_4_3 c_2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 25, "actions": ["start-flow p_0_4 c_3", "move p_0_4 p_0_3 c_3", "complete-flow p_0_3 p_0_2 c_3", "start-flow p_1_3 c_6", "move p_1_3 p_1_4 c_6", "complete-flow p_1_4 p_2_4 c_6", "start-flow p_3_0 c_2", "move p_3_0 p_4_0 c_2", "complete-flow p_4_0 p_4_1 c_2", "start-flow p_2_2 c_5", "move p_2_2 p_2_3 c_5", "complete-flow p_2_3 p_3_3 c_5", "start-flow p_3_4 c_4", "move p_3_4 p_4_4 c_4", "move p_4_4 p_4_3 c_4", "move p_4_3 p_4_2 c_4", "move p_4_2 p_3_2 c_4", "move p_3_2 p_3_1 c_4", "move p_3_1 p_2_1 c_4", "move p_2_1 p_1_1 c_4", "complete-flow p_1_1 p_1_2 c_4", "start-flow p_2_0 c_1", "move p_2_0 p_1_0 c_1", "move p_1_0 p_0_0 c_1", "complete-flow p_0_0 p_0_1 c_1"]}
 ```
@@ -2310,7 +2310,7 @@ We expected that the one of the following actions:
 (move p_4_4 p_4_3 c_1)
 (move p_4_4 p_4_3 c_2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 25, "actions": ["start-flow p_0_4 c_3", "move p_0_4 p_0_3 c_3", "complete-flow p_0_3 p_0_2 c_3", "start-flow p_1_3 c_6", "move p_1_3 p_1_4 c_6", "complete-flow p_1_4 p_2_4 c_6", "start-flow p_3_0 c_2", "move p_3_0 p_4_0 c_2", "complete-flow p_4_0 p_4_1 c_2", "start-flow p_2_2 c_5", "move p_2_2 p_2_3 c_5", "complete-flow p_2_3 p_3_3 c_5", "start-flow p_3_4 c_4", "move p_3_4 p_4_4 c_4", "move p_4_4 p_4_3 c_4", "move p_4_3 p_4_2 c_4", "move p_4_2 p_3_2 c_4", "move p_3_2 p_3_1 c_4", "move p_3_1 p_2_1 c_4", "move p_2_1 p_1_1 c_4", "complete-flow p_1_1 p_1_2 c_4", "start-flow p_2_0 c_1", "move p_2_0 p_1_0 c_1", "move p_1_0 p_0_0 c_1", "complete-flow p_0_0 p_0_1 c_1"]}
 ```

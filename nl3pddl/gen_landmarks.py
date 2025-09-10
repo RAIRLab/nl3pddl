@@ -24,7 +24,7 @@ def extract_domain_name(domain_path):
     return os.path.basename(os.path.dirname(domain_path))
 
 # Generates landmarks in the form of {"facts": ["Atom ontable(b2)"], "disjunctive": "False", "first_achievers": ["put-down b2"]}
-def generate_landmarks_for(domain_file, problem_file):
+def generate_landmarks_for(domain_file, problem_file) -> dict:
     try:
         domain_path = Path(domain_file)
         problem_path = Path(problem_file)
@@ -62,11 +62,6 @@ def generate_landmarks():
         problem_pattern = os.path.join(PROBLEMS_PATH, domain_name, "problem-*.pddl")
         problem_files = glob.glob(problem_pattern)
         
-        # # If no problems found, try looking in a subdirectory with the domain name
-        # if not problem_files:
-        #     problem_pattern = os.path.join(PROBLEMS_PATH, domain_name, domain_name, "p*.pddl")
-        #     problem_files = glob.glob(problem_pattern)
-        
         # If still no problems found, print a warning
         if not problem_files:
             print(f"Warning: No problem files found for domain {domain_name}")
@@ -91,6 +86,7 @@ def generate_landmarks():
                 'domain': domain_name,
                 'problem': problem_name,
                 'problem_num': problem_num,
+                'raw_landmarks': success,
                 'landmarks': list(gen_action_landmarks(success))
             }, open(output_file, 'w'), indent=4)
     

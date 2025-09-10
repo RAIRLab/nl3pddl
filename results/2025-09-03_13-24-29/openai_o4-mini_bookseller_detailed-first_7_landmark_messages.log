@@ -365,7 +365,7 @@ We expected that the one of the following actions:
 (loadfirst drone2 book3 loc2)
 (loadfirst drone1 book3 loc2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["loadfirst drone1 book3 loc1", "fly drone1 loc1 loc5", "loadbottom drone1 book3 book4 loc5", "fly drone1 loc5 loc4", "unloadbottom drone1 book4 book3 loc4", "fly drone1 loc4 loc3", "fly drone1 loc3 loc2", "unloadfinal drone1 book3 loc2"]}
 ```

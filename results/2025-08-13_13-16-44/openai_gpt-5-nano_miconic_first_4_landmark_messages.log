@@ -272,7 +272,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 9, "actions": ["board p2 f2", "move-down f2 f1", "board p1 f1", "move-up f1 f3", "alight p2 f3", "alight p1 f3", "board p3 f3", "move-down f3 f2", "alight p3 f2"]}
 ```
@@ -328,7 +328,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 9, "actions": ["board p2 f2", "move-down f2 f1", "board p1 f1", "move-up f1 f3", "alight p2 f3", "alight p1 f3", "board p3 f3", "move-down f3 f2", "alight p3 f2"]}
 ```
@@ -435,7 +435,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 9, "actions": ["board p2 f2", "move-down f2 f1", "board p1 f1", "move-up f1 f3", "alight p2 f3", "alight p1 f3", "board p3 f3", "move-down f3 f2", "alight p3 f2"]}
 ```
@@ -538,7 +538,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 9, "actions": ["board p2 f2", "move-down f2 f1", "board p1 f1", "move-up f1 f3", "alight p2 f3", "alight p1 f3", "board p3 f3", "move-down f3 f2", "alight p3 f2"]}
 ```
@@ -594,7 +594,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 9, "actions": ["board p2 f2", "move-down f2 f1", "board p1 f1", "move-up f1 f3", "alight p2 f3", "alight p1 f3", "board p3 f3", "move-down f3 f2", "alight p3 f2"]}
 ```
@@ -650,7 +650,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 7, "actions": ["board p2 f2", "board-alt f2 p1", "board-alt f2 p3", "alight p3 f2", "move-up f2 f3", "alight p1 f3", "alight p2 f3"]}
 ```

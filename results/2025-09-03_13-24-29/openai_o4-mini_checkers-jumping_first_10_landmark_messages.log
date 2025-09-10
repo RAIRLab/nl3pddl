@@ -990,7 +990,7 @@ We expected that the one of the following actions:
 (slide-blue blue1 space2 space1)
 (jump-blue blue1 red2 space3 space2 space1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["blue-move blue1 space4 space3", "red-jump red2 blue1 space2 space3 space4", "red-move red1 space1 space2", "blue-jump blue1 red1 space3 space2 space1", "blue-jump blue2 red2 space5 space4 space3", "red-move red2 space4 space5", "red-jump red1 blue2 space2 space3 space4", "blue-move blue2 space3 space2"]}
 ```

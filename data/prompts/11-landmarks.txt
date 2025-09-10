@@ -6,7 +6,7 @@ We expected that the one of the following actions:
 ```
 {landmark} 
 ```
-would be executed in the following plan:
+would be executed on the following plan, since these actions are a disjunctive action landmark for the problem:
 ```
 {plan}
 ```

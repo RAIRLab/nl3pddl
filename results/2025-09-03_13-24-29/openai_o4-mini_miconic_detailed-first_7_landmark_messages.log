@@ -373,7 +373,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 9, "actions": ["board-passenger p2 f2", "move-up f2 f1", "board-passenger p1 f1", "move-down f1 f3", "disembark-passenger p2 f3", "disembark-passenger p1 f3", "board-passenger p3 f3", "move-up f3 f2", "disembark-passenger p3 f2"]}
 ```
@@ -517,7 +517,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 9, "actions": ["board-passenger p2 f2", "move-up f2 f1", "board-passenger p1 f1", "move-down f1 f3", "disembark-passenger p2 f3", "disembark-passenger p1 f3", "board-passenger p3 f3", "move-up f3 f2", "disembark-passenger p3 f2"]}
 ```
@@ -573,7 +573,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 9, "actions": ["board-passenger p2 f2", "move-up f2 f1", "board-passenger p1 f1", "move-down f1 f3", "disembark-passenger p2 f3", "disembark-passenger p1 f3", "board-passenger p3 f3", "move-up f3 f2", "disembark-passenger p3 f2"]}
 ```
@@ -629,7 +629,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 7, "actions": ["board-passenger p2 f2", "board-passenger p1 f2", "board-passenger p3 f2", "disembark-passenger p3 f2", "move-down f2 f3", "disembark-passenger p1 f3", "disembark-passenger p2 f3"]}
 ```
@@ -685,7 +685,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 7, "actions": ["board-passenger p2 f2", "board-passenger p1 f2", "board-passenger p3 f2", "disembark-passenger p3 f2", "move-down f2 f3", "disembark-passenger p1 f3", "disembark-passenger p2 f3"]}
 ```
@@ -741,7 +741,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 7, "actions": ["board-passenger p2 f2", "board-passenger p1 f2", "board-passenger p3 f2", "disembark-passenger p3 f2", "move-down f2 f3", "disembark-passenger p1 f3", "disembark-passenger p2 f3"]}
 ```
@@ -797,7 +797,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 7, "actions": ["board-passenger p2 f2", "board-passenger p1 f2", "board-passenger p3 f2", "disembark-passenger p3 f2", "move-down f2 f3", "disembark-passenger p1 f3", "disembark-passenger p2 f3"]}
 ```
@@ -853,7 +853,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 9, "actions": ["board-passenger p2 f2", "move-up f2 f1", "board-passenger p1 f1", "move-down f1 f3", "disembark-passenger p2 f3", "disembark-passenger p1 f3", "board-passenger p3 f3", "move-up f3 f2", "disembark-passenger p3 f2"]}
 ```

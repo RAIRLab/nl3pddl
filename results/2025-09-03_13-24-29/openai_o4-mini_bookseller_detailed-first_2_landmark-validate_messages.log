@@ -381,7 +381,7 @@ We expected that the one of the following actions:
 (loadfirst drone2 book3 loc2)
 (loadfirst drone1 book3 loc2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["loadfirst drone1 book3 loc1", "flydrone drone1 loc1 loc5", "loadbottom drone1 book3 book4 loc5", "flydrone drone1 loc5 loc4", "unloadbottom drone1 book4 book3 loc4", "flydrone drone1 loc4 loc3", "flydrone drone1 loc3 loc2", "unloadfinal drone1 book3 loc2"]}
 ```
@@ -509,7 +509,7 @@ We expected that the one of the following actions:
 (loadfirst drone2 book3 loc2)
 (loadfirst drone1 book3 loc2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["loadfirst drone1 book3 loc1", "flydrone drone1 loc1 loc5", "loadbottom drone1 book3 book4 loc5", "flydrone drone1 loc5 loc4", "unloadbottom drone1 book4 book3 loc4", "flydrone drone1 loc4 loc3", "flydrone drone1 loc3 loc2", "unloadfinal drone1 book3 loc2"]}
 ```
@@ -637,7 +637,7 @@ We expected that the one of the following actions:
 (loadfirst drone2 book3 loc2)
 (loadfirst drone1 book3 loc2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["loadfirst drone1 book3 loc1", "flydrone drone1 loc1 loc5", "loadbottom drone1 book3 book4 loc5", "flydrone drone1 loc5 loc4", "unloadbottom drone1 book4 book3 loc4", "flydrone drone1 loc4 loc3", "flydrone drone1 loc3 loc2", "unloadfinal drone1 book3 loc2"]}
 ```
@@ -765,7 +765,7 @@ We expected that the one of the following actions:
 (loadfirst drone2 book3 loc2)
 (loadfirst drone1 book3 loc2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["loadfirst drone1 book3 loc1", "flydrone drone1 loc1 loc5", "loadbottom drone1 book3 book4 loc5", "flydrone drone1 loc5 loc4", "unloadbottom drone1 book4 book3 loc4", "flydrone drone1 loc4 loc3", "flydrone drone1 loc3 loc2", "unloadfinal drone1 book3 loc2"]}
 ```
@@ -893,7 +893,7 @@ We expected that the one of the following actions:
 (loadfirst drone2 book3 loc2)
 (loadfirst drone1 book3 loc2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["loadfirst drone1 book3 loc1", "flydrone drone1 loc1 loc5", "loadbottom drone1 book3 book4 loc5", "flydrone drone1 loc5 loc4", "unloadbottom drone1 book4 book3 loc4", "flydrone drone1 loc4 loc3", "flydrone drone1 loc3 loc2", "unloadfinal drone1 book3 loc2"]}
 ```
@@ -1118,7 +1118,7 @@ We expected that the one of the following actions:
 (loadfirst drone2 book3 loc2)
 (loadfirst drone1 book3 loc2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["loadfirst drone1 book3 loc1", "flydrone drone1 loc1 loc5", "loadbottom drone1 book3 book4 loc5", "flydrone drone1 loc5 loc4", "unloadbottom drone1 book4 book3 loc4", "flydrone drone1 loc4 loc3", "flydrone drone1 loc3 loc2", "unloadfinal drone1 book3 loc2"]}
 ```
@@ -1246,7 +1246,7 @@ We expected that the one of the following actions:
 (loadfirst drone2 book3 loc2)
 (loadfirst drone1 book3 loc2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["loadfirst drone1 book3 loc1", "flydrone drone1 loc1 loc5", "loadbottom drone1 book3 book4 loc5", "flydrone drone1 loc5 loc4", "unloadbottom drone1 book4 book3 loc4", "flydrone drone1 loc4 loc3", "flydrone drone1 loc3 loc2", "unloadfinal drone1 book3 loc2"]}
 ```
@@ -1382,7 +1382,7 @@ We expected that the one of the following actions:
 (unloadbottom drone2 book4 book3 loc1)
 (unloadbottom drone2 book4 book3 loc2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 11, "actions": ["loadfirst drone1 book3 loc1", "flydrone drone1 loc1 loc5", "flydrone drone1 loc5 loc4", "flydrone drone1 loc4 loc3", "flydrone drone2 loc3 loc4", "flydrone drone1 loc3 loc2", "unloadfinal drone1 book3 loc2", "flydrone drone2 loc4 loc5", "loadfirst drone2 book4 loc5", "flydrone drone2 loc5 loc4", "unloadfinal drone2 book4 loc4"]}
 ```

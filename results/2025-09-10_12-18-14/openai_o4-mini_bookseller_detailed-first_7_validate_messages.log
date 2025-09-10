@@ -1,0 +1,758 @@
+NON VAR INFO =========================================
+
+TRIAL: 7
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/bookseller
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: validate
+GIVE PRED DESCRIPTIONS: True
+
+EXPERIMENT RESULTS ===================================
+
+DOMAIN CHECK RUNS: 4
+LANDMARK RUNS: 0
+VAL RUNS: 5
+HDE ITERATIONS: 10
+HDE TIMEOUT: True
+ACTION TIMEOUT: False
+ACTION TIMEOUT CAUSE: 
+EVALS PASSED: 1
+TOTAL EVALS: 10
+LANGGRAPH PATH:
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	build_domain->
+	check_domain_syntax->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	hde_timeout_node->
+	final_evaluation
+
+FINAL DOMAIN =====================================
+
+(define (domain bookseller)
+    (:requirements :strips :typing)
+    (:types
+        book drone location - object
+    )
+    (:predicates (book-at ?b - book ?l - location)  (drone-at ?d - drone ?l - location)  (empty ?d - drone)  (first ?b - book ?d - drone)  (last ?b - book ?d - drone)  (ontop ?b1 - book ?b2 - book)  (path ?l1 - location ?l2 - location))
+    (:action flyDrone
+        :parameters (?d - drone ?from - location ?to - location)
+        :precondition (and (drone-at ?d ?from) (path ?from ?to))
+        :effect (and (not (drone-at ?d ?from)) (drone-at ?d ?to))
+    )
+     (:action loadBottom
+        :parameters (?d - drone ?bnew - book ?bold - book ?l - location)
+        :precondition (and (drone-at ?d ?l) (book-at ?bnew ?l) (last ?bold ?d))
+        :effect (and (not (book-at ?bnew ?l)) (not (last ?bold ?d)) (ontop ?bold ?bnew) (last ?bnew ?d))
+    )
+     (:action loadFirst
+        :parameters (?d - drone ?b - book ?l - location)
+        :precondition (and (drone-at ?d ?l) (empty ?d) (book-at ?b ?l))
+        :effect (and (not (book-at ?b ?l)) (not (empty ?d)) (first ?b ?d) (last ?b ?d))
+    )
+     (:action unloadBottom
+        :parameters (?d - drone ?bold - book ?bnew - book ?l - location)
+        :precondition (and (drone-at ?d ?l) (last ?bold ?d) (ontop ?bnew ?bold))
+        :effect (and (book-at ?bold ?l) (not (last ?bold ?d)) (not (ontop ?bnew ?bold)) (last ?bnew ?d))
+    )
+     (:action unloadFinal
+        :parameters (?d - drone ?b - book ?l - location)
+        :precondition (and (drone-at ?d ?l) (first ?b ?d) (last ?b ?d))
+        :effect (and (empty ?d) (book-at ?b ?l) (not (first ?b ?d)) (not (last ?b ?d)))
+    )
+)
+Messages ===========================================
+
+
+SYSTEM
+
+You will be given a natural language description of an a Planning Domain Definition Language (PDDL) domain along with a set of types and predicates you are allowed to use. You will then be given a description of each action in the domain, including its parameter count and types. With this, your goal is to generate a PDDL action for this description filling in the preconditions and effects. You are allowed to create new predicates and types as needed but must include the set of all predicates and types you used in the output. For your output please provide a JSON object with the following felids: 
+1. A string containing a raw PDDL action 
+2. A list of predicates used so far with all parameters and types
+3. A list of types used so far, we assume there is no type hierarchy.
+
+The JSON object should be formatted as follows:
+{
+    "pddl_action": "(:action <action_name> ...)",
+    "predicates": ["(pred1 ?param1 - type1 ?param2 - type2)", ...]
+    "types" : ["type1", "type2", ...]
+}
+
+If you mess up the formatting or output invalid PDDL, you will receive a message instructing you on what is wrong and how you may fix it, at which point you should try to generate the PDDL action again, you will be requested to fix the issue until you generate a valid PDDL action. Ensure the generated domain is fully lowercase and that all parentheses are balanced.
+
+Do not refuse to answer and do not ask any questions to the user, since the user is an automated tool that can not respond as a human would. If you are unsure about something, make a reasonable assumption and proceed.
+
+Do not ask the user for any more information or clarifications, you must work with the information provided. If you are unsure about something, make a reasonable assumption and proceed.
+
+
+HUMAN
+
+The following is a natural language description of a PDDL domain:
+
+The domain assumes a world where there are a set of blocks that can be stacked on top of each other, an arm that can hold one block at a time, and a table where blocks can be placed.
+
+To start you may use the following predicates but are free to add more:
+
+["(handempty) : nothing is being held by the arm", "(on ?x - block ?y - block) : block ?x is ontop of block ?y", "(ontable ?x - block) : the given block is on the table", "(clear ?x - block) : The given block has nothing ontop of it", "(holding ?x - block) : The arm is holding the given block"]
+
+You may also use the following types:
+
+["block"]
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a description of the following action in the above described domain. 
+
+The pick-up action represents the action of a robot arm picking up a single block from the table
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{ 
+    "pddl_action": "(:action pick-up :parameters (?x - block) :precondition (and (ontable ?x) (clear ?x) (handempty)) :effect (and (not (ontable ?x)) (holding ?x) (not (handempty)) (not (clear ?x)))\n)",
+    "predicates": ["(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)"],
+    "types": ["block"]
+}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need, generate a description of the following action in the above described domain. 
+
+The Stack action represents the action of stacking a block on top of another block. 
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{
+    "pddl_action": "(:action stack :parameters (?x ?y - block) :precondition (and (clear ?y) (on ?x) (handempty)) :effect (and (not (on ?x)) (not (handempty)) (stacked ?x ?y) (not (clear ?y)))\n)",
+    "predicates": [(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)]
+    "types": ["block"]
+}
+
+
+HUMAN
+
+The following is a natural language description of a PDDL domain:
+
+This domain operates over a finite set of books, locations, and drones. Drones pick up books at a location and form a stack inside the drone—only the bottom book is accessible—and then transport them along defined paths to deliver them at targeted locations. The goal is to efficiently move all books to a designated location.
+
+To start you may use the following types but are free to add more:
+
+[book, drone, location]                                         
+
+To start you may use the following predicates but are free to add more:
+
+[(book-at ?b - book ?l - location): Indicates that a particular book is available at a given location, ready for pickup or delivery., (drone-at ?d - drone ?l - location): Specifies that a drone is present at a specific location, making it eligible to load or unload books or to fly to another location., (ontop ?b1 - book ?b2 - book): Indicates that a book is stacked directly above another book, establishing the order of books carried by the drone., (empty ?d - drone): Indicates that the drone is not carrying any books, so it is available to pick up a new book., (first ?b - book ?d - drone): Marks that a book, when loaded into a drone, is recognized as the first book in its stack, typically when the drone is initially empty., (last ?b - book ?d - drone): Identifies the bottom book in the drone's stack. This book is accessible when loading additional books or when unloading from the bottom., (path ?l1 - location ?l2 - location): Denotes that a connection exists between two locations, allowing a drone to fly from one to the other.]
+
+
+AI
+
+{"pddl_action": "(:action load-book\n :parameters (?d - drone ?b - book ?l - location)\n :precondition (and (drone-at ?d ?l)\n                    (book-at ?b ?l)\n                    (empty ?d))\n :effect (and (not (book-at ?b ?l))\n              (not (empty ?d))\n              (first ?b ?d)\n              (last ?b ?d)))", "predicates": ["(book-at ?b - book ?l - location)", "(drone-at ?d - drone ?l - location)", "(ontop ?b1 - book ?b2 - book)", "(empty ?d - drone)", "(first ?b - book ?d - drone)", "(last ?b - book ?d - drone)"], "types": ["book", "drone", "location"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+When a drone is at a location and is empty, and a book is available there, the loadFirst action loads that book into the drone. The book is marked both as the first and the last book in the drone's stack, and it is removed from the location.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action loadFirst\n :parameters (?d - drone ?b - book ?l - location)\n :precondition (and (drone-at ?d ?l)\n                    (empty ?d)\n                    (book-at ?b ?l))\n :effect (and (not (book-at ?b ?l))\n              (not (empty ?d))\n              (first ?b ?d)\n              (last ?b ?d)))", "predicates": ["(book-at ?b - book ?l - location)", "(drone-at ?d - drone ?l - location)", "(ontop ?b1 - book ?b2 - book)", "(empty ?d - drone)", "(first ?b - book ?d - drone)", "(last ?b - book ?d - drone)", "(path ?l1 - location ?l2 - location)"], "types": ["book", "drone", "location"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+If a drone already carries a book (marked as last) and another book is available at the same location, the loadBottom action allows the drone to load the new book underneath the existing stack. This action updates the previous bottom book by removing its 'last' status, marks it as 'ontop' of the new book, and sets the new book as the last in the stack.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action loadbottom\n :parameters (?d - drone ?bnew - book ?old - book ?l - location)\n :precondition (and (drone-at ?d ?l)\n                    (book-at ?bnew ?l)\n                    (last ?old ?d))\n :effect (and (not (book-at ?bnew ?l))\n              (not (last ?old ?d))\n              (ontop ?old ?bnew)\n              (last ?bnew ?d)))", "predicates": ["(book-at ?b - book ?l - location)", "(drone-at ?d - drone ?l - location)", "(ontop ?b1 - book ?b2 - book)", "(empty ?d - drone)", "(first ?b - book ?d - drone)", "(last ?b - book ?d - drone)", "(path ?l1 - location ?l2 - location)"], "types": ["book", "drone", "location"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+When a drone carrying a single book returns to a location, the unloadFinal action unloads that book. The drone becomes empty, the book is placed at the location, and both the 'first' and 'last' predicates for that book are removed.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action unloadFinal\n :parameters (?d - drone ?b - book ?l - location)\n :precondition (and (drone-at ?d ?l)\n                    (first ?b ?d)\n                    (last ?b ?d))\n :effect (and (empty ?d)\n              (book-at ?b ?l)\n              (not (first ?b ?d))\n              (not (last ?b ?d))))", "predicates": ["(book-at ?b - book ?l - location)", "(drone-at ?d - drone ?l - location)", "(ontop ?b1 - book ?b2 - book)", "(empty ?d - drone)", "(first ?b - book ?d - drone)", "(last ?b - book ?d - drone)", "(path ?l1 - location ?l2 - location)"], "types": ["book", "drone", "location"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+This action unloads the bottom book from a drone's stack. When a drone is at a location with a stacked load of books, unloadBottom removes the lowest book (currently marked as last) from the drone, places it at the location, and updates the stack so that the next book in line becomes the new last.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action unload-bottom\n :parameters (?d - drone ?b_old - book ?b_new - book ?l - location)\n :precondition (and (drone-at ?d ?l)\n                    (last ?b_old ?d)\n                    (ontop ?b_new ?b_old))\n :effect (and (book-at ?b_old ?l)\n              (not (last ?b_old ?d))\n              (not (ontop ?b_new ?b_old))\n              (last ?b_new ?d)))", "predicates": ["(book-at ?b - book ?l - location)", "(drone-at ?d - drone ?l - location)", "(ontop ?b1 - book ?b2 - book)", "(empty ?d - drone)", "(first ?b - book ?d - drone)", "(last ?b - book ?d - drone)", "(path ?l1 - location ?l2 - location)"], "types": ["book", "drone", "location"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+Simulates drone movement between locations along a defined path. When a drone is at its starting location and a valid path connects it to a destination, the flyDrone action moves the drone to the destination and updates its position accordingly.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action fly-drone\n :parameters (?d - drone ?from - location ?to - location)\n :precondition (and (drone-at ?d ?from) (path ?from ?to))\n :effect (and (not (drone-at ?d ?from)) (drone-at ?d ?to)))", "predicates": ["(book-at ?b - book ?l - location)", "(drone-at ?d - drone ?l - location)", "(ontop ?b1 - book ?b2 - book)", "(empty ?d - drone)", "(first ?b - book ?d - drone)", "(last ?b - book ?d - drone)", "(path ?l1 - location ?l2 - location)"], "types": ["book", "drone", "location"]}
+
+
+HUMAN
+
+Based on the actions you have given, the full domain is as follows:
+
+
+        (define (domain bookseller)
+            (:requirements :strips :typing)
+            (:types book
+drone
+location)
+            (:predicates (book-at ?b - book ?l - location)
+(drone-at ?d - drone ?l - location)
+(ontop ?b1 - book ?b2 - book)
+(empty ?d - drone)
+(first ?b - book ?d - drone)
+(last ?b - book ?d - drone)
+(path ?l1 - location ?l2 - location))
+
+            (:action load-book
+ :parameters (?d - drone ?b - book ?l - location)
+ :precondition (and (drone-at ?d ?l)
+                    (book-at ?b ?l)
+                    (empty ?d))
+ :effect (and (not (book-at ?b ?l))
+              (not (empty ?d))
+              (first ?b ?d)
+              (last ?b ?d)))
+(:action loadFirst
+ :parameters (?d - drone ?b - book ?l - location)
+ :precondition (and (drone-at ?d ?l)
+                    (empty ?d)
+                    (book-at ?b ?l))
+ :effect (and (not (book-at ?b ?l))
+              (not (empty ?d))
+              (first ?b ?d)
+              (last ?b ?d)))
+(:action loadbottom
+ :parameters (?d - drone ?bnew - book ?old - book ?l - location)
+ :precondition (and (drone-at ?d ?l)
+                    (book-at ?bnew ?l)
+                    (last ?old ?d))
+ :effect (and (not (book-at ?bnew ?l))
+              (not (last ?old ?d))
+              (ontop ?old ?bnew)
+              (last ?bnew ?d)))
+(:action unloadFinal
+ :parameters (?d - drone ?b - book ?l - location)
+ :precondition (and (drone-at ?d ?l)
+                    (first ?b ?d)
+                    (last ?b ?d))
+ :effect (and (empty ?d)
+              (book-at ?b ?l)
+              (not (first ?b ?d))
+              (not (last ?b ?d))))
+(:action unload-bottom
+ :parameters (?d - drone ?b_old - book ?b_new - book ?l - location)
+ :precondition (and (drone-at ?d ?l)
+                    (last ?b_old ?d)
+                    (ontop ?b_new ?b_old))
+ :effect (and (book-at ?b_old ?l)
+              (not (last ?b_old ?d))
+              (not (ontop ?b_new ?b_old))
+              (last ?b_new ?d)))
+(:action fly-drone
+ :parameters (?d - drone ?from - location ?to - location)
+ :precondition (and (drone-at ?d ?from) (path ?from ?to))
+ :effect (and (not (drone-at ?d ?from)) (drone-at ?d ?to)))
+        )
+    
+
+Now you will receive a list of issues with the domain, one at a time. For each issue, generate a corrected version of the full domain that addresses the issue.
+
+
+HUMAN
+
+Action names do not match the expected action names. Missing actions: unloadBottom, flyDrone, loadBottom. Extra actions: unload-bottom, fly-drone, loadbottom, load-book.  Please revise the domain and try again.
+
+
+AI
+
+{"pddl_domain": "(define (domain bookseller)\n  (:requirements :strips :typing)\n  (:types book drone location)\n  (:predicates\n    (book-at ?b - book ?l - location)\n    (drone-at ?d - drone ?l - location)\n    (ontop ?b1 - book ?b2 - book)\n    (empty ?d - drone)\n    (first ?b - book ?d - drone)\n    (last ?b - book ?d - drone)\n    (path ?l1 - location ?l2 - location))\n\n  (:action loadFirst\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (empty ?d) (book-at ?b ?l))\n    :effect (and (not (book-at ?b ?l)) (not (empty ?d)) (first ?b ?d) (last ?b ?d)))\n\n  (:action loadBottom\n    :parameters (?d - drone ?bnew - book ?old - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (book-at ?bnew ?l) (last ?old ?d))\n    :effect (and (not (book-at ?bnew ?l)) (not (last ?old ?d)) (ontop ?old ?bnew) (last ?bnew ?d)))\n\n  (:action unloadFinal\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (first ?b ?d) (last ?b ?d))\n    :effect (and (empty ?d) (book-at ?b ?l) (not (first ?b ?d)) (not (last ?b ?d))))\n\n  (:action unloadBottom\n    :parameters (?d - drone ?b_old - book ?b_new - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (last ?b_old ?d) (ontop ?b_new ?b_old))\n    :effect (and (book-at ?b_old ?l) (not (last ?b_old ?d)) (not (ontop ?b_new ?b_old)) (last ?b_new ?d)))\n\n  (:action flyDrone\n    :parameters (?d - drone ?from - location ?to - location)\n    :precondition (and (drone-at ?d ?from) (path ?from ?to))\n    :effect (and (not (drone-at ?d ?from)) (drone-at ?d ?to))))"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem bookseller-prob-5loc-4bk-2dr)
+  (:domain bookseller)
+
+  (:objects
+    book1 book2 book3 book4 - book
+    loc1 loc2 loc3 loc4 loc5 - location
+    drone1 drone2 - drone
+  )
+
+  (:init
+    (book-at book1 loc4)
+    (book-at book2 loc1)
+    (book-at book3 loc3)
+    (book-at book4 loc4)
+
+    (drone-at drone1 loc1)
+    (empty drone1)
+    (drone-at drone2 loc3)
+    (empty drone2)
+
+    (path loc1 loc2)
+    (path loc2 loc1)
+    (path loc2 loc3)
+    (path loc3 loc2)
+    (path loc3 loc4)
+    (path loc4 loc3)
+    (path loc4 loc5)
+    (path loc5 loc4)
+    (path loc5 loc1)
+    (path loc1 loc5)
+  )
+
+  (:goal (and
+    (book-at book1 loc1)
+    (book-at book2 loc3)
+    (book-at book3 loc4)
+    (book-at book4 loc5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(loadfirst drone2 book3 loc3)
+(flydrone drone2 loc3 loc4)
+(unloadfinal drone2 book3 loc4)
+(loadfirst drone2 book1 loc4)
+(loadbottom drone2 book1 book4 loc4)
+(loadbottom drone2 book4 book4 loc4)
+(flydrone drone2 loc4 loc5)
+(unloadbottom drone2 book4 book4 loc5)
+(flydrone drone2 loc5 loc1)
+(unloadbottom drone2 book1 book4 loc1)
+(loadfirst drone1 book2 loc1)
+(flydrone drone1 loc1 loc2)
+(flydrone drone1 loc2 loc3)
+(unloadfinal drone1 book2 loc3)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain bookseller)\n  (:requirements :strips :typing)\n  (:types book drone location)\n\n  (:predicates\n    (book-at ?b - book ?l - location)\n    (drone-at ?d - drone ?l - location)\n    (ontop ?b1 - book ?b2 - book)\n    (empty ?d - drone)\n    (first ?b - book ?d - drone)\n    (last ?b - book ?d - drone)\n    (path ?l1 - location ?l2 - location)\n  )\n\n  (:action loadfirst\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l)\n                       (empty ?d)\n                       (book-at ?b ?l))\n    :effect (and (not (book-at ?b ?l))\n                 (not (empty ?d))\n                 (first ?b ?d)\n                 (last ?b ?d))\n  )\n\n  (:action loadbottom\n    :parameters (?d - drone ?bn - book ?bo - book ?l - location)\n    :precondition (and (drone-at ?d ?l)\n                       (book-at ?bn ?l)\n                       (last ?bo ?d))\n    :effect (and (not (book-at ?bn ?l))\n                 (not (last ?bo ?d))\n                 (ontop ?bo ?bn)\n                 (last ?bn ?d))\n  )\n\n  (:action unloadfinal\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l)\n                       (first ?b ?d)\n                       (last ?b ?d))\n    :effect (and (empty ?d)\n                 (book-at ?b ?l)\n                 (not (first ?b ?d))\n                 (not (last ?b ?d)))\n  )\n\n  (:action unloadbottom\n    :parameters (?d - drone ?bo - book ?bn - book ?l - location)\n    :precondition (and (drone-at ?d ?l)\n                       (last ?bo ?d)\n                       (ontop ?bn ?bo))\n    :effect (and (book-at ?bo ?l)\n                 (not (last ?bo ?d))\n                 (not (ontop ?bn ?bo))\n                 (last ?bn ?d))\n  )\n\n  (:action flydrone\n    :parameters (?d - drone ?from - location ?to - location)\n    :precondition (and (drone-at ?d ?from)\n                       (path ?from ?to))\n    :effect (and (not (drone-at ?d ?from))\n                 (drone-at ?d ?to)))\n)\n"}
+
+
+HUMAN
+
+Action names do not match the expected action names. Missing actions: flyDrone, loadBottom, unloadFinal, loadFirst, unloadBottom. Extra actions: loadbottom, unloadfinal, flydrone, unloadbottom, loadfirst.  Please revise the domain and try again.
+
+
+AI
+
+{"pddl_domain": "(define (domain bookseller)\n  (:requirements :strips :typing)\n  (:types book drone location)\n\n  (:predicates\n    (book-at ?b - book ?l - location)\n    (drone-at ?d - drone ?l - location)\n    (ontop ?b1 - book ?b2 - book)\n    (empty ?d - drone)\n    (first ?b - book ?d - drone)\n    (last ?b - book ?d - drone)\n    (path ?l1 - location ?l2 - location)\n  )\n\n  (:action loadFirst\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (empty ?d) (book-at ?b ?l))\n    :effect (and (not (book-at ?b ?l)) (not (empty ?d)) (first ?b ?d) (last ?b ?d))\n  )\n\n  (:action loadBottom\n    :parameters (?d - drone ?bnew - book ?bold - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (book-at ?bnew ?l) (last ?bold ?d))\n    :effect (and (not (book-at ?bnew ?l)) (not (last ?bold ?d)) (ontop ?bold ?bnew) (last ?bnew ?d))\n  )\n\n  (:action unloadFinal\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (first ?b ?d) (last ?b ?d))\n    :effect (and (empty ?d) (book-at ?b ?l) (not (first ?b ?d)) (not (last ?b ?d)))\n  )\n\n  (:action unloadBottom\n    :parameters (?d - drone ?bold - book ?bnew - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (last ?bold ?d) (ontop ?bnew ?bold))\n    :effect (and (book-at ?bold ?l) (not (last ?bold ?d)) (not (ontop ?bnew ?bold)) (last ?bnew ?d))\n  )\n\n  (:action flyDrone\n    :parameters (?d - drone ?from - location ?to - location)\n    :precondition (and (drone-at ?d ?from) (path ?from ?to))\n    :effect (and (not (drone-at ?d ?from)) (drone-at ?d ?to))\n  )\n)\n"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem bookseller-prob-5loc-4bk-2dr)
+  (:domain bookseller)
+
+  (:objects
+    book1 book2 book3 book4 - book
+    loc1 loc2 loc3 loc4 loc5 - location
+    drone1 drone2 - drone
+  )
+
+  (:init
+    (book-at book1 loc4)
+    (book-at book2 loc1)
+    (book-at book3 loc3)
+    (book-at book4 loc4)
+
+    (drone-at drone1 loc1)
+    (empty drone1)
+    (drone-at drone2 loc3)
+    (empty drone2)
+
+    (path loc1 loc2)
+    (path loc2 loc1)
+    (path loc2 loc3)
+    (path loc3 loc2)
+    (path loc3 loc4)
+    (path loc4 loc3)
+    (path loc4 loc5)
+    (path loc5 loc4)
+    (path loc5 loc1)
+    (path loc1 loc5)
+  )
+
+  (:goal (and
+    (book-at book1 loc1)
+    (book-at book2 loc3)
+    (book-at book3 loc4)
+    (book-at book4 loc5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(loadfirst drone2 book3 loc3)
+(flydrone drone2 loc3 loc4)
+(unloadfinal drone2 book3 loc4)
+(loadfirst drone2 book1 loc4)
+(loadbottom drone2 book1 book4 loc4)
+(loadbottom drone2 book4 book4 loc4)
+(flydrone drone2 loc4 loc5)
+(unloadbottom drone2 book4 book4 loc5)
+(flydrone drone2 loc5 loc1)
+(unloadbottom drone2 book1 book4 loc1)
+(loadfirst drone1 book2 loc1)
+(flydrone drone1 loc1 loc2)
+(flydrone drone1 loc2 loc3)
+(unloadfinal drone1 book2 loc3)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain bookseller)\n  (:requirements :strips :typing)\n  (:types book drone location)\n\n  (:predicates\n    (book-at ?b - book ?l - location)\n    (drone-at ?d - drone ?l - location)\n    (ontop ?b1 - book ?b2 - book)\n    (empty ?d - drone)\n    (first ?b - book ?d - drone)\n    (last ?b - book ?d - drone)\n    (path ?l1 - location ?l2 - location)\n  )\n\n  (:action loadfirst\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (empty ?d) (book-at ?b ?l))\n    :effect (and (not (book-at ?b ?l)) (not (empty ?d)) (first ?b ?d) (last ?b ?d))\n  )\n\n  (:action loadbottom\n    :parameters (?d - drone ?bnew - book ?bold - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (book-at ?bnew ?l) (last ?bold ?d))\n    :effect (and (not (book-at ?bnew ?l)) (not (last ?bold ?d)) (ontop ?bold ?bnew) (last ?bnew ?d))\n  )\n\n  (:action unloadfinal\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (first ?b ?d) (last ?b ?d))\n    :effect (and (empty ?d) (book-at ?b ?l) (not (first ?b ?d)) (not (last ?b ?d)))\n  )\n\n  (:action unloadbottom\n    :parameters (?d - drone ?bold - book ?bnew - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (last ?bold ?d) (ontop ?bnew ?bold))\n    :effect (and (book-at ?bold ?l) (not (last ?bold ?d)) (not (ontop ?bnew ?bold)) (last ?bnew ?d))\n  )\n\n  (:action flydrone\n    :parameters (?d - drone ?from - location ?to - location)\n    :precondition (and (drone-at ?d ?from) (path ?from ?to))\n    :effect (and (not (drone-at ?d ?from)) (drone-at ?d ?to))\n  )\n)\n"}
+
+
+HUMAN
+
+Action names do not match the expected action names. Missing actions: flyDrone, loadBottom, unloadFinal, loadFirst, unloadBottom. Extra actions: loadbottom, unloadfinal, flydrone, unloadbottom, loadfirst.  Please revise the domain and try again.
+
+
+AI
+
+{"pddl_domain": "(define (domain bookseller)\n  (:requirements :strips :typing)\n  (:types book drone location)\n\n  (:predicates\n    (book-at ?b - book ?l - location)\n    (drone-at ?d - drone ?l - location)\n    (ontop ?b1 - book ?b2 - book)\n    (empty ?d - drone)\n    (first ?b - book ?d - drone)\n    (last ?b - book ?d - drone)\n    (path ?l1 - location ?l2 - location)\n  )\n\n  (:action loadFirst\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (empty ?d) (book-at ?b ?l))\n    :effect (and (not (book-at ?b ?l))\n                 (not (empty ?d))\n                 (first ?b ?d)\n                 (last ?b ?d))\n  )\n\n  (:action loadBottom\n    :parameters (?d - drone ?bn - book ?bo - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (book-at ?bn ?l) (last ?bo ?d))\n    :effect (and (not (book-at ?bn ?l))\n                 (not (last ?bo ?d))\n                 (ontop ?bo ?bn)\n                 (last ?bn ?d))\n  )\n\n  (:action unloadFinal\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (first ?b ?d) (last ?b ?d))\n    :effect (and (empty ?d)\n                 (book-at ?b ?l)\n                 (not (first ?b ?d))\n                 (not (last ?b ?d)))\n  )\n\n  (:action unloadBottom\n    :parameters (?d - drone ?bo - book ?bn - book ?l - location)\n    :precondition (and (drone-at ?d ?l) (last ?bo ?d) (ontop ?bn ?bo))\n    :effect (and (book-at ?bo ?l)\n                 (not (last ?bo ?d))\n                 (not (ontop ?bn ?bo))\n                 (last ?bn ?d))\n  )\n\n  (:action flyDrone\n    :parameters (?d - drone ?from - location ?to - location)\n    :precondition (and (drone-at ?d ?from) (path ?from ?to))\n    :effect (and (not (drone-at ?d ?from))\n                 (drone-at ?d ?to)))\n)\n"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem bookseller-prob-5loc-4bk-2dr)
+  (:domain bookseller)
+
+  (:objects
+    book1 book2 book3 book4 - book
+    loc1 loc2 loc3 loc4 loc5 - location
+    drone1 drone2 - drone
+  )
+
+  (:init
+    (book-at book1 loc4)
+    (book-at book2 loc1)
+    (book-at book3 loc3)
+    (book-at book4 loc4)
+
+    (drone-at drone1 loc1)
+    (empty drone1)
+    (drone-at drone2 loc3)
+    (empty drone2)
+
+    (path loc1 loc2)
+    (path loc2 loc1)
+    (path loc2 loc3)
+    (path loc3 loc2)
+    (path loc3 loc4)
+    (path loc4 loc3)
+    (path loc4 loc5)
+    (path loc5 loc4)
+    (path loc5 loc1)
+    (path loc1 loc5)
+  )
+
+  (:goal (and
+    (book-at book1 loc1)
+    (book-at book2 loc3)
+    (book-at book3 loc4)
+    (book-at book4 loc5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(loadfirst drone2 book3 loc3)
+(flydrone drone2 loc3 loc4)
+(unloadfinal drone2 book3 loc4)
+(loadfirst drone2 book1 loc4)
+(loadbottom drone2 book1 book4 loc4)
+(loadbottom drone2 book4 book4 loc4)
+(flydrone drone2 loc4 loc5)
+(unloadbottom drone2 book4 book4 loc5)
+(flydrone drone2 loc5 loc1)
+(unloadbottom drone2 book1 book4 loc1)
+(loadfirst drone1 book2 loc1)
+(flydrone drone1 loc1 loc2)
+(flydrone drone1 loc2 loc3)
+(unloadfinal drone1 book2 loc3)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain bookseller)\n  (:requirements :strips :typing)\n  (:types book drone location)\n\n  (:predicates\n    (book-at ?b - book ?l - location)\n    (drone-at ?d - drone ?l - location)\n    (ontop   ?b1 - book ?b2 - book)\n    (empty   ?d  - drone)\n    (first   ?b  - book ?d - drone)\n    (last    ?b  - book ?d - drone)\n    (path    ?l1 - location ?l2 - location)\n  )\n\n  (:action loadfirst\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l)\n                       (empty    ?d)\n                       (book-at  ?b ?l))\n    :effect (and (not (book-at  ?b ?l))\n                 (not (empty    ?d))\n                 (first      ?b ?d)\n                 (last       ?b ?d))\n  )\n\n  (:action loadbottom\n    :parameters (?d   - drone\n                 ?bnew - book\n                 ?bold - book\n                 ?l    - location)\n    :precondition (and (drone-at ?d   ?l)\n                       (book-at  ?bnew ?l)\n                       (last     ?bold ?d))\n    :effect (and (not (book-at      ?bnew ?l))\n                 (not (last         ?bold ?d))\n                 (ontop              ?bold ?bnew)\n                 (last               ?bnew ?d))\n  )\n\n  (:action unloadfinal\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l)\n                       (first    ?b ?d)\n                       (last     ?b ?d))\n    :effect (and (empty    ?d)\n                 (book-at  ?b ?l)\n                 (not (first ?b ?d))\n                 (not (last  ?b ?d)))\n  )\n\n  (:action unloadbottom\n    :parameters (?d    - drone\n                 ?bold - book\n                 ?bnew - book\n                 ?l    - location)\n    :precondition (and (drone-at ?d    ?l)\n                       (last     ?bold ?d)\n                       (ontop    ?bnew ?bold))\n    :effect (and (book-at           ?bold ?l)\n                 (not (last        ?bold ?d))\n                 (not (ontop       ?bnew ?bold))\n                 (last             ?bnew ?d))\n  )\n\n  (:action flydrone\n    :parameters (?d   - drone\n                 ?from - location\n                 ?to   - location)\n    :precondition (and (drone-at ?d   ?from)\n                       (path     ?from ?to))\n    :effect (and (not (drone-at ?d   ?from))\n                 (drone-at      ?d   ?to))\n  )\n)"}
+
+
+HUMAN
+
+Action names do not match the expected action names. Missing actions: flyDrone, loadBottom, unloadFinal, loadFirst, unloadBottom. Extra actions: loadbottom, unloadfinal, flydrone, unloadbottom, loadfirst.  Please revise the domain and try again.
+
+
+AI
+
+{"pddl_domain": "(define (domain bookseller)\n  (:requirements :strips :typing)\n  (:types book drone location)\n  (:predicates\n    (book-at ?b - book ?l - location)\n    (drone-at ?d - drone ?l - location)\n    (ontop ?b1 - book ?b2 - book)\n    (empty ?d - drone)\n    (first ?b - book ?d - drone)\n    (last ?b - book ?d - drone)\n    (path ?l1 - location ?l2 - location)\n  )\n\n  (:action loadFirst\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l)\n                       (empty    ?d)\n                       (book-at  ?b ?l))\n    :effect (and (not (book-at  ?b ?l))\n                 (not (empty    ?d))\n                 (first      ?b ?d)\n                 (last       ?b ?d))\n  )\n\n  (:action loadBottom\n    :parameters (?d   - drone\n                 ?bnew - book\n                 ?bold - book\n                 ?l    - location)\n    :precondition (and (drone-at ?d   ?l)\n                       (book-at  ?bnew ?l)\n                       (last     ?bold ?d))\n    :effect (and (not (book-at      ?bnew ?l))\n                 (not (last         ?bold ?d))\n                 (ontop              ?bold ?bnew)\n                 (last               ?bnew ?d))\n  )\n\n  (:action unloadFinal\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l)\n                       (first    ?b ?d)\n                       (last     ?b ?d))\n    :effect (and (empty    ?d)\n                 (book-at  ?b ?l)\n                 (not (first ?b ?d))\n                 (not (last  ?b ?d)))\n  )\n\n  (:action unloadBottom\n    :parameters (?d    - drone\n                 ?bold - book\n                 ?bnew - book\n                 ?l    - location)\n    :precondition (and (drone-at ?d    ?l)\n                       (last     ?bold ?d)\n                       (ontop    ?bnew ?bold))\n    :effect (and (book-at           ?bold ?l)\n                 (not (last        ?bold ?d))\n                 (not (ontop       ?bnew ?bold))\n                 (last             ?bnew ?d))\n  )\n\n  (:action flyDrone\n    :parameters (?d   - drone\n                 ?from - location\n                 ?to   - location)\n    :precondition (and (drone-at ?d   ?from)\n                       (path     ?from ?to))\n    :effect (and (not (drone-at ?d   ?from))\n                 (drone-at      ?d   ?to))\n  )\n)"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem bookseller-prob-5loc-4bk-2dr)
+  (:domain bookseller)
+
+  (:objects
+    book1 book2 book3 book4 - book
+    loc1 loc2 loc3 loc4 loc5 - location
+    drone1 drone2 - drone
+  )
+
+  (:init
+    (book-at book1 loc4)
+    (book-at book2 loc1)
+    (book-at book3 loc3)
+    (book-at book4 loc4)
+
+    (drone-at drone1 loc1)
+    (empty drone1)
+    (drone-at drone2 loc3)
+    (empty drone2)
+
+    (path loc1 loc2)
+    (path loc2 loc1)
+    (path loc2 loc3)
+    (path loc3 loc2)
+    (path loc3 loc4)
+    (path loc4 loc3)
+    (path loc4 loc5)
+    (path loc5 loc4)
+    (path loc5 loc1)
+    (path loc1 loc5)
+  )
+
+  (:goal (and
+    (book-at book1 loc1)
+    (book-at book2 loc3)
+    (book-at book3 loc4)
+    (book-at book4 loc5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(loadfirst drone2 book3 loc3)
+(flydrone drone2 loc3 loc4)
+(unloadfinal drone2 book3 loc4)
+(loadfirst drone2 book1 loc4)
+(loadbottom drone2 book1 book4 loc4)
+(loadbottom drone2 book4 book4 loc4)
+(flydrone drone2 loc4 loc5)
+(unloadbottom drone2 book4 book4 loc5)
+(flydrone drone2 loc5 loc1)
+(unloadbottom drone2 book1 book4 loc1)
+(loadfirst drone1 book2 loc1)
+(flydrone drone1 loc1 loc2)
+(flydrone drone1 loc2 loc3)
+(unloadfinal drone1 book2 loc3)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain bookseller)\n  (:requirements :strips :typing)\n  (:types book drone location)\n\n  (:predicates\n    (book-at  ?b - book     ?l - location)\n    (drone-at ?d - drone    ?l - location)\n    (ontop    ?b1 - book    ?b2 - book)\n    (empty    ?d - drone)\n    (first    ?b - book     ?d - drone)\n    (last     ?b - book     ?d - drone)\n    (path     ?l1 - location ?l2 - location)\n  )\n\n  (:action loadFirst\n    :parameters (?d   - drone\n                 ?b   - book\n                 ?l   - location)\n    :precondition (and (drone-at ?d ?l)\n                       (empty    ?d)\n                       (book-at  ?b ?l))\n    :effect (and (not (book-at ?b ?l))\n                 (not (empty    ?d))\n                 (first      ?b ?d)\n                 (last       ?b ?d))\n  )\n\n  (:action loadBottom\n    :parameters (?d    - drone\n                 ?bnew - book\n                 ?bold - book\n                 ?l    - location)\n    :precondition (and (drone-at ?d ?l)\n                       (book-at  ?bnew ?l)\n                       (last     ?bold ?d))\n    :effect (and (not (book-at      ?bnew ?l))\n                 (not (last         ?bold ?d))\n                 (ontop              ?bold ?bnew)\n                 (last               ?bnew ?d))\n  )\n\n  (:action unloadFinal\n    :parameters (?d   - drone\n                 ?b   - book\n                 ?l   - location)\n    :precondition (and (drone-at ?d ?l)\n                       (first    ?b ?d)\n                       (last     ?b ?d))\n    :effect (and (empty    ?d)\n                 (book-at  ?b ?l)\n                 (not (first ?b ?d))\n                 (not (last  ?b ?d)))\n  )\n\n  (:action unloadBottom\n    :parameters (?d    - drone\n                 ?bold - book\n                 ?bnew - book\n                 ?l    - location)\n    :precondition (and (drone-at ?d    ?l)\n                       (last     ?bold ?d)\n                       (ontop    ?bnew ?bold))\n    :effect (and (book-at           ?bold ?l)\n                 (not (last        ?bold ?d))\n                 (not (ontop       ?bnew ?bold))\n                 (last             ?bnew ?d))\n  )\n\n  (:action flyDrone\n    :parameters (?d    - drone\n                 ?from - location\n                 ?to   - location)\n    :precondition (and (drone-at ?d    ?from)\n                       (path     ?from ?to))\n    :effect (and (not (drone-at ?d    ?from))\n                 (drone-at      ?d    ?to))\n  )\n)"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem bookseller-prob-5loc-4bk-2dr)
+  (:domain bookseller)
+
+  (:objects
+    book1 book2 book3 book4 - book
+    loc1 loc2 loc3 loc4 loc5 - location
+    drone1 drone2 - drone
+  )
+
+  (:init
+    (book-at book1 loc4)
+    (book-at book2 loc1)
+    (book-at book3 loc3)
+    (book-at book4 loc4)
+
+    (drone-at drone1 loc1)
+    (empty drone1)
+    (drone-at drone2 loc3)
+    (empty drone2)
+
+    (path loc1 loc2)
+    (path loc2 loc1)
+    (path loc2 loc3)
+    (path loc3 loc2)
+    (path loc3 loc4)
+    (path loc4 loc3)
+    (path loc4 loc5)
+    (path loc5 loc4)
+    (path loc5 loc1)
+    (path loc1 loc5)
+  )
+
+  (:goal (and
+    (book-at book1 loc1)
+    (book-at book2 loc3)
+    (book-at book3 loc4)
+    (book-at book4 loc5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(loadfirst drone2 book3 loc3)
+(flydrone drone2 loc3 loc4)
+(unloadfinal drone2 book3 loc4)
+(loadfirst drone2 book1 loc4)
+(loadbottom drone2 book1 book4 loc4)
+(loadbottom drone2 book4 book4 loc4)
+(flydrone drone2 loc4 loc5)
+(unloadbottom drone2 book4 book4 loc5)
+(flydrone drone2 loc5 loc1)
+(unloadbottom drone2 book1 book4 loc1)
+(loadfirst drone1 book2 loc1)
+(flydrone drone1 loc1 loc2)
+(flydrone drone1 loc2 loc3)
+(unloadfinal drone1 book2 loc3)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain bookseller)\n  (:requirements :strips :typing)\n  (:types book drone location)\n\n  (:predicates\n    (book-at ?b - book ?l - location)\n    (drone-at ?d - drone ?l - location)\n    (ontop ?b1 - book ?b2 - book)\n    (empty ?d - drone)\n    (first ?b - book ?d - drone)\n    (last ?b - book ?d - drone)\n    (path ?l1 - location ?l2 - location)\n  )\n\n  (:action loadFirst\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l)\n                       (empty    ?d)\n                       (book-at  ?b ?l))\n    :effect (and (not (book-at  ?b ?l))\n                 (not (empty    ?d))\n                 (first      ?b ?d)\n                 (last       ?b ?d))\n  )\n\n  (:action loadBottom\n    :parameters (?d   - drone\n                 ?bnew - book\n                 ?bold - book\n                 ?l    - location)\n    :precondition (and (drone-at ?d   ?l)\n                       (book-at  ?bnew ?l)\n                       (last     ?bold ?d))\n    :effect (and (not (book-at      ?bnew ?l))\n                 (not (last         ?bold ?d))\n                 (ontop              ?bold ?bnew)\n                 (last               ?bnew ?d))\n  )\n\n  (:action unloadFinal\n    :parameters (?d - drone ?b - book ?l - location)\n    :precondition (and (drone-at ?d ?l)\n                       (first    ?b ?d)\n                       (last     ?b ?d))\n    :effect (and (empty    ?d)\n                 (book-at  ?b ?l)\n                 (not (first ?b ?d))\n                 (not (last  ?b ?d)))\n  )\n\n  (:action unloadBottom\n    :parameters (?d    - drone\n                 ?bold - book\n                 ?bnew - book\n                 ?l    - location)\n    :precondition (and (drone-at ?d    ?l)\n                       (last     ?bold ?d)\n                       (ontop    ?bnew ?bold))\n    :effect (and (book-at           ?bold ?l)\n                 (not (last        ?bold ?d))\n                 (not (ontop       ?bnew ?bold))\n                 (last             ?bnew ?d))\n  )\n\n  (:action flyDrone\n    :parameters (?d    - drone ?from - location ?to - location)\n    :precondition (and (drone-at ?d    ?from)\n                       (path     ?from ?to))\n    :effect (and (not (drone-at ?d    ?from))\n                 (drone-at      ?d    ?to))\n  )\n)\n"}
+
+

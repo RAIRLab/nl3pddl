@@ -295,7 +295,7 @@ We expected that the one of the following actions:
 (unloadfinal drone1 book1 loc1)
 (unloadfinal drone1 book1 loc3) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 6, "actions": ["deliver-book drone1 book3 loc1 loc5", "deliver-book drone1 book4 loc5 loc4", "fly-drone drone1 loc4 loc5", "deliver-book drone1 book3 loc5 loc4", "deliver-book drone1 book3 loc4 loc3", "deliver-book drone2 book3 loc3 loc2"]}
 ```
@@ -845,7 +845,7 @@ We expected that the one of the following actions:
 (unloadfinal drone1 book1 loc1)
 (unloadfinal drone1 book1 loc3) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 11, "actions": ["pickup-book drone1 loc1 book3", "fly-drone drone1 loc1 loc5", "fly-drone drone2 loc3 loc4", "fly-drone drone1 loc5 loc4", "fly-drone drone1 loc4 loc3", "fly-drone drone1 loc3 loc2", "drop-off-book drone1 loc2 book3", "fly-drone drone2 loc4 loc5", "pickup-book drone2 loc5 book4", "fly-drone drone2 loc5 loc4", "drop-off-book drone2 loc4 book4"]}
 ```
@@ -980,7 +980,7 @@ We expected that the one of the following actions:
 (unloadfinal drone1 book1 loc1)
 (unloadfinal drone1 book1 loc3) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 11, "actions": ["pickup-book drone1 loc1 book3", "fly-drone drone1 loc1 loc5", "fly-drone drone2 loc3 loc4", "fly-drone drone1 loc5 loc4", "fly-drone drone1 loc4 loc3", "fly-drone drone1 loc3 loc2", "drop-off-book drone1 loc2 book3", "fly-drone drone2 loc4 loc5", "pickup-book drone2 loc5 book4", "fly-drone drone2 loc5 loc4", "drop-off-book drone2 loc4 book4"]}
 ```

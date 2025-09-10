@@ -821,7 +821,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["board p2 f2", "depart p2 f3", "down f2 f1", "board p1 f1", "depart p1 f3", "up f1 f3", "board p3 f3", "depart p3 f2"]}
 ```
@@ -968,7 +968,7 @@ We expected that the one of the following actions:
 ```
 (board f2 p1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["board f2 p2", "depart p2 f3", "down f2 f1", "board f1 p1", "depart p1 f3", "up f1 f3", "board f3 p3", "depart p3 f2"]}
 ```
@@ -1025,7 +1025,7 @@ We expected that the one of the following actions:
 (up f1 f2)
 (down f3 f2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 6, "actions": ["board f2 p3", "depart p3 f2", "board f2 p2", "depart p2 f3", "board f2 p1", "depart p1 f3"]}
 ```
@@ -1082,7 +1082,7 @@ We expected that the one of the following actions:
 (up f1 f2)
 (down f3 f2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 6, "actions": ["board f2 p3", "depart p3 f2", "board f2 p2", "depart p2 f3", "board f2 p1", "depart p1 f3"]}
 ```
@@ -1139,7 +1139,7 @@ We expected that the one of the following actions:
 (up f1 f2)
 (down f3 f2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 6, "actions": ["board f2 p3", "depart p3 f2", "board f2 p2", "depart p2 f3", "board f2 p1", "depart p1 f3"]}
 ```

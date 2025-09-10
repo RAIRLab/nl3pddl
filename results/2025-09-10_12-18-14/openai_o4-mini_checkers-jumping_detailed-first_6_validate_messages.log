@@ -1,0 +1,886 @@
+NON VAR INFO =========================================
+
+TRIAL: 6
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/checkers-jumping
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: validate
+GIVE PRED DESCRIPTIONS: True
+
+EXPERIMENT RESULTS ===================================
+
+DOMAIN CHECK RUNS: 1
+LANDMARK RUNS: 0
+VAL RUNS: 8
+HDE ITERATIONS: 10
+HDE TIMEOUT: True
+ACTION TIMEOUT: False
+ACTION TIMEOUT CAUSE: 
+EVALS PASSED: 0
+TOTAL EVALS: 10
+LANGGRAPH PATH:
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	build_domain->
+	check_domain_syntax->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	hde_timeout_node->
+	final_evaluation
+
+FINAL DOMAIN =====================================
+
+(define (domain checkers-jumping)
+    (:requirements :typing)
+    (:types
+        checker space - object
+    )
+    (:predicates (at ?c - checker ?s - space)  (empty ?s - space)  (is-blue ?c - checker)  (is-red ?c - checker)  (left-of ?s1 - space ?s2 - space)  (right-of ?s1 - space ?s2 - space))
+    (:action jump-blue
+        :parameters (?b - checker ?r - checker ?from - space ?over - space ?to - space)
+        :precondition (and (is-blue ?b) (at ?b ?from) (is-red ?r) (at ?r ?over) (left-of ?over ?from) (left-of ?to ?over) (empty ?to))
+        :effect (and (not (at ?b ?from)) (not (at ?r ?over)) (not (empty ?to)) (at ?b ?to) (empty ?from) (empty ?over))
+    )
+     (:action jump-red
+        :parameters (?r - checker ?b - checker ?from - space ?over - space ?to - space)
+        :precondition (and (is-red ?r) (at ?r ?from) (is-blue ?b) (at ?b ?over) (right-of ?over ?from) (right-of ?to ?over) (empty ?to))
+        :effect (and (not (at ?r ?from)) (not (at ?b ?over)) (not (empty ?to)) (at ?r ?to) (empty ?from) (empty ?over))
+    )
+     (:action slide-blue
+        :parameters (?c - checker ?from - space ?to - space)
+        :precondition (and (is-blue ?c) (at ?c ?from) (empty ?to) (left-of ?to ?from))
+        :effect (and (not (at ?c ?from)) (not (empty ?to)) (at ?c ?to) (empty ?from))
+    )
+     (:action slide-red
+        :parameters (?c - checker ?from - space ?to - space)
+        :precondition (and (is-red ?c) (at ?c ?from) (empty ?to) (right-of ?to ?from))
+        :effect (and (not (at ?c ?from)) (not (empty ?to)) (at ?c ?to) (empty ?from))
+    )
+)
+Messages ===========================================
+
+
+SYSTEM
+
+You will be given a natural language description of an a Planning Domain Definition Language (PDDL) domain along with a set of types and predicates you are allowed to use. You will then be given a description of each action in the domain, including its parameter count and types. With this, your goal is to generate a PDDL action for this description filling in the preconditions and effects. You are allowed to create new predicates and types as needed but must include the set of all predicates and types you used in the output. For your output please provide a JSON object with the following felids: 
+1. A string containing a raw PDDL action 
+2. A list of predicates used so far with all parameters and types
+3. A list of types used so far, we assume there is no type hierarchy.
+
+The JSON object should be formatted as follows:
+{
+    "pddl_action": "(:action <action_name> ...)",
+    "predicates": ["(pred1 ?param1 - type1 ?param2 - type2)", ...]
+    "types" : ["type1", "type2", ...]
+}
+
+If you mess up the formatting or output invalid PDDL, you will receive a message instructing you on what is wrong and how you may fix it, at which point you should try to generate the PDDL action again, you will be requested to fix the issue until you generate a valid PDDL action. Ensure the generated domain is fully lowercase and that all parentheses are balanced.
+
+Do not refuse to answer and do not ask any questions to the user, since the user is an automated tool that can not respond as a human would. If you are unsure about something, make a reasonable assumption and proceed.
+
+Do not ask the user for any more information or clarifications, you must work with the information provided. If you are unsure about something, make a reasonable assumption and proceed.
+
+
+HUMAN
+
+The following is a natural language description of a PDDL domain:
+
+The domain assumes a world where there are a set of blocks that can be stacked on top of each other, an arm that can hold one block at a time, and a table where blocks can be placed.
+
+To start you may use the following predicates but are free to add more:
+
+["(handempty) : nothing is being held by the arm", "(on ?x - block ?y - block) : block ?x is ontop of block ?y", "(ontable ?x - block) : the given block is on the table", "(clear ?x - block) : The given block has nothing ontop of it", "(holding ?x - block) : The arm is holding the given block"]
+
+You may also use the following types:
+
+["block"]
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a description of the following action in the above described domain. 
+
+The pick-up action represents the action of a robot arm picking up a single block from the table
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{ 
+    "pddl_action": "(:action pick-up :parameters (?x - block) :precondition (and (ontable ?x) (clear ?x) (handempty)) :effect (and (not (ontable ?x)) (holding ?x) (not (handempty)) (not (clear ?x)))\n)",
+    "predicates": ["(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)"],
+    "types": ["block"]
+}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need, generate a description of the following action in the above described domain. 
+
+The Stack action represents the action of stacking a block on top of another block. 
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{
+    "pddl_action": "(:action stack :parameters (?x ?y - block) :precondition (and (clear ?y) (on ?x) (handempty)) :effect (and (not (on ?x)) (not (handempty)) (stacked ?x ?y) (not (clear ?y)))\n)",
+    "predicates": [(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)]
+    "types": ["block"]
+}
+
+
+HUMAN
+
+The following is a natural language description of a PDDL domain:
+
+
+
+To start you may use the following types but are free to add more:
+
+[checker, space]                                         
+
+To start you may use the following predicates but are free to add more:
+
+[(is-red ?c - checker): Indicates that a specific checker is red, distinguishing it from blue checkers., (empty ?s - space): Specifies that a square on the board does not contain any checker, making it available for movement., (at ?c - checker ?s - space): Indicates that a specific checker (red or blue) occupies a particular square on the board., (right-of ?s1 - space ?s2 - space): Denotes the relative position of one square being directly to the right of another square on the board., (is-blue ?c - checker): Indicates that a specific checker is blue, distinguishing it from red checkers., (left-of ?s1 - space ?s2 - space): Denotes the relative position of one square being directly to the left of another square on the board.]
+
+
+AI
+
+{"pddl_action": "(:action move-right\n :parameters (?c - checker ?from - space ?to - space)\n :precondition (and (at ?c ?from)\n                    (right-of ?to ?from)\n                    (empty ?to))\n :effect (and (not (at ?c ?from))\n              (not (empty ?to))\n              (at ?c ?to)\n              (empty ?from)))", "predicates": ["(is-red ?c - checker)", "(is-blue ?c - checker)", "(empty ?s - space)", "(at ?c - checker ?s - space)", "(right-of ?s1 - space ?s2 - space)", "(left-of ?s1 - space ?s2 - space)"], "types": ["checker", "space"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+This action allows a player to move a red checker to an adjacent square. The square must be empty, meaning no other checker is present. The player can not slide the checker backwards.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action move-red\n :parameters (?c - checker ?from - space ?to - space)\n :precondition (and (is-red ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (right-of ?to ?from))\n :effect (and (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))))", "predicates": ["(is-red ?c - checker)", "(is-blue ?c - checker)", "(empty ?s - space)", "(at ?c - checker ?s - space)", "(right-of ?s1 - space ?s2 - space)", "(left-of ?s1 - space ?s2 - space)"], "types": ["checker", "space"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+This action allows a player to move a blue checker to an adjacent square. The square must be empty, meaning no other checker is present. The player can not slide the checker backwards.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action move-blue\n :parameters (?c - checker ?from - space ?to - space)\n :precondition (and (is-blue ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (left-of ?to ?from))\n :effect (and (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))))", "predicates": ["(is-red ?c - checker)", "(is-blue ?c - checker)", "(empty ?s - space)", "(at ?c - checker ?s - space)", "(right-of ?s1 - space ?s2 - space)", "(left-of ?s1 - space ?s2 - space)"], "types": ["checker", "space"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+This action allows a player to jump over an adjacent blue checker to land on an empty square directly on the opposite side of the jumped checker.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action jump-red\n :parameters (?r - checker ?b - checker ?from - space ?over - space ?to - space)\n :precondition (and (is-red ?r)\n                    (at ?r ?from)\n                    (at ?b ?over)\n                    (is-blue ?b)\n                    (right-of ?over ?from)\n                    (right-of ?to ?over)\n                    (empty ?to))\n :effect (and (not (at ?r ?from))\n              (not (at ?b ?over))\n              (at ?r ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))))", "predicates": ["(is-red ?c - checker)", "(is-blue ?c - checker)", "(empty ?s - space)", "(at ?c - checker ?s - space)", "(right-of ?s1 - space ?s2 - space)", "(left-of ?s1 - space ?s2 - space)"], "types": ["checker", "space"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+This action allows a player to jump over an adjacent red checker to land on an empty square directly on the opposite side of the jumped checker.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action jump-blue\n :parameters (?b - checker ?r - checker ?from - space ?over - space ?to - space)\n :precondition (and (is-blue ?b)\n                    (at ?b ?from)\n                    (is-red ?r)\n                    (at ?r ?over)\n                    (left-of ?over ?from)\n                    (left-of ?to ?over)\n                    (empty ?to))\n :effect (and (not (at ?b ?from))\n              (not (at ?r ?over))\n              (at ?b ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))))", "predicates": ["(is-red ?c - checker)", "(is-blue ?c - checker)", "(empty ?s - space)", "(at ?c - checker ?s - space)", "(right-of ?s1 - space ?s2 - space)", "(left-of ?s1 - space ?s2 - space)"], "types": ["checker", "space"]}
+
+
+HUMAN
+
+Based on the actions you have given, the full domain is as follows:
+
+
+        (define (domain checkers-jumping)
+            (:requirements :strips :typing)
+            (:types checker
+space)
+            (:predicates (is-red ?c - checker)
+(is-blue ?c - checker)
+(empty ?s - space)
+(at ?c - checker ?s - space)
+(right-of ?s1 - space ?s2 - space)
+(left-of ?s1 - space ?s2 - space))
+
+            (:action move-right
+ :parameters (?c - checker ?from - space ?to - space)
+ :precondition (and (at ?c ?from)
+                    (right-of ?to ?from)
+                    (empty ?to))
+ :effect (and (not (at ?c ?from))
+              (not (empty ?to))
+              (at ?c ?to)
+              (empty ?from)))
+(:action move-red
+ :parameters (?c - checker ?from - space ?to - space)
+ :precondition (and (is-red ?c)
+                    (at ?c ?from)
+                    (empty ?to)
+                    (right-of ?to ?from))
+ :effect (and (not (at ?c ?from))
+              (at ?c ?to)
+              (empty ?from)
+              (not (empty ?to))))
+(:action move-blue
+ :parameters (?c - checker ?from - space ?to - space)
+ :precondition (and (is-blue ?c)
+                    (at ?c ?from)
+                    (empty ?to)
+                    (left-of ?to ?from))
+ :effect (and (not (at ?c ?from))
+              (at ?c ?to)
+              (empty ?from)
+              (not (empty ?to))))
+(:action jump-red
+ :parameters (?r - checker ?b - checker ?from - space ?over - space ?to - space)
+ :precondition (and (is-red ?r)
+                    (at ?r ?from)
+                    (at ?b ?over)
+                    (is-blue ?b)
+                    (right-of ?over ?from)
+                    (right-of ?to ?over)
+                    (empty ?to))
+ :effect (and (not (at ?r ?from))
+              (not (at ?b ?over))
+              (at ?r ?to)
+              (empty ?from)
+              (empty ?over)
+              (not (empty ?to))))
+(:action jump-blue
+ :parameters (?b - checker ?r - checker ?from - space ?over - space ?to - space)
+ :precondition (and (is-blue ?b)
+                    (at ?b ?from)
+                    (is-red ?r)
+                    (at ?r ?over)
+                    (left-of ?over ?from)
+                    (left-of ?to ?over)
+                    (empty ?to))
+ :effect (and (not (at ?b ?from))
+              (not (at ?r ?over))
+              (at ?b ?to)
+              (empty ?from)
+              (empty ?over)
+              (not (empty ?to))))
+        )
+    
+
+Now you will receive a list of issues with the domain, one at a time. For each issue, generate a corrected version of the full domain that addresses the issue.
+
+
+HUMAN
+
+Action names do not match the expected action names. Missing actions: slide-red, slide-blue. Extra actions: move-right, move-red, move-blue.  Please revise the domain and try again.
+
+
+AI
+
+{"pddl_domain": "(define (domain checkers-jumping)\n  (:requirements :strips :typing)\n  (:types checker space)\n  (:predicates\n    (is-red ?c - checker)\n    (is-blue ?c - checker)\n    (empty ?s - space)\n    (at ?c - checker ?s - space)\n    (right-of ?s1 - space ?s2 - space)\n    (left-of ?s1 - space ?s2 - space)\n  )\n\n  (:action slide-red\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-red ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (right-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action slide-blue\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-blue ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (left-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-red\n    :parameters (?r - checker ?b - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-red ?r)\n                    (at ?r ?from)\n                    (is-blue ?b)\n                    (at ?b ?over)\n                    (right-of ?over ?from)\n                    (right-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?r ?from))\n              (not (at ?b ?over))\n              (at ?r ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-blue\n    :parameters (?b - checker ?r - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-blue ?b)\n                    (at ?b ?from)\n                    (is-red ?r)\n                    (at ?r ?over)\n                    (left-of ?over ?from)\n                    (left-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?b ?from))\n              (not (at ?r ?over))\n              (at ?b ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n)"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem checkers-jumping-prob-2)
+  (:domain checkers-jumping)
+
+  (:objects
+    space1 space2 space3 space4 space5 - space
+    red1 red2 blue1 blue2 - checker
+  )
+
+  (:init
+    (at red1 space1)
+    (at red2 space2)
+    (empty space3)
+    (at blue1 space4)
+    (at blue2 space5)
+
+    (right-of space1 space2)
+    (right-of space2 space3)
+    (right-of space3 space4)
+    (right-of space4 space5)
+    (left-of space2 space1)
+    (left-of space3 space2)
+    (left-of space4 space3)
+    (left-of space5 space4)
+
+    (is-red red1)
+    (is-red red2)
+    (is-blue blue1)
+    (is-blue blue2)
+  )
+
+  (:goal (and
+    (at blue1 space1)
+    (at blue2 space2)
+    (empty space3)
+    (at red1 space4)
+    (at red2 space5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(slide-blue blue1 space4 space3)
+(jump-red red2 blue1 space2 space3 space4)
+(slide-red red1 space1 space2)
+(jump-blue blue1 red1 space3 space2 space1)
+(jump-blue blue2 red2 space5 space4 space3)
+(slide-red red2 space4 space5)
+(jump-red red1 blue2 space2 space3 space4)
+(slide-blue blue2 space3 space2)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain checkers-jumping)\n  (:requirements :typing)\n  (:types\n    checker\n    space\n  )\n  (:predicates\n    (is-red ?c - checker)\n    (is-blue ?c - checker)\n    (empty ?s - space)\n    (at ?c - checker ?s - space)\n    (right-of ?s1 - space ?s2 - space)\n    (left-of ?s1 - space ?s2 - space)\n  )\n\n  (:action slide-red\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-red ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (right-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action slide-blue\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-blue ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (left-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-red\n    :parameters (?r - checker ?b - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-red ?r)\n                    (at ?r ?from)\n                    (is-blue ?b)\n                    (at ?b ?over)\n                    (right-of ?over ?from)\n                    (right-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?r ?from))\n              (not (at ?b ?over))\n              (at ?r ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-blue\n    :parameters (?b - checker ?r - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-blue ?b)\n                    (at ?b ?from)\n                    (is-red ?r)\n                    (at ?r ?over)\n                    (left-of ?over ?from)\n                    (left-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?b ?from))\n              (not (at ?r ?over))\n              (at ?b ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n)"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem checkers-jumping-prob-2)
+  (:domain checkers-jumping)
+
+  (:objects
+    space1 space2 space3 space4 space5 - space
+    red1 red2 blue1 blue2 - checker
+  )
+
+  (:init
+    (at red1 space1)
+    (at red2 space2)
+    (empty space3)
+    (at blue1 space4)
+    (at blue2 space5)
+
+    (right-of space1 space2)
+    (right-of space2 space3)
+    (right-of space3 space4)
+    (right-of space4 space5)
+    (left-of space2 space1)
+    (left-of space3 space2)
+    (left-of space4 space3)
+    (left-of space5 space4)
+
+    (is-red red1)
+    (is-red red2)
+    (is-blue blue1)
+    (is-blue blue2)
+  )
+
+  (:goal (and
+    (at blue1 space1)
+    (at blue2 space2)
+    (empty space3)
+    (at red1 space4)
+    (at red2 space5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(slide-blue blue1 space4 space3)
+(jump-red red2 blue1 space2 space3 space4)
+(slide-red red1 space1 space2)
+(jump-blue blue1 red1 space3 space2 space1)
+(jump-blue blue2 red2 space5 space4 space3)
+(slide-red red2 space4 space5)
+(jump-red red1 blue2 space2 space3 space4)
+(slide-blue blue2 space3 space2)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain checkers-jumping)\n  (:requirements :strips :typing)\n  (:types\n    checker\n    space\n  )\n  (:predicates\n    (is-red ?c - checker)\n    (is-blue ?c - checker)\n    (empty ?s - space)\n    (at ?c - checker ?s - space)\n    (right-of ?s1 - space ?s2 - space)\n    (left-of ?s1 - space ?s2 - space)\n  )\n\n  (:action slide-red\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-red ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (right-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action slide-blue\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-blue ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (left-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-red\n    :parameters (?r - checker ?b - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-red ?r)\n                    (at ?r ?from)\n                    (is-blue ?b)\n                    (at ?b ?over)\n                    (right-of ?over ?from)\n                    (right-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?r ?from))\n              (not (at ?b ?over))\n              (at ?r ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-blue\n    :parameters (?b - checker ?r - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-blue ?b)\n                    (at ?b ?from)\n                    (is-red ?r)\n                    (at ?r ?over)\n                    (left-of ?over ?from)\n                    (left-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?b ?from))\n              (not (at ?r ?over))\n              (at ?b ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n)"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem checkers-jumping-prob-2)
+  (:domain checkers-jumping)
+
+  (:objects
+    space1 space2 space3 space4 space5 - space
+    red1 red2 blue1 blue2 - checker
+  )
+
+  (:init
+    (at red1 space1)
+    (at red2 space2)
+    (empty space3)
+    (at blue1 space4)
+    (at blue2 space5)
+
+    (right-of space1 space2)
+    (right-of space2 space3)
+    (right-of space3 space4)
+    (right-of space4 space5)
+    (left-of space2 space1)
+    (left-of space3 space2)
+    (left-of space4 space3)
+    (left-of space5 space4)
+
+    (is-red red1)
+    (is-red red2)
+    (is-blue blue1)
+    (is-blue blue2)
+  )
+
+  (:goal (and
+    (at blue1 space1)
+    (at blue2 space2)
+    (empty space3)
+    (at red1 space4)
+    (at red2 space5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(slide-blue blue1 space4 space3)
+(jump-red red2 blue1 space2 space3 space4)
+(slide-red red1 space1 space2)
+(jump-blue blue1 red1 space3 space2 space1)
+(jump-blue blue2 red2 space5 space4 space3)
+(slide-red red2 space4 space5)
+(jump-red red1 blue2 space2 space3 space4)
+(slide-blue blue2 space3 space2)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain checkers-jumping)\n  (:requirements :typing :strips)\n  (:types\n    checker\n    space\n  )\n  (:predicates\n    (is-red ?c - checker)\n    (is-blue ?c - checker)\n    (empty ?s - space)\n    (at ?c - checker ?s - space)\n    (right-of ?s1 - space ?s2 - space)\n    (left-of ?s1 - space ?s2 - space)\n  )\n\n  (:action slide-red\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and (is-red ?c)\n                       (at ?c ?from)\n                       (empty ?to)\n                       (right-of ?to ?from))\n    :effect (and (not (at ?c ?from))\n                 (at ?c ?to)\n                 (empty ?from)\n                 (not (empty ?to)))\n  )\n\n  (:action slide-blue\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and (is-blue ?c)\n                       (at ?c ?from)\n                       (empty ?to)\n                       (left-of ?to ?from))\n    :effect (and (not (at ?c ?from))\n                 (at ?c ?to)\n                 (empty ?from)\n                 (not (empty ?to)))\n  )\n\n  (:action jump-red\n    :parameters (?r - checker ?b - checker ?from - space ?over - space ?to - space)\n    :precondition (and (is-red ?r)\n                       (at ?r ?from)\n                       (is-blue ?b)\n                       (at ?b ?over)\n                       (right-of ?over ?from)\n                       (right-of ?to ?over)\n                       (empty ?to))\n    :effect (and (not (at ?r ?from))\n                 (not (at ?b ?over))\n                 (at ?r ?to)\n                 (empty ?from)\n                 (empty ?over)\n                 (not (empty ?to)))\n  )\n\n  (:action jump-blue\n    :parameters (?b - checker ?r - checker ?from - space ?over - space ?to - space)\n    :precondition (and (is-blue ?b)\n                       (at ?b ?from)\n                       (is-red ?r)\n                       (at ?r ?over)\n                       (left-of ?over ?from)\n                       (left-of ?to ?over)\n                       (empty ?to))\n    :effect (and (not (at ?b ?from))\n                 (not (at ?r ?over))\n                 (at ?b ?to)\n                 (empty ?from)\n                 (empty ?over)\n                 (not (empty ?to)))\n  )\n)"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem checkers-jumping-prob-2)
+  (:domain checkers-jumping)
+
+  (:objects
+    space1 space2 space3 space4 space5 - space
+    red1 red2 blue1 blue2 - checker
+  )
+
+  (:init
+    (at red1 space1)
+    (at red2 space2)
+    (empty space3)
+    (at blue1 space4)
+    (at blue2 space5)
+
+    (right-of space1 space2)
+    (right-of space2 space3)
+    (right-of space3 space4)
+    (right-of space4 space5)
+    (left-of space2 space1)
+    (left-of space3 space2)
+    (left-of space4 space3)
+    (left-of space5 space4)
+
+    (is-red red1)
+    (is-red red2)
+    (is-blue blue1)
+    (is-blue blue2)
+  )
+
+  (:goal (and
+    (at blue1 space1)
+    (at blue2 space2)
+    (empty space3)
+    (at red1 space4)
+    (at red2 space5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(slide-blue blue1 space4 space3)
+(jump-red red2 blue1 space2 space3 space4)
+(slide-red red1 space1 space2)
+(jump-blue blue1 red1 space3 space2 space1)
+(jump-blue blue2 red2 space5 space4 space3)
+(slide-red red2 space4 space5)
+(jump-red red1 blue2 space2 space3 space4)
+(slide-blue blue2 space3 space2)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain checkers-jumping)\n  (:requirements :strips :typing)\n  (:types\n    checker\n    space\n  )\n  (:predicates\n    (is-red ?c - checker)\n    (is-blue ?c - checker)\n    (empty ?s - space)\n    (at ?c - checker ?s - space)\n    (right-of ?s1 - space ?s2 - space)\n    (left-of ?s1 - space ?s2 - space)\n  )\n\n  (:action slide-red\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-red ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (right-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action slide-blue\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-blue ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (left-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-red\n    :parameters (?r - checker ?b - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-red ?r)\n                    (at ?r ?from)\n                    (is-blue ?b)\n                    (at ?b ?over)\n                    (right-of ?over ?from)\n                    (right-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?r ?from))\n              (not (at ?b ?over))\n              (at ?r ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-blue\n    :parameters (?b - checker ?r - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-blue ?b)\n                    (at ?b ?from)\n                    (is-red ?r)\n                    (at ?r ?over)\n                    (left-of ?over ?from)\n                    (left-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?b ?from))\n              (not (at ?r ?over))\n              (at ?b ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n)"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem checkers-jumping-prob-2)
+  (:domain checkers-jumping)
+
+  (:objects
+    space1 space2 space3 space4 space5 - space
+    red1 red2 blue1 blue2 - checker
+  )
+
+  (:init
+    (at red1 space1)
+    (at red2 space2)
+    (empty space3)
+    (at blue1 space4)
+    (at blue2 space5)
+
+    (right-of space1 space2)
+    (right-of space2 space3)
+    (right-of space3 space4)
+    (right-of space4 space5)
+    (left-of space2 space1)
+    (left-of space3 space2)
+    (left-of space4 space3)
+    (left-of space5 space4)
+
+    (is-red red1)
+    (is-red red2)
+    (is-blue blue1)
+    (is-blue blue2)
+  )
+
+  (:goal (and
+    (at blue1 space1)
+    (at blue2 space2)
+    (empty space3)
+    (at red1 space4)
+    (at red2 space5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(slide-blue blue1 space4 space3)
+(jump-red red2 blue1 space2 space3 space4)
+(slide-red red1 space1 space2)
+(jump-blue blue1 red1 space3 space2 space1)
+(jump-blue blue2 red2 space5 space4 space3)
+(slide-red red2 space4 space5)
+(jump-red red1 blue2 space2 space3 space4)
+(slide-blue blue2 space3 space2)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain checkers-jumping)\n  (:requirements :typing)\n  (:types\n    checker\n    space\n  )\n  (:predicates\n    (is-red ?c - checker)\n    (is-blue ?c - checker)\n    (empty ?s - space)\n    (at ?c - checker ?s - space)\n    (right-of ?s1 - space ?s2 - space)\n    (left-of ?s1 - space ?s2 - space)\n  )\n\n  (:action slide-red\n    :parameters (?c - checker ?from ?to - space)\n    :precondition (and\n                    (is-red ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (right-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action slide-blue\n    :parameters (?c - checker ?from ?to - space)\n    :precondition (and\n                    (is-blue ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (left-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-red\n    :parameters (?r ?b - checker ?from ?over ?to - space)\n    :precondition (and\n                    (is-red ?r)\n                    (at ?r ?from)\n                    (is-blue ?b)\n                    (at ?b ?over)\n                    (right-of ?over ?from)\n                    (right-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?r ?from))\n              (not (at ?b ?over))\n              (at ?r ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-blue\n    :parameters (?b ?r - checker ?from ?over ?to - space)\n    :precondition (and\n                    (is-blue ?b)\n                    (at ?b ?from)\n                    (is-red ?r)\n                    (at ?r ?over)\n                    (left-of ?over ?from)\n                    (left-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?b ?from))\n              (not (at ?r ?over))\n              (at ?b ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n)"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem checkers-jumping-prob-2)
+  (:domain checkers-jumping)
+
+  (:objects
+    space1 space2 space3 space4 space5 - space
+    red1 red2 blue1 blue2 - checker
+  )
+
+  (:init
+    (at red1 space1)
+    (at red2 space2)
+    (empty space3)
+    (at blue1 space4)
+    (at blue2 space5)
+
+    (right-of space1 space2)
+    (right-of space2 space3)
+    (right-of space3 space4)
+    (right-of space4 space5)
+    (left-of space2 space1)
+    (left-of space3 space2)
+    (left-of space4 space3)
+    (left-of space5 space4)
+
+    (is-red red1)
+    (is-red red2)
+    (is-blue blue1)
+    (is-blue blue2)
+  )
+
+  (:goal (and
+    (at blue1 space1)
+    (at blue2 space2)
+    (empty space3)
+    (at red1 space4)
+    (at red2 space5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(slide-blue blue1 space4 space3)
+(jump-red red2 blue1 space2 space3 space4)
+(slide-red red1 space1 space2)
+(jump-blue blue1 red1 space3 space2 space1)
+(jump-blue blue2 red2 space5 space4 space3)
+(slide-red red2 space4 space5)
+(jump-red red1 blue2 space2 space3 space4)
+(slide-blue blue2 space3 space2)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain checkers-jumping)\n  (:requirements :strips :typing)\n  (:types\n    checker\n    space\n  )\n  (:predicates\n    (is-red ?c - checker)\n    (is-blue ?c - checker)\n    (empty ?s - space)\n    (at ?c - checker ?s - space)\n    (right-of ?s1 - space ?s2 - space)\n    (left-of ?s1 - space ?s2 - space)\n  )\n\n  (:action slide-red\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-red ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (right-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action slide-blue\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-blue ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (left-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (at ?c ?to)\n              (empty ?from)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-red\n    :parameters (?r - checker ?b - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-red ?r)\n                    (at ?r ?from)\n                    (is-blue ?b)\n                    (at ?b ?over)\n                    (right-of ?over ?from)\n                    (right-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?r ?from))\n              (not (at ?b ?over))\n              (at ?r ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n\n  (:action jump-blue\n    :parameters (?b - checker ?r - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-blue ?b)\n                    (at ?b ?from)\n                    (is-red ?r)\n                    (at ?r ?over)\n                    (left-of ?over ?from)\n                    (left-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?b ?from))\n              (not (at ?r ?over))\n              (at ?b ?to)\n              (empty ?from)\n              (empty ?over)\n              (not (empty ?to))\n            )\n  )\n)"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem checkers-jumping-prob-2)
+  (:domain checkers-jumping)
+
+  (:objects
+    space1 space2 space3 space4 space5 - space
+    red1 red2 blue1 blue2 - checker
+  )
+
+  (:init
+    (at red1 space1)
+    (at red2 space2)
+    (empty space3)
+    (at blue1 space4)
+    (at blue2 space5)
+
+    (right-of space1 space2)
+    (right-of space2 space3)
+    (right-of space3 space4)
+    (right-of space4 space5)
+    (left-of space2 space1)
+    (left-of space3 space2)
+    (left-of space4 space3)
+    (left-of space5 space4)
+
+    (is-red red1)
+    (is-red red2)
+    (is-blue blue1)
+    (is-blue blue2)
+  )
+
+  (:goal (and
+    (at blue1 space1)
+    (at blue2 space2)
+    (empty space3)
+    (at red1 space4)
+    (at red2 space5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(slide-blue blue1 space4 space3)
+(jump-red red2 blue1 space2 space3 space4)
+(slide-red red1 space1 space2)
+(jump-blue blue1 red1 space3 space2 space1)
+(jump-blue blue2 red2 space5 space4 space3)
+(slide-red red2 space4 space5)
+(jump-red red1 blue2 space2 space3 space4)
+(slide-blue blue2 space3 space2)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain checkers-jumping)\n  (:requirements :strips :typing)\n  (:types\n    checker\n    space\n  )\n  (:predicates\n    (is-red ?c - checker)\n    (is-blue ?c - checker)\n    (empty ?s - space)\n    (at ?c - checker ?s - space)\n    (right-of ?a - space ?b - space)\n    (left-of  ?a - space ?b - space)\n  )\n\n  (:action slide-red\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-red ?c)\n                    (at      ?c ?from)\n                    (empty   ?to)\n                    (right-of ?to  ?from)\n                  )\n    :effect (and\n              (not   (at    ?c ?from))\n              (at     ?c      ?to)\n              (empty  ?from)\n              (not   (empty ?to))\n            )\n  )\n\n  (:action slide-blue\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-blue ?c)\n                    (at      ?c ?from)\n                    (empty   ?to)\n                    (left-of  ?to  ?from)\n                  )\n    :effect (and\n              (not   (at    ?c ?from))\n              (at     ?c      ?to)\n              (empty  ?from)\n              (not   (empty ?to))\n            )\n  )\n\n  (:action jump-red\n    :parameters (?r - checker ?b - checker\n                 ?from - space  ?over - space  ?to - space)\n    :precondition (and\n                    (is-red  ?r)\n                    (at      ?r   ?from)\n                    (is-blue ?b)\n                    (at      ?b   ?over)\n                    (right-of ?over ?from)\n                    (right-of ?to   ?over)\n                    (empty   ?to)\n                  )\n    :effect (and\n              (not   (at    ?r   ?from))\n              (not   (at    ?b   ?over))\n              (at     ?r      ?to)\n              (empty  ?from)\n              (empty  ?over)\n              (not   (empty ?to))\n            )\n  )\n\n  (:action jump-blue\n    :parameters (?b - checker ?r - checker\n                 ?from - space  ?over - space  ?to - space)\n    :precondition (and\n                    (is-blue ?b)\n                    (at      ?b   ?from)\n                    (is-red  ?r)\n                    (at      ?r   ?over)\n                    (left-of  ?over ?from)\n                    (left-of  ?to   ?over)\n                    (empty   ?to)\n                  )\n    :effect (and\n              (not   (at    ?b   ?from))\n              (not   (at    ?r   ?over))\n              (at     ?b      ?to)\n              (empty  ?from)\n              (empty  ?over)\n              (not   (empty ?to))\n            )\n  )\n)"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem checkers-jumping-prob-2)
+  (:domain checkers-jumping)
+
+  (:objects
+    space1 space2 space3 space4 space5 - space
+    red1 red2 blue1 blue2 - checker
+  )
+
+  (:init
+    (at red1 space1)
+    (at red2 space2)
+    (empty space3)
+    (at blue1 space4)
+    (at blue2 space5)
+
+    (right-of space1 space2)
+    (right-of space2 space3)
+    (right-of space3 space4)
+    (right-of space4 space5)
+    (left-of space2 space1)
+    (left-of space3 space2)
+    (left-of space4 space3)
+    (left-of space5 space4)
+
+    (is-red red1)
+    (is-red red2)
+    (is-blue blue1)
+    (is-blue blue2)
+  )
+
+  (:goal (and
+    (at blue1 space1)
+    (at blue2 space2)
+    (empty space3)
+    (at red1 space4)
+    (at red2 space5)
+  ))
+)
+
+```
+An issue was encountered with the following plan:
+```
+(slide-blue blue1 space4 space3)
+(jump-red red2 blue1 space2 space3 space4)
+(slide-red red1 space1 space2)
+(jump-blue blue1 red1 space3 space2 space1)
+(jump-blue blue2 red2 space5 space4 space3)
+(slide-red red2 space4 space5)
+(jump-red red1 blue2 space2 space3 space4)
+(slide-blue blue2 space3 space2)
+
+```
+The output of the plan validator VAL is:
+```
+The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct.
+```
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain checkers-jumping)\n  (:requirements :typing)\n  (:types checker space)\n  (:predicates\n    (is-red ?c - checker)\n    (is-blue ?c - checker)\n    (empty ?s - space)\n    (at ?c - checker ?s - space)\n    (right-of ?s1 - space ?s2 - space)\n    (left-of ?s1 - space ?s2 - space)\n  )\n\n  (:action slide-red\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-red ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (right-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (not (empty ?to))\n              (at ?c ?to)\n              (empty ?from)\n            )\n  )\n\n  (:action slide-blue\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and\n                    (is-blue ?c)\n                    (at ?c ?from)\n                    (empty ?to)\n                    (left-of ?to ?from)\n                  )\n    :effect (and\n              (not (at ?c ?from))\n              (not (empty ?to))\n              (at ?c ?to)\n              (empty ?from)\n            )\n  )\n\n  (:action jump-red\n    :parameters (?r - checker ?b - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-red ?r)\n                    (at ?r ?from)\n                    (is-blue ?b)\n                    (at ?b ?over)\n                    (right-of ?over ?from)\n                    (right-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?r ?from))\n              (not (at ?b ?over))\n              (not (empty ?to))\n              (at ?r ?to)\n              (empty ?from)\n              (empty ?over)\n            )\n  )\n\n  (:action jump-blue\n    :parameters (?b - checker ?r - checker ?from - space ?over - space ?to - space)\n    :precondition (and\n                    (is-blue ?b)\n                    (at ?b ?from)\n                    (is-red ?r)\n                    (at ?r ?over)\n                    (left-of ?over ?from)\n                    (left-of ?to ?over)\n                    (empty ?to)\n                  )\n    :effect (and\n              (not (at ?b ?from))\n              (not (at ?r ?over))\n              (not (empty ?to))\n              (at ?b ?to)\n              (empty ?from)\n              (empty ?over)\n            )\n  )\n)"}
+
+

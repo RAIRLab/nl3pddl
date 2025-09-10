@@ -91,6 +91,7 @@ def plt_average_eval(ndf, model, pipeline):
         plt.vlines(p.get_x() + p.get_width()/2, ci_lo, ci_hi, color='k')
 
     plt.title(f'Evaluations Passed: {model} - {pipeline}')
+    plt.ylim(0, 10)
     plt.suptitle('')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()

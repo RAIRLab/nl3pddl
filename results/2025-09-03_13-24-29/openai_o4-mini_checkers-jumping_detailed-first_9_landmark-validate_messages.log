@@ -511,7 +511,7 @@ We expected that the one of the following actions:
 (slide-blue blue1 space4 space3)
 (jump-blue blue1 red1 space4 space3 space2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["move-blue blue1 space4 space3", "jump-red red2 blue1 space2 space3 space4", "move-red red1 space1 space2", "jump-blue blue1 red1 space3 space2 space1", "jump-blue blue2 red2 space5 space4 space3", "move-red red2 space4 space5", "jump-red red1 blue2 space2 space3 space4", "move-blue blue2 space3 space2"]}
 ```
@@ -628,7 +628,7 @@ We expected that the one of the following actions:
 (slide-blue blue1 space4 space3)
 (jump-blue blue1 red1 space4 space3 space2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["move-blue blue1 space4 space3", "jump-red red2 blue1 space2 space3 space4", "move-red red1 space1 space2", "jump-blue blue1 red1 space3 space2 space1", "jump-blue blue2 red2 space5 space4 space3", "move-red red2 space4 space5", "jump-red red1 blue2 space2 space3 space4", "move-blue blue2 space3 space2"]}
 ```
@@ -745,7 +745,7 @@ We expected that the one of the following actions:
 (slide-blue blue1 space4 space3)
 (jump-blue blue1 red1 space4 space3 space2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["move-blue blue1 space4 space3", "jump-red red2 blue1 space2 space3 space4", "move-red red1 space1 space2", "jump-blue blue1 red1 space3 space2 space1", "jump-blue blue2 red2 space5 space4 space3", "move-red red2 space4 space5", "jump-red red1 blue2 space2 space3 space4", "move-blue blue2 space3 space2"]}
 ```
@@ -862,7 +862,7 @@ We expected that the one of the following actions:
 (slide-blue blue1 space4 space3)
 (jump-blue blue1 red1 space4 space3 space2) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["move-blue blue1 space4 space3", "jump-red red2 blue1 space2 space3 space4", "move-red red1 space1 space2", "jump-blue blue1 red1 space3 space2 space1", "jump-blue blue2 red2 space5 space4 space3", "move-red red2 space4 space5", "jump-red red1 blue2 space2 space3 space4", "move-blue blue2 space3 space2"]}
 ```

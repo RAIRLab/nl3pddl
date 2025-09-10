@@ -4,7 +4,7 @@
 # Problem Generation Parameters ================================================
 
 # Number of problems to generate that will be used during the feedback loop
-feedback-problems: 3
+feedback-problems: 5
 
 # Number of problems that will be generated for use during the final evaluation
 evaluation-problems: 10
@@ -42,6 +42,7 @@ kstar-timeout: 5
 # When using KStar for landmark evaluation, up to how many plans should be generated?
 kstar-n-plans: 100
 
+# TODO: Remove this parameter, it is no longer used.
 # Alternation steps, how many times should feedback be run from one part of the
 # pipeline before switching to the next part?
 alternation-steps: 10
@@ -58,14 +59,14 @@ models:
     openai:
         - o4-mini
     #    - gpt-4o-mini
-    #    - gpt-5-nano    
+        - gpt-5-nano    
     # deepseek:
     #     - deepseek-chat
 
 # Description classes to evaluate over, should correspond to the classes
 # present in the dataset/*/nl.json files.
 description-classes:
-    - first
+#    - first
     - detailed-first
 
 # list of feedback pipelines to evaluate. Pipeline stage names correspond to 

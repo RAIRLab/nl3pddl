@@ -626,7 +626,7 @@ We expected that the one of the following actions:
 (slide-blue blue1 space2 space1)
 (jump-blue blue1 red2 space3 space2 space1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["move-left blue1 space4 space3", "jump-red-over-blue-right red2 blue1 space2 space3 space4", "move-right red1 space1 space2", "jump-blue-over-red-left blue1 red1 space3 space2 space1", "jump-blue-over-red-left blue2 red2 space5 space4 space3", "move-right red2 space4 space5", "jump-red-over-blue-right red1 blue2 space2 space3 space4", "move-left blue2 space3 space2"]}
 ```
@@ -689,7 +689,7 @@ We expected that the one of the following actions:
 (slide-blue blue1 space2 space1)
 (jump-blue blue1 red2 space3 space2 space1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["move-left blue1 space4 space3", "jump-red-over-blue-right red2 blue1 space2 space3 space4", "move-right red1 space1 space2", "jump-blue-over-red-left blue1 red1 space3 space2 space1", "jump-blue-over-red-left blue2 red2 space5 space4 space3", "move-right red2 space4 space5", "jump-red-over-blue-right red1 blue2 space2 space3 space4", "move-left blue2 space3 space2"]}
 ```
@@ -806,7 +806,7 @@ We expected that the one of the following actions:
 (slide-blue blue1 space2 space1)
 (jump-blue blue1 red2 space3 space2 space1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["move-left blue1 space4 space3", "jump-red-over-blue-right red2 blue1 space2 space3 space4", "move-right red1 space1 space2", "jump-blue-over-red-left blue1 red1 space3 space2 space1", "jump-blue-over-red-left blue2 red2 space5 space4 space3", "move-right red2 space4 space5", "jump-red-over-blue-right red1 blue2 space2 space3 space4", "move-left blue2 space3 space2"]}
 ```
@@ -869,7 +869,7 @@ We expected that the one of the following actions:
 (slide-blue blue1 space2 space1)
 (jump-blue blue1 red2 space3 space2 space1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["move-left blue1 space4 space3", "jump-red-over-blue-right red2 blue1 space2 space3 space4", "move-right red1 space1 space2", "jump-blue-over-red-left blue1 red1 space3 space2 space1", "jump-blue-over-red-left blue2 red2 space5 space4 space3", "move-right red2 space4 space5", "jump-red-over-blue-right red1 blue2 space2 space3 space4", "move-left blue2 space3 space2"]}
 ```
@@ -932,7 +932,7 @@ We expected that the one of the following actions:
 (slide-blue blue1 space2 space1)
 (jump-blue blue1 red2 space3 space2 space1) 
 ```
-would be executed in the following plan:
+would be executed on the following plan:
 ```
 {"cost": 8, "actions": ["move-left blue1 space4 space3", "jump-red-over-blue-right red2 blue1 space2 space3 space4", "move-right red1 space1 space2", "jump-blue-over-red-left blue1 red1 space3 space2 space1", "jump-blue-over-red-left blue2 red2 space5 space4 space3", "move-right red2 space4 space5", "jump-red-over-blue-right red1 blue2 space2 space3 space4", "move-left blue2 space3 space2"]}
 ```
