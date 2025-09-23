@@ -2,8 +2,247 @@
     "domain": "checkers-jumping",
     "problem": "problem-5.pddl",
     "problem_num": 5,
+    "trivial_state_landmarks": [
+        "Atom empty(space7)",
+        "Atom at(blue1, space8)",
+        "Atom at(red6, space6)",
+        "Atom at(red5, space5)",
+        "Atom at(blue2, space9)",
+        "Atom at(blue3, space10)",
+        "Atom at(red4, space4)",
+        "Atom at(red3, space3)",
+        "Atom at(blue4, space11)",
+        "Atom at(blue5, space12)",
+        "Atom at(red2, space2)",
+        "Atom at(red1, space1)",
+        "Atom at(blue6, space13)"
+    ],
+    "non_trivial_state_landmarks": [
+        "Atom at(blue1, space1)",
+        "Atom at(red6, space13)",
+        "Atom at(red5, space12)",
+        "Atom at(blue2, space2)",
+        "Atom at(blue3, space3)",
+        "Atom at(red4, space11)",
+        "Atom at(red3, space10)",
+        "Atom at(blue4, space4)",
+        "Atom at(blue5, space5)",
+        "Atom at(red2, space9)",
+        "Atom at(red1, space8)",
+        "Atom at(blue6, space6)",
+        "Atom empty(space1)",
+        "Atom empty(space10)",
+        "Atom empty(space11)",
+        "Atom empty(space12)",
+        "Atom empty(space13)",
+        "Atom empty(space2)",
+        "Atom empty(space3)",
+        "Atom empty(space4)",
+        "Atom empty(space5)",
+        "Atom empty(space6)",
+        "Atom empty(space8)",
+        "Atom empty(space9)"
+    ],
+    "landmarks": [
+        [
+            "slide-blue blue1 space2 space1",
+            "jump-blue blue1 red1 space3 space2 space1",
+            "jump-blue blue1 red2 space3 space2 space1"
+        ],
+        [
+            "jump-blue blue4 red3 space6 space5 space4",
+            "slide-blue blue4 space5 space4",
+            "jump-blue blue4 red4 space6 space5 space4",
+            "jump-blue blue4 red1 space6 space5 space4",
+            "jump-blue blue4 red2 space6 space5 space4",
+            "jump-blue blue4 red5 space6 space5 space4"
+        ],
+        [
+            "slide-red red2 space2 space3",
+            "jump-red red2 blue4 space2 space3 space4",
+            "jump-red red2 blue3 space2 space3 space4",
+            "jump-red red2 blue5 space2 space3 space4",
+            "jump-red red2 blue1 space2 space3 space4",
+            "jump-red red2 blue6 space2 space3 space4",
+            "jump-red red2 blue2 space2 space3 space4"
+        ],
+        [
+            "slide-blue blue6 space7 space6",
+            "jump-blue blue6 red5 space8 space7 space6",
+            "jump-blue blue6 red3 space8 space7 space6",
+            "jump-blue blue6 red4 space8 space7 space6",
+            "jump-blue blue6 red1 space8 space7 space6",
+            "jump-blue blue6 red6 space8 space7 space6",
+            "jump-blue blue6 red2 space8 space7 space6"
+        ],
+        [
+            "jump-blue blue3 red2 space10 space9 space8",
+            "slide-blue blue3 space10 space9",
+            "jump-blue blue3 red1 space10 space9 space8",
+            "jump-blue blue3 red6 space10 space9 space8",
+            "jump-blue blue3 red3 space10 space9 space8",
+            "jump-blue blue3 red5 space10 space9 space8",
+            "jump-blue blue3 red4 space10 space9 space8"
+        ],
+        [
+            "jump-red red1 blue4 space6 space7 space8",
+            "slide-red red1 space7 space8",
+            "jump-red red1 blue6 space6 space7 space8",
+            "jump-red red1 blue3 space6 space7 space8",
+            "jump-red red1 blue2 space6 space7 space8",
+            "jump-red red1 blue5 space6 space7 space8",
+            "jump-red red1 blue1 space6 space7 space8"
+        ],
+        [
+            "jump-blue blue3 red2 space5 space4 space3",
+            "jump-blue blue3 red3 space5 space4 space3",
+            "slide-blue blue3 space4 space3",
+            "jump-blue blue3 red1 space5 space4 space3",
+            "jump-blue blue3 red4 space5 space4 space3"
+        ],
+        [
+            "jump-red red4 blue3 space9 space10 space11",
+            "slide-red red4 space10 space11",
+            "jump-red red4 blue4 space9 space10 space11",
+            "jump-red red4 blue5 space9 space10 space11",
+            "jump-red red4 blue6 space9 space10 space11"
+        ],
+        [
+            "slide-red red6 space12 space13",
+            "jump-red red6 blue5 space11 space12 space13",
+            "jump-red red6 blue6 space11 space12 space13"
+        ],
+        [
+            "jump-blue blue2 red1 space4 space3 space2",
+            "jump-blue blue2 red3 space4 space3 space2",
+            "jump-blue blue2 red2 space4 space3 space2",
+            "slide-blue blue2 space3 space2"
+        ],
+        [
+            "jump-red red2 blue2 space7 space8 space9",
+            "slide-red red2 space8 space9",
+            "jump-red red2 blue5 space7 space8 space9",
+            "jump-red red2 blue1 space7 space8 space9",
+            "jump-red red2 blue6 space7 space8 space9",
+            "jump-red red2 blue3 space7 space8 space9",
+            "jump-red red2 blue4 space7 space8 space9"
+        ],
+        [
+            "jump-red red3 blue2 space3 space4 space5",
+            "jump-red red3 blue3 space3 space4 space5",
+            "jump-red red3 blue1 space3 space4 space5",
+            "jump-red red3 blue5 space3 space4 space5",
+            "jump-red red3 blue6 space3 space4 space5",
+            "slide-red red3 space3 space4",
+            "jump-red red3 blue4 space3 space4 space5"
+        ],
+        [
+            "jump-red red4 blue4 space4 space5 space6",
+            "jump-red red4 blue6 space4 space5 space6",
+            "jump-red red4 blue5 space4 space5 space6",
+            "slide-red red4 space4 space5",
+            "jump-red red4 blue1 space4 space5 space6",
+            "jump-red red4 blue2 space4 space5 space6",
+            "jump-red red4 blue3 space4 space5 space6"
+        ],
+        [
+            "jump-blue blue1 red5 space8 space7 space6",
+            "jump-blue blue1 red1 space8 space7 space6",
+            "slide-blue blue1 space8 space7",
+            "jump-blue blue1 red4 space8 space7 space6",
+            "jump-blue blue1 red6 space8 space7 space6",
+            "jump-blue blue1 red3 space8 space7 space6",
+            "jump-blue blue1 red2 space8 space7 space6"
+        ],
+        [
+            "slide-red red6 space6 space7",
+            "jump-red red6 blue5 space6 space7 space8",
+            "jump-red red6 blue4 space6 space7 space8",
+            "jump-red red6 blue3 space6 space7 space8",
+            "jump-red red6 blue2 space6 space7 space8",
+            "jump-red red6 blue1 space6 space7 space8",
+            "jump-red red6 blue6 space6 space7 space8"
+        ],
+        [
+            "jump-red red5 blue4 space10 space11 space12",
+            "slide-red red5 space11 space12",
+            "jump-red red5 blue6 space10 space11 space12",
+            "jump-red red5 blue5 space10 space11 space12"
+        ],
+        [
+            "jump-red red1 blue5 space1 space2 space3",
+            "jump-red red1 blue3 space1 space2 space3",
+            "jump-red red1 blue2 space1 space2 space3",
+            "jump-red red1 blue1 space1 space2 space3",
+            "slide-red red1 space1 space2",
+            "jump-red red1 blue4 space1 space2 space3",
+            "jump-red red1 blue6 space1 space2 space3"
+        ],
+        [
+            "jump-blue blue4 red3 space11 space10 space9",
+            "jump-blue blue4 red4 space11 space10 space9",
+            "jump-blue blue4 red6 space11 space10 space9",
+            "jump-blue blue4 red2 space11 space10 space9",
+            "jump-blue blue4 red1 space11 space10 space9",
+            "jump-blue blue4 red5 space11 space10 space9",
+            "slide-blue blue4 space11 space10"
+        ],
+        [
+            "jump-red red5 blue5 space5 space6 space7",
+            "jump-red red5 blue1 space5 space6 space7",
+            "jump-red red5 blue4 space5 space6 space7",
+            "jump-red red5 blue2 space5 space6 space7",
+            "slide-red red5 space5 space6",
+            "jump-red red5 blue3 space5 space6 space7",
+            "jump-red red5 blue6 space5 space6 space7"
+        ],
+        [
+            "slide-blue blue5 space6 space5",
+            "jump-blue blue5 red6 space7 space6 space5",
+            "jump-blue blue5 red3 space7 space6 space5",
+            "jump-blue blue5 red2 space7 space6 space5",
+            "jump-blue blue5 red5 space7 space6 space5",
+            "jump-blue blue5 red1 space7 space6 space5",
+            "jump-blue blue5 red4 space7 space6 space5"
+        ],
+        [
+            "jump-blue blue6 red4 space13 space12 space11",
+            "jump-blue blue6 red5 space13 space12 space11",
+            "slide-blue blue6 space13 space12",
+            "jump-blue blue6 red6 space13 space12 space11",
+            "jump-blue blue6 red2 space13 space12 space11",
+            "jump-blue blue6 red3 space13 space12 space11",
+            "jump-blue blue6 red1 space13 space12 space11"
+        ],
+        [
+            "jump-blue blue5 red6 space12 space11 space10",
+            "jump-blue blue5 red1 space12 space11 space10",
+            "jump-blue blue5 red5 space12 space11 space10",
+            "slide-blue blue5 space12 space11",
+            "jump-blue blue5 red4 space12 space11 space10",
+            "jump-blue blue5 red3 space12 space11 space10",
+            "jump-blue blue5 red2 space12 space11 space10"
+        ],
+        [
+            "jump-blue blue2 red5 space9 space8 space7",
+            "slide-blue blue2 space9 space8",
+            "jump-blue blue2 red2 space9 space8 space7",
+            "jump-blue blue2 red4 space9 space8 space7",
+            "jump-blue blue2 red1 space9 space8 space7",
+            "jump-blue blue2 red3 space9 space8 space7",
+            "jump-blue blue2 red6 space9 space8 space7"
+        ],
+        [
+            "jump-red red3 blue2 space8 space9 space10",
+            "jump-red red3 blue5 space8 space9 space10",
+            "jump-red red3 blue6 space8 space9 space10",
+            "jump-red red3 blue4 space8 space9 space10",
+            "slide-red red3 space9 space10",
+            "jump-red red3 blue3 space8 space9 space10"
+        ]
+    ],
     "raw_landmarks": {
-        "planner_output": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/james/repos/nl2pddl3/.venv/bin/python /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/translate/translate.py /home/james/repos/nl2pddl3/data/domains/checkers-jumping/ground.pddl /home/james/repos/nl2pddl3/data/gen_problems/feedback/checkers-jumping/problem-5.pddl --sas-file output.sas\nParsing...\nParsing: [0.000s CPU, 0.002s wall-clock]\nNormalizing task... [0.000s CPU, 0.000s wall-clock]\nInstantiating...\nGenerating Datalog program... [0.000s CPU, 0.000s wall-clock]\nNormalizing Datalog program...\nNormalizing Datalog program: [0.000s CPU, 0.002s wall-clock]\nPreparing model... [0.000s CPU, 0.001s wall-clock]\nGenerated 43 rules.\nComputing model... [0.010s CPU, 0.010s wall-clock]\n857 relevant atoms\n1394 auxiliary atoms\n2251 final queue length\n3337 total queue pushes\nCompleting instantiation... [0.010s CPU, 0.013s wall-clock]\nInstantiating: [0.020s CPU, 0.026s wall-clock]\nComputing fact groups...\nFinding invariants...\n5 initial candidates\nFinding invariants: [0.000s CPU, 0.002s wall-clock]\nChecking invariant weight... [0.000s CPU, 0.000s wall-clock]\nInstantiating groups... [0.000s CPU, 0.000s wall-clock]\nCollecting mutex groups... [0.000s CPU, 0.000s wall-clock]\nChoosing groups...\n0 uncovered facts\nChoosing groups: [0.000s CPU, 0.000s wall-clock]\nBuilding translation key... [0.000s CPU, 0.000s wall-clock]\nComputing fact groups: [0.000s CPU, 0.003s wall-clock]\nBuilding STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]\nBuilding dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]\nBuilding mutex information...\nBuilding mutex information: [0.000s CPU, 0.000s wall-clock]\nTranslating task...\nProcessing axioms...\nSimplifying axioms... [0.000s CPU, 0.000s wall-clock]\nTranslator axioms removed by simplifying: 0\nComputing negative axioms... [0.000s CPU, 0.000s wall-clock]\nProcessing axioms: [0.010s CPU, 0.001s wall-clock]\nTranslating task: [0.020s CPU, 0.011s wall-clock]\n0 effect conditions simplified\n0 implied preconditions added\nDetecting unreachable propositions...\n0 operators removed\n0 axioms removed\n13 propositions removed\nDetecting unreachable propositions: [0.000s CPU, 0.006s wall-clock]\nReordering and filtering variables...\n13 of 13 variables necessary.\n13 of 26 mutex groups necessary.\n606 of 606 operators necessary.\n0 of 0 axiom rules necessary.\nReordering and filtering variables: [0.000s CPU, 0.002s wall-clock]\nTranslator variables: 13\nTranslator derived variables: 0\nTranslator facts: 139\nTranslator goal facts: 13\nTranslator mutex groups: 13\nTranslator total mutex groups size: 139\nTranslator operators: 606\nTranslator axioms: 0\nTranslator task size: 3826\nTranslator peak memory: 30988 KB\nWriting output... [0.010s CPU, 0.003s wall-clock]\nDone! [0.050s CPU, 0.054s wall-clock]\ntranslate exit code: 0\n\nINFO     Running search (/home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin).\nINFO     search stdin: output.sas\nINFO     search time limit: None\nINFO     search memory limit: None\nINFO     search command line string: /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/downward --evaluator 'h=lmcount(lm_factory=lm_exhaust(),dump_action_landmarks=true)' --always --search 'lazy_greedy([h,const(infinity())])' --internal-plan-file sas_plan < output.sas\n[t=3.0957e-05s, 11192 KB] reading input...\n[t=0.0023406s, 11588 KB] done reading input!\n[t=0.00349609s, 11844 KB] Initializing landmark count heuristic...\n[t=0.00355735s, 11844 KB] Generating landmark graph...\n[t=0.00362203s, 11844 KB] Initializing Exploration...\n[t=0.0038881s, 12108 KB] Generating landmarks by testing all facts with RPG method\n[t=0.00815787s, 12240 KB] Removed 0 reasonable or obedient reasonable orders\n[t=0.00828217s, 12240 KB] Landmarks generation time: 0.0047708s\n[t=0.00837711s, 12240 KB] Discovered 37 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00841427s, 12240 KB] 0 edges\n[t=0.00842813s, 12240 KB] Landmark graph generation time: 0.00487926s\n[t=0.0084372s, 12240 KB] Landmark graph contains 37 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00844533s, 12240 KB] Landmark graph contains 0 orderings.\n[t=0.00845507s, 12240 KB] Dumping landmarks from landmark graph: \n[t=0.00862703s, 12240 KB] Action landmarks end.\n[t=0.00872781s, 12240 KB] Building successor generator...done!\n[t=0.00895575s, 12240 KB] peak memory difference for successor generator creation: 0 KB\n[t=0.00896532s, 12240 KB] time for successor generation creation: 0.000175071s\n[t=0.00897753s, 12240 KB] Variables: 13\n[t=0.00899913s, 12240 KB] FactPairs: 139\n[t=0.00901148s, 12240 KB] Bytes per state: 8\n[t=0.0091086s, 12240 KB] Conducting lazy best first search, (real) bound = 2147483647\n[t=0.00920028s, 12240 KB] 13 initial landmarks, 13 goal landmarks\n[t=0.00925947s, 12240 KB] Initial heuristic value for lmcount(lm_factory = lm_exhaust, dump_action_landmarks = true): 24\n[t=0.00927513s, 12240 KB] Completely explored state space -- no solution!\n[t=0.00928455s, 12240 KB] Actual search time: 4.0534e-05s\n[t=0.00929484s, 12240 KB] Expanded 0 state(s).\n[t=0.00929484s, 12240 KB] Reopened 0 state(s).\n[t=0.00929484s, 12240 KB] Evaluated 1 state(s).\n[t=0.00929484s, 12240 KB] Evaluations: 1\n[t=0.00929484s, 12240 KB] Generated 0 state(s).\n[t=0.00929484s, 12240 KB] Dead ends: 1 state(s).\n[t=0.00929484s, 12240 KB] Number of registered states: 1\n[t=0.00929484s, 12240 KB] Int hash set load factor: 1/1 = 1\n[t=0.00929484s, 12240 KB] Int hash set resizes: 0\n[t=0.00929484s, 12240 KB] Search time: 0.000186506s\n[t=0.00929484s, 12240 KB] Total time: 0.00929484s\nSearch stopped without finding a solution.\nPeak memory: 12240 KB\nRemove intermediate file output.sas\nsearch exit code: 12\n\nDriver aborting after search\nINFO     Planner time: 0.15s\n",
+        "planner_output": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/james/repos/nl2pddl3/.venv/bin/python /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/translate/translate.py /home/james/repos/nl2pddl3/data/domains/checkers-jumping/ground.pddl /home/james/repos/nl2pddl3/data/gen_problems/feedback/checkers-jumping/problem-5.pddl --sas-file output.sas\nParsing...\nParsing: [0.000s CPU, 0.002s wall-clock]\nNormalizing task... [0.000s CPU, 0.000s wall-clock]\nInstantiating...\nGenerating Datalog program... [0.000s CPU, 0.000s wall-clock]\nNormalizing Datalog program...\nNormalizing Datalog program: [0.000s CPU, 0.002s wall-clock]\nPreparing model... [0.000s CPU, 0.001s wall-clock]\nGenerated 43 rules.\nComputing model... [0.010s CPU, 0.010s wall-clock]\n857 relevant atoms\n1394 auxiliary atoms\n2251 final queue length\n3337 total queue pushes\nCompleting instantiation... [0.020s CPU, 0.013s wall-clock]\nInstantiating: [0.030s CPU, 0.027s wall-clock]\nComputing fact groups...\nFinding invariants...\n5 initial candidates\nFinding invariants: [0.000s CPU, 0.002s wall-clock]\nChecking invariant weight... [0.000s CPU, 0.000s wall-clock]\nInstantiating groups... [0.000s CPU, 0.001s wall-clock]\nCollecting mutex groups... [0.000s CPU, 0.000s wall-clock]\nChoosing groups...\n0 uncovered facts\nChoosing groups: [0.000s CPU, 0.000s wall-clock]\nBuilding translation key... [0.000s CPU, 0.000s wall-clock]\nComputing fact groups: [0.000s CPU, 0.004s wall-clock]\nBuilding STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]\nBuilding dictionary for full mutex groups... [0.000s CPU, 0.001s wall-clock]\nBuilding mutex information...\nBuilding mutex information: [0.000s CPU, 0.000s wall-clock]\nTranslating task...\nProcessing axioms...\nSimplifying axioms... [0.000s CPU, 0.000s wall-clock]\nTranslator axioms removed by simplifying: 0\nComputing negative axioms... [0.000s CPU, 0.000s wall-clock]\nProcessing axioms: [0.000s CPU, 0.001s wall-clock]\nTranslating task: [0.020s CPU, 0.013s wall-clock]\n0 effect conditions simplified\n0 implied preconditions added\nDetecting unreachable propositions...\n0 operators removed\n0 axioms removed\n13 propositions removed\nDetecting unreachable propositions: [0.000s CPU, 0.006s wall-clock]\nReordering and filtering variables...\n13 of 13 variables necessary.\n13 of 26 mutex groups necessary.\n606 of 606 operators necessary.\n0 of 0 axiom rules necessary.\nReordering and filtering variables: [0.000s CPU, 0.002s wall-clock]\nTranslator variables: 13\nTranslator derived variables: 0\nTranslator facts: 139\nTranslator goal facts: 13\nTranslator mutex groups: 13\nTranslator total mutex groups size: 139\nTranslator operators: 606\nTranslator axioms: 0\nTranslator task size: 3826\nTranslator peak memory: 30988 KB\nWriting output... [0.000s CPU, 0.003s wall-clock]\nDone! [0.060s CPU, 0.057s wall-clock]\ntranslate exit code: 0\n\nINFO     Running search (/home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin).\nINFO     search stdin: output.sas\nINFO     search time limit: None\nINFO     search memory limit: None\nINFO     search command line string: /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/downward --evaluator 'h=lmcount(lm_factory=lm_exhaust(),dump_action_landmarks=true)' --always --search 'lazy_greedy([h,const(infinity())])' --internal-plan-file sas_plan < output.sas\n[t=3.2479e-05s, 11192 KB] reading input...\n[t=0.00232474s, 11588 KB] done reading input!\n[t=0.00337874s, 11844 KB] Initializing landmark count heuristic...\n[t=0.00344686s, 11844 KB] Generating landmark graph...\n[t=0.00352648s, 11844 KB] Initializing Exploration...\n[t=0.00382077s, 12108 KB] Generating landmarks by testing all facts with RPG method\n[t=0.00796705s, 12240 KB] Removed 0 reasonable or obedient reasonable orders\n[t=0.00812342s, 12240 KB] Landmarks generation time: 0.00471717s\n[t=0.00819969s, 12240 KB] Discovered 37 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00821395s, 12240 KB] 0 edges\n[t=0.00822273s, 12240 KB] Landmark graph generation time: 0.00478394s\n[t=0.00823104s, 12240 KB] Landmark graph contains 37 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00823985s, 12240 KB] Landmark graph contains 0 orderings.\n[t=0.0082502s, 12240 KB] Dumping landmarks from landmark graph: \n[t=0.00840477s, 12240 KB] Action landmarks end.\n[t=0.00850351s, 12240 KB] Building successor generator...done!\n[t=0.00876968s, 12240 KB] peak memory difference for successor generator creation: 0 KB\n[t=0.00877904s, 12240 KB] time for successor generation creation: 0.000199893s\n[t=0.00879079s, 12240 KB] Variables: 13\n[t=0.00881246s, 12240 KB] FactPairs: 139\n[t=0.00882485s, 12240 KB] Bytes per state: 8\n[t=0.00893634s, 12240 KB] Conducting lazy best first search, (real) bound = 2147483647\n[t=0.00901086s, 12240 KB] 13 initial landmarks, 13 goal landmarks\n[t=0.00904085s, 12240 KB] Initial heuristic value for lmcount(lm_factory = lm_exhaust, dump_action_landmarks = true): 24\n[t=0.00906449s, 12240 KB] Completely explored state space -- no solution!\n[t=0.00907674s, 12240 KB] Actual search time: 4.9317e-05s\n[t=0.00909717s, 12240 KB] Expanded 0 state(s).\n[t=0.00909717s, 12240 KB] Reopened 0 state(s).\n[t=0.00909717s, 12240 KB] Evaluated 1 state(s).\n[t=0.00909717s, 12240 KB] Evaluations: 1\n[t=0.00909717s, 12240 KB] Generated 0 state(s).\n[t=0.00909717s, 12240 KB] Dead ends: 1 state(s).\n[t=0.00909717s, 12240 KB] Number of registered states: 1\n[t=0.00909717s, 12240 KB] Int hash set load factor: 1/1 = 1\n[t=0.00909717s, 12240 KB] Int hash set resizes: 0\n[t=0.00909717s, 12240 KB] Search time: 0.000161201s\n[t=0.00909717s, 12240 KB] Total time: 0.00909717s\nSearch stopped without finding a solution.\nPeak memory: 12240 KB\nRemove intermediate file output.sas\nsearch exit code: 12\n\nDriver aborting after search\nINFO     Planner time: 0.14s\n",
         "planner_error": "",
         "landmarks": [
             {
@@ -523,290 +762,5 @@
                 ]
             }
         ]
-    },
-    "landmarks": [
-        [
-            "slide-blue blue1 space2 space1",
-            "jump-blue blue1 red1 space3 space2 space1",
-            "jump-blue blue1 red2 space3 space2 space1"
-        ],
-        [
-            "jump-red red2 blue1 space7 space8 space9",
-            "slide-red red2 space8 space9",
-            "jump-red red2 blue5 space7 space8 space9",
-            "jump-red red2 blue3 space7 space8 space9",
-            "jump-red red2 blue6 space7 space8 space9",
-            "jump-red red2 blue4 space7 space8 space9",
-            "jump-red red2 blue2 space7 space8 space9"
-        ],
-        [
-            "jump-red red6 blue6 space6 space7 space8",
-            "slide-red red6 space6 space7",
-            "jump-red red6 blue4 space6 space7 space8",
-            "jump-red red6 blue5 space6 space7 space8",
-            "jump-red red6 blue2 space6 space7 space8",
-            "jump-red red6 blue3 space6 space7 space8",
-            "jump-red red6 blue1 space6 space7 space8"
-        ],
-        [
-            "jump-red red5 blue3 space5 space6 space7",
-            "jump-red red5 blue1 space5 space6 space7",
-            "jump-red red5 blue4 space5 space6 space7",
-            "jump-red red5 blue6 space5 space6 space7",
-            "jump-red red5 blue5 space5 space6 space7",
-            "slide-red red5 space5 space6",
-            "jump-red red5 blue2 space5 space6 space7"
-        ],
-        [
-            "slide-blue blue6 space7 space6",
-            "jump-blue blue6 red1 space8 space7 space6",
-            "jump-blue blue6 red2 space8 space7 space6",
-            "jump-blue blue6 red3 space8 space7 space6",
-            "jump-blue blue6 red4 space8 space7 space6",
-            "jump-blue blue6 red6 space8 space7 space6",
-            "jump-blue blue6 red5 space8 space7 space6"
-        ],
-        [
-            "jump-blue blue4 red5 space6 space5 space4",
-            "jump-blue blue4 red2 space6 space5 space4",
-            "jump-blue blue4 red4 space6 space5 space4",
-            "jump-blue blue4 red1 space6 space5 space4",
-            "slide-blue blue4 space5 space4",
-            "jump-blue blue4 red3 space6 space5 space4"
-        ],
-        [
-            "jump-blue blue5 red6 space12 space11 space10",
-            "jump-blue blue5 red4 space12 space11 space10",
-            "jump-blue blue5 red2 space12 space11 space10",
-            "jump-blue blue5 red3 space12 space11 space10",
-            "jump-blue blue5 red1 space12 space11 space10",
-            "jump-blue blue5 red5 space12 space11 space10",
-            "slide-blue blue5 space12 space11"
-        ],
-        [
-            "jump-red red1 blue2 space1 space2 space3",
-            "jump-red red1 blue4 space1 space2 space3",
-            "slide-red red1 space1 space2",
-            "jump-red red1 blue6 space1 space2 space3",
-            "jump-red red1 blue1 space1 space2 space3",
-            "jump-red red1 blue5 space1 space2 space3",
-            "jump-red red1 blue3 space1 space2 space3"
-        ],
-        [
-            "slide-red red2 space2 space3",
-            "jump-red red2 blue3 space2 space3 space4",
-            "jump-red red2 blue5 space2 space3 space4",
-            "jump-red red2 blue2 space2 space3 space4",
-            "jump-red red2 blue6 space2 space3 space4",
-            "jump-red red2 blue4 space2 space3 space4",
-            "jump-red red2 blue1 space2 space3 space4"
-        ],
-        [
-            "jump-red red3 blue6 space8 space9 space10",
-            "jump-red red3 blue4 space8 space9 space10",
-            "jump-red red3 blue3 space8 space9 space10",
-            "jump-red red3 blue5 space8 space9 space10",
-            "jump-red red3 blue2 space8 space9 space10",
-            "slide-red red3 space9 space10"
-        ],
-        [
-            "jump-blue blue5 red4 space7 space6 space5",
-            "jump-blue blue5 red1 space7 space6 space5",
-            "jump-blue blue5 red5 space7 space6 space5",
-            "jump-blue blue5 red3 space7 space6 space5",
-            "jump-blue blue5 red6 space7 space6 space5",
-            "slide-blue blue5 space6 space5",
-            "jump-blue blue5 red2 space7 space6 space5"
-        ],
-        [
-            "jump-blue blue4 red5 space11 space10 space9",
-            "jump-blue blue4 red6 space11 space10 space9",
-            "jump-blue blue4 red3 space11 space10 space9",
-            "slide-blue blue4 space11 space10",
-            "jump-blue blue4 red4 space11 space10 space9",
-            "jump-blue blue4 red2 space11 space10 space9",
-            "jump-blue blue4 red1 space11 space10 space9"
-        ],
-        [
-            "jump-red red3 blue4 space3 space4 space5",
-            "jump-red red3 blue2 space3 space4 space5",
-            "jump-red red3 blue5 space3 space4 space5",
-            "jump-red red3 blue1 space3 space4 space5",
-            "jump-red red3 blue3 space3 space4 space5",
-            "slide-red red3 space3 space4",
-            "jump-red red3 blue6 space3 space4 space5"
-        ],
-        [
-            "jump-blue blue1 red3 space8 space7 space6",
-            "slide-blue blue1 space8 space7",
-            "jump-blue blue1 red1 space8 space7 space6",
-            "jump-blue blue1 red4 space8 space7 space6",
-            "jump-blue blue1 red2 space8 space7 space6",
-            "jump-blue blue1 red5 space8 space7 space6",
-            "jump-blue blue1 red6 space8 space7 space6"
-        ],
-        [
-            "jump-red red4 blue4 space4 space5 space6",
-            "jump-red red4 blue2 space4 space5 space6",
-            "slide-red red4 space4 space5",
-            "jump-red red4 blue1 space4 space5 space6",
-            "jump-red red4 blue6 space4 space5 space6",
-            "jump-red red4 blue3 space4 space5 space6",
-            "jump-red red4 blue5 space4 space5 space6"
-        ],
-        [
-            "jump-blue blue6 red2 space13 space12 space11",
-            "slide-blue blue6 space13 space12",
-            "jump-blue blue6 red3 space13 space12 space11",
-            "jump-blue blue6 red5 space13 space12 space11",
-            "jump-blue blue6 red6 space13 space12 space11",
-            "jump-blue blue6 red1 space13 space12 space11",
-            "jump-blue blue6 red4 space13 space12 space11"
-        ],
-        [
-            "slide-blue blue2 space3 space2",
-            "jump-blue blue2 red2 space4 space3 space2",
-            "jump-blue blue2 red1 space4 space3 space2",
-            "jump-blue blue2 red3 space4 space3 space2"
-        ],
-        [
-            "jump-red red5 blue5 space10 space11 space12",
-            "slide-red red5 space11 space12",
-            "jump-red red5 blue4 space10 space11 space12",
-            "jump-red red5 blue6 space10 space11 space12"
-        ],
-        [
-            "jump-blue blue3 red4 space10 space9 space8",
-            "jump-blue blue3 red6 space10 space9 space8",
-            "jump-blue blue3 red3 space10 space9 space8",
-            "jump-blue blue3 red5 space10 space9 space8",
-            "jump-blue blue3 red2 space10 space9 space8",
-            "slide-blue blue3 space10 space9",
-            "jump-blue blue3 red1 space10 space9 space8"
-        ],
-        [
-            "slide-red red6 space7 space8",
-            "jump-red red5 blue3 space7 space8 space9",
-            "jump-blue blue4 red3 space7 space6 space5",
-            "jump-red red6 blue4 space7 space8 space9",
-            "jump-red red4 blue2 space7 space8 space9",
-            "jump-red red2 blue6 space7 space8 space9",
-            "jump-blue blue1 red4 space7 space6 space5",
-            "jump-red red3 blue1 space7 space8 space9",
-            "jump-red red6 blue3 space7 space8 space9",
-            "jump-red red5 blue4 space7 space8 space9",
-            "jump-red red1 blue6 space7 space8 space9",
-            "jump-blue blue1 red3 space7 space6 space5",
-            "jump-blue blue4 red5 space7 space6 space5",
-            "slide-blue blue1 space7 space6",
-            "jump-blue blue5 red5 space7 space6 space5",
-            "jump-red red3 blue5 space7 space8 space9",
-            "jump-blue blue5 red6 space7 space6 space5",
-            "jump-red red6 blue5 space7 space8 space9",
-            "jump-red red2 blue1 space7 space8 space9",
-            "jump-red red1 blue5 space7 space8 space9",
-            "jump-blue blue2 red6 space7 space6 space5",
-            "jump-blue blue6 red4 space7 space6 space5",
-            "jump-blue blue3 red5 space7 space6 space5",
-            "jump-red red1 blue4 space7 space8 space9",
-            "slide-red red5 space7 space8",
-            "slide-blue blue6 space7 space6",
-            "jump-blue blue2 red2 space7 space6 space5",
-            "jump-blue blue3 red3 space7 space6 space5",
-            "jump-red red3 blue2 space7 space8 space9",
-            "slide-red red1 space7 space8",
-            "jump-red red1 blue1 space7 space8 space9",
-            "jump-red red2 blue3 space7 space8 space9",
-            "jump-blue blue2 red5 space7 space6 space5",
-            "slide-blue blue4 space7 space6",
-            "jump-blue blue6 red2 space7 space6 space5",
-            "jump-red red5 blue6 space7 space8 space9",
-            "jump-red red2 blue4 space7 space8 space9",
-            "jump-blue blue3 red6 space7 space6 space5",
-            "jump-blue blue6 red3 space7 space6 space5",
-            "jump-blue blue5 red4 space7 space6 space5",
-            "jump-blue blue1 red1 space7 space6 space5",
-            "jump-red red2 blue5 space7 space8 space9",
-            "jump-red red3 blue4 space7 space8 space9",
-            "jump-red red6 blue6 space7 space8 space9",
-            "jump-red red1 blue3 space7 space8 space9",
-            "jump-red red2 blue2 space7 space8 space9",
-            "jump-red red5 blue1 space7 space8 space9",
-            "jump-red red1 blue2 space7 space8 space9",
-            "jump-blue blue2 red4 space7 space6 space5",
-            "jump-red red3 blue6 space7 space8 space9",
-            "slide-blue blue5 space7 space6",
-            "jump-blue blue3 red1 space7 space6 space5",
-            "jump-red red6 blue1 space7 space8 space9",
-            "jump-blue blue6 red1 space7 space6 space5",
-            "jump-blue blue6 red5 space7 space6 space5",
-            "jump-red red4 blue4 space7 space8 space9",
-            "jump-red red4 blue3 space7 space8 space9",
-            "jump-blue blue1 red2 space7 space6 space5",
-            "jump-blue blue5 red1 space7 space6 space5",
-            "jump-red red5 blue2 space7 space8 space9",
-            "slide-red red4 space7 space8",
-            "jump-blue blue3 red4 space7 space6 space5",
-            "slide-red red3 space7 space8",
-            "jump-blue blue4 red6 space7 space6 space5",
-            "jump-blue blue1 red5 space7 space6 space5",
-            "jump-red red4 blue5 space7 space8 space9",
-            "jump-blue blue1 red6 space7 space6 space5",
-            "jump-red red4 blue6 space7 space8 space9",
-            "slide-blue blue2 space7 space6",
-            "jump-blue blue5 red3 space7 space6 space5",
-            "jump-red red5 blue5 space7 space8 space9",
-            "jump-red red3 blue3 space7 space8 space9",
-            "jump-blue blue2 red3 space7 space6 space5",
-            "jump-blue blue4 red2 space7 space6 space5",
-            "slide-blue blue3 space7 space6",
-            "jump-blue blue2 red1 space7 space6 space5",
-            "jump-blue blue3 red2 space7 space6 space5",
-            "jump-blue blue4 red1 space7 space6 space5",
-            "jump-blue blue6 red6 space7 space6 space5",
-            "slide-red red2 space7 space8",
-            "jump-red red4 blue1 space7 space8 space9",
-            "jump-blue blue4 red4 space7 space6 space5",
-            "jump-red red6 blue2 space7 space8 space9",
-            "jump-blue blue5 red2 space7 space6 space5"
-        ],
-        [
-            "slide-blue blue3 space4 space3",
-            "jump-blue blue3 red2 space5 space4 space3",
-            "jump-blue blue3 red3 space5 space4 space3",
-            "jump-blue blue3 red1 space5 space4 space3",
-            "jump-blue blue3 red4 space5 space4 space3"
-        ],
-        [
-            "jump-red red6 blue5 space11 space12 space13",
-            "slide-red red6 space12 space13",
-            "jump-red red6 blue6 space11 space12 space13"
-        ],
-        [
-            "jump-red red4 blue4 space9 space10 space11",
-            "jump-red red4 blue6 space9 space10 space11",
-            "jump-red red4 blue5 space9 space10 space11",
-            "slide-red red4 space10 space11",
-            "jump-red red4 blue3 space9 space10 space11"
-        ],
-        [
-            "jump-blue blue2 red3 space9 space8 space7",
-            "slide-blue blue2 space9 space8",
-            "jump-blue blue2 red4 space9 space8 space7",
-            "jump-blue blue2 red5 space9 space8 space7",
-            "jump-blue blue2 red2 space9 space8 space7",
-            "jump-blue blue2 red6 space9 space8 space7",
-            "jump-blue blue2 red1 space9 space8 space7"
-        ],
-        [],
-        [
-            "jump-red red1 blue5 space6 space7 space8",
-            "jump-red red1 blue2 space6 space7 space8",
-            "jump-red red1 blue4 space6 space7 space8",
-            "slide-red red1 space7 space8",
-            "jump-red red1 blue6 space6 space7 space8",
-            "jump-red red1 blue1 space6 space7 space8",
-            "jump-red red1 blue3 space6 space7 space8"
-        ]
-    ]
+    }
 }
