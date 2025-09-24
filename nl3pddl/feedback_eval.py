@@ -59,8 +59,6 @@ def raw_validate(
         _ = subprocess.check_output(args, stderr=subprocess.DEVNULL)
     except CalledProcessError as err:
         shutil.rmtree(tmpdir)
-        if err.returncode == -11:
-            return "The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct."
         return err.output.decode()
     shutil.rmtree(tmpdir)
     if os.path.exists("found_plans"):
@@ -78,8 +76,6 @@ HumanMessage | None:
     for problem_path in problem_paths:
         for plan_path in d.feedback_plan_paths[problem_path]:
             result = raw_validate(new_domain_str, problem_path, plan_path)
-            if result is not None and (result == "" or result.strip()) == "":
-                result = "The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL."
             if result is not None:
                 problem_raw = d.feedback_problem_raws[problem_path]
                 plan_raw = d.feedback_plan_raws[plan_path]
@@ -161,12 +157,12 @@ def landmark_feedback(
         new_plans = plan_obj["plans"]
         for new_plan in new_plans:
             # By dumping the plan to a string, we can check if an action is satisfied just by checking if the action is in the string.
-            new_plan_str = "\n".join(f"({a})" for a in new_plan["actions"])
+            new_plan = json.dumps(new_plan)
             for landmark in landmarks:
                 landmark_str = "\n".join([f"({l})" for l in landmark])
                 landmark_satisfied = False
                 for landmark_disjunt in landmark:
-                    if landmark_disjunt in new_plan_str:
+                    if landmark_disjunt in new_plan:
                         landmark_satisfied = True
                         break
                 if not landmark_satisfied:
@@ -174,6 +170,6 @@ def landmark_feedback(
                     return HumanMessage(LANDMARK_PROMPT_TEMPLATE.format(
                         problem=problem_raw,
                         landmark=landmark_str,
-                        plan=new_plan_str
+                        plan=new_plan
                     ))
     return None

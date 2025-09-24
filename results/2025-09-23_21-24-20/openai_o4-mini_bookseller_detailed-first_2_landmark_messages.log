@@ -1,0 +1,115 @@
+NON VAR INFO =========================================
+
+TRIAL: 2
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/bookseller
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: landmark
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: RuntimeError, Failed to call domain model: Error during feedback generation: I apologize for the confusion – the original domain was in fact correct, and the “disjunctive landmark” you describe is a property of the problem rather than a missing domain capability.  In the plan you showed, book3 really only ever appears at loc4 before being picked up; there is no way under the standard “book-at” predicate to load book3 at loc1 because it isn’t there.  
+
+No change to the domain will force the planner to pick up book3 at loc1.  If you *do* intend to allow a drone to “load” any book at any location (even if the book isn’t physically there yet), you must remove the `(book-at ?b ?l)` precondition from `loadfirst` (and likewise from `loadbottom`).  Here is the smallest STRIPS‐typed revision that does exactly that:
+
+```lisp
+(define (domain bookseller)
+  (:requirements :strips :typing)
+  (:types
+    location
+    book
+    drone)
+
+  (:predicates
+    (drone-at ?d - drone ?l - location)
+    (book-at   ?b - book   ?l - location)
+    (ontop     ?b1 - book  ?b2 - book)
+    (empty     ?d - drone)
+    (path      ?l1 - location ?l2 - location)
+    (first     ?b - book    ?d - drone)
+    (last      ?b - book    ?d - drone)
+  )
+
+  ;; Move a drone along a valid path
+  (:action fly
+    :parameters (?d - drone ?from - location ?to - location)
+    :precondition (and (drone-at ?d ?from) (path ?from ?to))
+    :effect (and
+      (not (drone-at ?d ?from))
+      (drone-at ?d ?to)
+    )
+  )
+
+  ;; *** Allow loadfirst even if the book is *not* at this location ***
+  ;; loadfirst no longer requires (book-at ?b ?l)
+  (:action loadfirst
+    :parameters (?d - drone ?b - book ?l - location)
+    :precondition (and
+      (drone-at ?d ?l)
+      (empty ?d)
+      ;; (book-at ?b ?l)   <-- removed
+    )
+    :effect (and
+      (not (empty ?d))
+      (not (book-at ?b ?l))  ; still remove it if it happens to be there
+      (first ?b ?d)
+      (last  ?b ?d)
+    )
+  )
+
+  ;; Likewise loosen loadbottom so you can load *any* new book underneath
+  (:action loadbottom
+    :parameters (?d - drone ?bnew - book ?bold - book ?l - location)
+    :precondition (and
+      (drone-at ?d ?l)
+      (last   ?bold ?d)
+      ;; (book-at ?bnew ?l)  <-- removed
+    )
+    :effect (and
+      (not (book-at ?bnew ?l))
+      (not (last ?bold ?d))
+      (ontop ?bold ?bnew)
+      (last  ?bnew ?d)
+    )
+  )
+
+  ;; Unload a single‐book drone to the ground
+  (:action unload-final
+    :parameters (?d - drone ?b - book ?l - location)
+    :precondition (and
+      (drone-at ?d ?l)
+      (first ?b ?d)
+      (last  ?b ?d)
+    )
+    :effect (and
+      (empty ?d)
+      (book-at ?b ?l)
+      (not (first ?b ?d))
+      (not (last  ?b ?d))
+    )
+  )
+
+  ;; Unload the bottom book from a multi‐book drone
+  (:action unload-bottom
+    :parameters (?d - drone ?b - book ?b2 - book ?l - location)
+    :precondition (and
+      (drone-at ?d ?l)
+      (last   ?b  ?d)
+      (ontop  ?b2 ?b)
+    )
+    :effect (and
+      (book-at ?b ?l)
+      (not (last  ?b  ?d))
+      (not (ontop ?b2 ?b))
+      (last ?b2 ?d)
+    )
+  )
+)
+```
+
+With this change, `loadfirst drone2 book3 loc1` (or `loadfirst drone1 book3 loc1`) *is* legal even though `book3` didn’t start at `loc1`.  However, in the *original* bookseller domain it was *never* meant to allow that – the drone can only pick up what’s actually sitting at its current location.  If your intent is that a drone can magically “call down” any book from anywhere, then you must remove `(book-at ?b ?l)` from the load actions as shown above.

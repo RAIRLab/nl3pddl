@@ -8,15 +8,12 @@ import re
 from typing import Any
 
 # External package imports
-from pddl.core import Domain
 from pddl.parser.domain import DomainParser
 from langchain.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage
 
-from nl3pddl.params import Params
-
 # Internal package imports
-from .dataset import Dataset, PipelineResult
+from .dataset import PipelineResult
 
 
 DOMAIN_PARSER = DomainParser()
@@ -129,7 +126,7 @@ def lark_err_str(e : Exception) -> str:
         #This should NEVER happen, come up with better cases.
         #Occasionally the lark error fails, this is the worst case
         #fallback scenario
-        return "A parsing error occurred without an error message "
+        return "There is a severe syntax error in the PDDL code."
 
 bad_pred_list_template = PromptTemplate(template="""
     The following predicate list you provided is invalid:
@@ -171,30 +168,14 @@ def check_action_output(
         return HumanMessage(f"Unable to parse action ```{action_str}```\n\
         Error: {lark_err_str(e)} \nPlease revise the action and try again.")
 
-def check_domain_syntax_output(d : Dataset,p: Params, message : Any) -> None | HumanMessage:
+def check_domain_syntax_output(message : Any) -> None | HumanMessage:
     """
     Converts a pddl string to a PDDL domain object or returns an error
     """
-    ground_domain : Domain = d.domains[p.domain_path]
-    domain_str : str = message.pddl_domain
+    domain_str = message.pddl_domain
     try:
-        domain : Domain = DOMAIN_PARSER(domain_str)
-        if domain.name != ground_domain.name:
-            return HumanMessage(f"Domain name {domain.name} does not match \
-            expected domain name {ground_domain.name}. Please revise the domain \
-            and try again.")
-        # Check to make sure all action names match the ground domain
-        ground_action_names = {a.name for a in ground_domain.actions}
-        action_names = {a.name for a in domain.actions}
-        if ground_action_names != action_names:
-            missing = ground_action_names - action_names
-            extra = action_names - ground_action_names
-            msg = ""
-            if missing:
-                msg += f"Missing actions: {', '.join(missing)}. "
-            if extra:
-                msg += f"Extra actions: {', '.join(extra)}. "
-            return HumanMessage(f"Action names do not match the expected action names. {msg} Please revise the domain and try again.")
+        _ = DOMAIN_PARSER(domain_str)
         return None
-    except Exception as e: # pylint: disable=broad-except 
-        return HumanMessage(f"Unable to parse domain ```{domain_str}```\nError: {lark_err_str(e)} \nRecall that this must be a STRIPS domain, it may not contain any additional PDDL features.")
+    except Exception as e: # pylint: disable=broad-except
+        return HumanMessage(f"Unable to parse domain ```{domain_str}```\n\
+        Error: {lark_err_str(e)} \nPlease revise the domain and try again.")

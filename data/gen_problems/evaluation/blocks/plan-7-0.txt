@@ -1,2 +1,0 @@
-(pick-up b4)
-(stack b4 b1)

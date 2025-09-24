@@ -121,13 +121,3 @@ def pred_to_str(p : Predicate) -> str:
 
     args = [f"?{var} - {type_}" for var, type_ in zip(vars, types)]
     return f"({name} {' '.join(args)})"
-
-def grounded_pred_to_lm_str(p : Predicate) -> str:
-    """
-    Converts a Predicate object to a string representation.
-    This is the representation of predicates used in landmarks
-    """
-    name = p.name
-    vars = [t.name for t in p.terms]
-    args = [f"{var}" for var in vars]
-    return f"Atom {name}({', '.join(args)})"
