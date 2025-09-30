@@ -86,27 +86,35 @@ def generate_landmarks():
             success = generate_landmarks_for(domain_file, problem_file)
 
 
-            # Filter out "Trivial Landmarks" that are true in the initial state
-            # of the problem
+            # Filter landmarks into three classes 
+            # trivial, where the landmark is in the initial state
+            # non-trivial, where the landmark is not in the initial state
+            # non-applicable, where the landmark is a negated atom or
+            # special value, <none of those>
             problem_object = pddl.parse_problem(problem_file) 
             initial_state = set(str(atom) for atom in problem_object.init)
             initial_state = {grounded_pred_to_lm_str(atom) for atom in problem_object.init}
             trivial_landmarks = []
+            non_applicable_landmarks = []
             non_trivial_landmarks = []
             for lm in success['landmarks']:
                 lm_str = str(lm["facts"][0])
                 if lm_str in initial_state:
                     trivial_landmarks.append(lm)
+                elif "NegatedAtom" in lm_str or "<none of those>" in lm_str:
+                    non_applicable_landmarks.append(lm)
                 else:
                     non_trivial_landmarks.append(lm)
 
+            # Write the landmarks
             json.dump({
                 'domain': domain_name,
                 'problem': problem_name,
                 'problem_num': problem_num,
                 'trivial_state_landmarks': [lm["facts"][0] for lm in trivial_landmarks],
                 'non_trivial_state_landmarks': [lm["facts"][0] for lm in non_trivial_landmarks],
+                'non_applicable_state_landmarks': [lm["facts"][0] for lm in non_applicable_landmarks],
                 'landmarks': list(gen_action_landmarks(non_trivial_landmarks)),
-                'raw_landmarks': success
+                'raw_output': success
             }, open(output_file, 'w'), indent=4)
     

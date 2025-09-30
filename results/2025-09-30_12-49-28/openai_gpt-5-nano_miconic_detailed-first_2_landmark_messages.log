@@ -1,0 +1,483 @@
+NON VAR INFO =========================================
+
+TRIAL: 2
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: gpt-5-nano
+DOMAIN PATH: data/domains/miconic
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: landmark
+GIVE PRED DESCRIPTIONS: True
+
+EXPERIMENT RESULTS ===================================
+
+DOMAIN CHECK RUNS: 6
+LANDMARK RUNS: 3
+VAL RUNS: 0
+HDE ITERATIONS: 10
+HDE TIMEOUT: True
+ACTION TIMEOUT: False
+ACTION TIMEOUT CAUSE: 
+EVALS PASSED: 9
+TOTAL EVALS: 10
+LANGGRAPH PATH:
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	call_action_model->
+	check_action->
+	next_action->
+	build_domain->
+	check_domain_syntax->
+	call_domain_model->
+	check_domain_syntax->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	call_domain_model->
+	check_domain_syntax->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	call_domain_model->
+	check_domain_syntax->
+	feedback->
+	call_domain_model->
+	check_domain_syntax->
+	call_domain_model->
+	check_domain_syntax->
+	hde_timeout_node->
+	final_evaluation
+
+FINAL DOMAIN =====================================
+
+(define (domain miconic)
+    (:requirements :strips :typing)
+    (:types
+        floor passenger - object
+    )
+    (:predicates (above ?f1 - floor ?f2 - floor)  (adjacent ?f1 - floor ?f2 - floor)  (boarded ?p - passenger)  (destin ?p - passenger ?f - floor)  (lift-at ?f - floor)  (not-boarded ?p - passenger)  (not-served ?p - passenger)  (origin ?p - passenger ?f - floor)  (served ?p - passenger))
+    (:action board
+        :parameters (?p - passenger ?f - floor)
+        :precondition (and (lift-at ?f) (origin ?p ?f) (not-boarded ?p))
+        :effect (and (not (origin ?p ?f)) (boarded ?p) (not (not-boarded ?p)))
+    )
+     (:action depart
+        :parameters (?from - floor ?to - floor)
+        :precondition (and (lift-at ?from) (adjacent ?from ?to))
+        :effect (and (not (lift-at ?from)) (lift-at ?to))
+    )
+     (:action down
+        :parameters (?from - floor ?to - floor)
+        :precondition (and (lift-at ?from) (above ?from ?to))
+        :effect (and (not (lift-at ?from)) (lift-at ?to))
+    )
+     (:action up
+        :parameters (?from - floor ?to - floor)
+        :precondition (and (lift-at ?from) (above ?to ?from))
+        :effect (and (not (lift-at ?from)) (lift-at ?to))
+    )
+)
+Messages ===========================================
+
+
+SYSTEM
+
+You will be given a natural language description of an a Planning Domain Definition Language (PDDL) domain along with a set of types and predicates you are allowed to use. You will then be given a description of each action in the domain, including its parameter count and types. With this, your goal is to generate a PDDL action for this description filling in the preconditions and effects. You are allowed to create new predicates and types as needed but must include the set of all predicates and types you used in the output. For your output please provide a JSON object with the following felids: 
+1. A string containing a raw PDDL action 
+2. A list of predicates used so far with all parameters and types
+3. A list of types used so far, we assume there is no type hierarchy.
+
+The JSON object should be formatted as follows:
+{
+    "pddl_action": "(:action <action_name> ...)",
+    "predicates": ["(pred1 ?param1 - type1 ?param2 - type2)", ...]
+    "types" : ["type1", "type2", ...]
+}
+
+If you mess up the formatting or output invalid PDDL, you will receive a message instructing you on what is wrong and how you may fix it, at which point you should try to generate the PDDL action again, you will be requested to fix the issue until you generate a valid PDDL action. Ensure the generated domain is fully lowercase and that all parentheses are balanced.
+
+Do not refuse to answer and do not ask any questions to the user, since the user is an automated tool that can not respond as a human would. If you are unsure about something, make a reasonable assumption and proceed.
+
+Do not ask the user for any more information or clarifications, you must work with the information provided. If you are unsure about something, make a reasonable assumption and proceed.
+
+
+HUMAN
+
+The following is a natural language description of a PDDL domain:
+
+The domain assumes a world where there are a set of blocks that can be stacked on top of each other, an arm that can hold one block at a time, and a table where blocks can be placed.
+
+To start you may use the following predicates but are free to add more:
+
+["(handempty) : nothing is being held by the arm", "(on ?x - block ?y - block) : block ?x is ontop of block ?y", "(ontable ?x - block) : the given block is on the table", "(clear ?x - block) : The given block has nothing ontop of it", "(holding ?x - block) : The arm is holding the given block"]
+
+You may also use the following types:
+
+["block"]
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a description of the following action in the above described domain. 
+
+The pick-up action represents the action of a robot arm picking up a single block from the table
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{ 
+    "pddl_action": "(:action pick-up :parameters (?x - block) :precondition (and (ontable ?x) (clear ?x) (handempty)) :effect (and (not (ontable ?x)) (holding ?x) (not (handempty)) (not (clear ?x)))\n)",
+    "predicates": ["(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)"],
+    "types": ["block"]
+}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need, generate a description of the following action in the above described domain. 
+
+The Stack action represents the action of stacking a block on top of another block. 
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{
+    "pddl_action": "(:action stack :parameters (?x ?y - block) :precondition (and (clear ?y) (on ?x) (handempty)) :effect (and (not (on ?x)) (not (handempty)) (stacked ?x ?y) (not (clear ?y)))\n)",
+    "predicates": [(handempty)", "(on ?x - block ?y - block)", "(ontable ?x - block)", "(clear ?x - block)", "(holding ?x - block)]
+    "types": ["block"]
+}
+
+
+HUMAN
+
+The following is a natural language description of a PDDL domain:
+
+This domain simulates the functioning of an elevator system in a multi-story building. The elevator can move up and down between floors, pick up waiting passengers, and drop them off at their desired destinations. The goal is to transport all passengers to their destination floors efficiently, at which point they are considered served.
+
+To start you may use the following types but are free to add more:
+
+[floor, passenger]                                         
+
+To start you may use the following predicates but are free to add more:
+
+[(lift-at ?floor - floor): This predicate indicates the current position of the elevator within the building, specifying which floor it is currently located on., (destin ?person - passenger ?floor - floor): This predicate identifies the floor where a passenger wants to go, representing their intended exit point from the elevator system., (origin ?person - passenger ?floor - floor): This predicate identifies the floor where a passenger initially appears and waits for the elevator, representing their point of entry into the system., (boarded ?person - passenger): This predicate indicates that a passenger has entered the elevator and is currently being transported, no longer waiting on their origin floor., (served ?person - passenger): This predicate indicates that a passenger has been successfully transported to their destination floor and has exited the elevator, completing their journey., (not-served ?person - passenger): This predicate indicates that a passenger has not yet been transported to their destination floor, meaning their journey is incomplete., (not-boarded ?person - passenger): This predicate indicates that a passenger is waiting to board the elevator and has not yet entered it., (above ?floor1 - floor ?floor2 - floor): This predicate establishes the vertical relationship between floors, indicating that the first floor is exactly one level above the second floor.]
+
+
+AI
+
+{"pddl_action": "(:action move :parameters (?from - floor ?to - floor) :precondition (and (lift-at ?from) (adjacent ?from ?to)) :effect (and (not (lift-at ?from)) (lift-at ?to)))", "predicates": ["(lift-at ?floor - floor)", "(destin ?person - passenger ?floor - floor)", "(origin ?person - passenger ?floor - floor)", "(boarded ?person - passenger)", "(served ?person - passenger)", "(not-served ?person - passenger)", "(not-boarded ?person - passenger)", "(above ?floor1 - floor ?floor2 - floor)", "(adjacent ?floor1 - floor ?floor2 - floor)"], "types": ["floor", "passenger"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+This action occurs when the elevator is at the same floor as a waiting passenger. The passenger enters the elevator and is marked as boarded, no longer waiting at their origin floor.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action board :parameters (?p - passenger ?f - floor) :precondition (and (lift-at ?f) (origin ?p ?f)) :effect (and (not (origin ?p ?f)) (boarded ?p) (not (not-boarded ?p))))", "predicates": ["(lift-at ?floor - floor)", "(destin ?person - passenger ?floor - floor)", "(origin ?person - passenger ?floor - floor)", "(boarded ?person - passenger)", "(served ?person - passenger)", "(not-served ?person - passenger)", "(not-boarded ?person - passenger)", "(above ?floor1 - floor ?floor2 - floor)", "(adjacent ?floor1 - floor ?floor2 - floor)"], "types": ["floor", "passenger"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+This action occurs when the elevator reaches a passenger's destination floor. The passenger exits the elevator and is marked as served, completing their journey.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action alight :parameters (?p - passenger ?f - floor) :precondition (and (lift-at ?f) (boarded ?p) (destin ?p ?f)) :effect (and (not (boarded ?p)) (served ?p) (not (destin ?p ?f))))", "predicates": ["(lift-at ?floor - floor)", "(destin ?person - passenger ?floor - floor)", "(origin ?person - passenger ?floor - floor)", "(boarded ?person - passenger)", "(served ?person - passenger)", "(not-served ?person - passenger)", "(not-boarded ?person - passenger)", "(above ?floor1 - floor ?floor2 - floor)", "(adjacent ?floor1 - floor ?floor2 - floor)"], "types": ["floor", "passenger"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+This action moves the elevator from its current floor to the floor directly above it, traveling upward one level at a time.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action move-up :parameters (?from - floor ?to - floor) :precondition (and (lift-at ?from) (above ?from ?to)) :effect (and (not (lift-at ?from)) (lift-at ?to)))", "predicates": ["(lift-at ?floor - floor)", "(destin ?person - passenger ?floor - floor)", "(origin ?person - passenger ?floor - floor)", "(boarded ?person - passenger)", "(served ?person - passenger)", "(not-served ?person - passenger)", "(not-boarded ?person - passenger)", "(above ?floor1 - floor ?floor2 - floor)", "(adjacent ?floor1 - floor ?floor2 - floor)"], "types": ["floor", "passenger"]}
+
+
+HUMAN
+
+Using the current list of predicates and any new predicates you feel you need,generate a PDDL action for the following action description in the above described domain: 
+
+This action moves the elevator from its current floor to the floor directly below it, traveling downward one level at a time.
+
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+
+
+AI
+
+{"pddl_action": "(:action move-down :parameters (?from - floor ?to - floor) :precondition (and (lift-at ?from) (above ?from ?to)) :effect (and (not (lift-at ?from)) (lift-at ?to)))", "predicates": ["(lift-at ?from - floor)", "(destin ?person - passenger ?floor - floor)", "(origin ?person - passenger ?floor - floor)", "(boarded ?person - passenger)", "(served ?person - passenger)", "(not-served ?person - passenger)", "(not-boarded ?person - passenger)", "(above ?from - floor ?to - floor)", "(adjacent ?from - floor ?to - floor)"], "types": ["floor", "passenger"]}
+
+
+HUMAN
+
+Based on the actions you have given, the full domain is as follows:
+
+
+        (define (domain miconic)
+            (:requirements :strips :typing)
+            (:types floor
+passenger)
+            (:predicates (lift-at ?from - floor)
+(destin ?person - passenger ?floor - floor)
+(origin ?person - passenger ?floor - floor)
+(boarded ?person - passenger)
+(served ?person - passenger)
+(not-served ?person - passenger)
+(not-boarded ?person - passenger)
+(above ?from - floor ?to - floor)
+(adjacent ?from - floor ?to - floor))
+
+            (:action move :parameters (?from - floor ?to - floor) :precondition (and (lift-at ?from) (adjacent ?from ?to)) :effect (and (not (lift-at ?from)) (lift-at ?to)))
+(:action board :parameters (?p - passenger ?f - floor) :precondition (and (lift-at ?f) (origin ?p ?f)) :effect (and (not (origin ?p ?f)) (boarded ?p) (not (not-boarded ?p))))
+(:action alight :parameters (?p - passenger ?f - floor) :precondition (and (lift-at ?f) (boarded ?p) (destin ?p ?f)) :effect (and (not (boarded ?p)) (served ?p) (not (destin ?p ?f))))
+(:action move-up :parameters (?from - floor ?to - floor) :precondition (and (lift-at ?from) (above ?from ?to)) :effect (and (not (lift-at ?from)) (lift-at ?to)))
+(:action move-down :parameters (?from - floor ?to - floor) :precondition (and (lift-at ?from) (above ?from ?to)) :effect (and (not (lift-at ?from)) (lift-at ?to)))
+        )
+    
+
+Now you will receive a list of issues with the domain, one at a time. For each issue, generate a corrected version of the full domain that addresses the issue.
+
+
+HUMAN
+
+Action names do not match the expected action names. Missing actions: depart, down, up. Extra actions: alight, move-down, move, move-up.  Please revise the domain and try again.
+
+
+AI
+
+{"pddl_domain": "(define (domain miconic)\n  (:requirements :strips :typing)\n  (:types floor passenger)\n  (:predicates\n    (lift-at ?from - floor)\n    (destin ?person - passenger ?floor - floor)\n    (origin ?person - passenger ?floor - floor)\n    (boarded ?person - passenger)\n    (served ?person - passenger)\n    (not-served ?person - passenger)\n    (not-boarded ?person - passenger)\n    (above ?from - floor ?to - floor)\n    (adjacent ?from - floor ?to - floor)\n  )\n  (:action depart :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (adjacent ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action up :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?to ?from))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action down :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n)\n"}
+
+
+HUMAN
+
+Action names do not match the expected action names. Missing actions: board.  Please revise the domain and try again.
+
+
+AI
+
+{"pddl_domain": "(define (domain miconic)\n  (:requirements :strips :typing)\n  (:types floor passenger)\n  (:predicates\n    (lift-at ?from - floor)\n    (destin ?person - passenger ?floor - floor)\n    (origin ?person - passenger ?floor - floor)\n    (boarded ?person - passenger)\n    (served ?person - passenger)\n    (not-served ?person - passenger)\n    (not-boarded ?person - passenger)\n    (above ?from - floor ?to - floor)\n    (adjacent ?from - floor ?to - floor)\n  )\n  (:action depart :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (adjacent ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action up :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?to ?from))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action down :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action board :parameters (?p - passenger ?f - floor)\n    :precondition (and (lift-at ?f) (origin ?p ?f))\n    :effect (and (not (origin ?p ?f)) (boarded ?p) (not (not-boarded ?p))))\n)\n"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem miconic-prob-3f-3p)
+  (:domain miconic)
+
+  (:objects
+    p1 p2 p3 - passenger
+    f1 f2 f3 - floor
+  )
+
+  (:init
+    (origin p1 f3)
+    (destin p1 f2)
+    (not-boarded p1)
+    (not-served p1)
+    (origin p2 f2)
+    (destin p2 f1)
+    (not-boarded p2)
+    (not-served p2)
+    (origin p3 f2)
+    (destin p3 f3)
+    (not-boarded p3)
+    (not-served p3)
+    (above f1 f2)
+    (above f1 f3)
+    (above f2 f3)
+    (lift-at f3)
+  )
+
+  (:goal (and
+    (served p1)
+    (served p2)
+    (served p3)
+  ))
+)
+
+```
+It was found to be unsolvable, but it was expected that the domain should be solvable on this problem. This is an indication that a precondition or effect of an action in the domain are missing.
+
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain miconic)\n  (:requirements :strips :typing)\n  (:types floor passenger)\n  (:predicates\n    (lift-at ?f - floor)\n    (destin ?p - passenger ?f - floor)\n    (origin ?p - passenger ?f - floor)\n    (boarded ?p - passenger)\n    (served ?p - passenger)\n    (not-served ?p - passenger)\n    (not-boarded ?p - passenger)\n    (above ?f1 - floor ?f2 - floor)\n    (adjacent ?f1 - floor ?f2 - floor)\n  )\n  (:action depart :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (adjacent ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action up :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?to ?from))\n    :effect (and (not (lifting-at ?from)) (lift-at ?to)))\n  (:action down :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action board :parameters (?p - passenger ?f - floor)\n    :precondition (and (lift-at ?f) (origin ?p ?f))\n    :effect (and (not (origin ?p ?f)) (boarded ?p)))\n  (:action alight :parameters (?p - passenger ?f - floor)\n    :precondition (and (lift-at ?f) (boarded ?p) (destin ?p ?f))\n    :effect (and (not (boarded ?p)) (served ?p) (not (destin ?p ?f))))\n)\n"}
+
+
+HUMAN
+
+Action names do not match the expected action names. Extra actions: alight.  Please revise the domain and try again.
+
+
+AI
+
+{"pddl_domain": "(define (domain miconic)\n  (:requirements :strips :typing)\n  (:types floor passenger)\n  (:predicates\n    (lift-at ?f - floor)\n    (destin ?p - passenger ?f - floor)\n    (origin ?p - passenger ?f - floor)\n    (boarded ?p - passenger)\n    (served ?p - passenger)\n    (not-served ?p - passenger)\n    (not-boarded ?p - passenger)\n    (above ?f1 - floor ?f2 - floor)\n    (adjacent ?f1 - floor ?f2 - floor)\n  )\n  (:action move :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (adjacent ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action move-up :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?to ?from))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action move-down :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action board :parameters (?p - passenger ?f - floor)\n    :precondition (and (lift-at ?f) (origin ?p ?f))\n    :effect (and (not (origin ?p ?f)) (boarded ?p)))\n)\n"}
+
+
+HUMAN
+
+Action names do not match the expected action names. Missing actions: depart, down, up. Extra actions: move-up, move-down, move.  Please revise the domain and try again.
+
+
+AI
+
+{"pddl_domain": "(define (domain miconic)\n  (:requirements :strips :typing)\n  (:types floor passenger)\n  (:predicates\n    (lift-at ?f - floor)\n    (destin ?p - passenger ?f - floor)\n    (origin ?p - passenger ?f - floor)\n    (boarded ?p - passenger)\n    (served ?p - passenger)\n    (not-served ?p - passenger)\n    (not-boarded ?p - passenger)\n    (above ?f1 - floor ?f2 - floor)\n    (adjacent ?f1 - floor ?f2 - floor)\n  )\n  (:action depart :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (adjacent ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action up :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?to ?from))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action down :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action board :parameters (?p - passenger ?f - floor)\n    :precondition (and (lift-at ?f) (origin ?p ?f))\n    :effect (and (not (origin ?p ?f)) (boarded ?p) (not (not-boarded ?p))))\n)\n"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem miconic-prob-3f-3p)
+  (:domain miconic)
+
+  (:objects
+    p1 p2 p3 - passenger
+    f1 f2 f3 - floor
+  )
+
+  (:init
+    (origin p1 f3)
+    (destin p1 f2)
+    (not-boarded p1)
+    (not-served p1)
+    (origin p2 f2)
+    (destin p2 f1)
+    (not-boarded p2)
+    (not-served p2)
+    (origin p3 f2)
+    (destin p3 f3)
+    (not-boarded p3)
+    (not-served p3)
+    (above f1 f2)
+    (above f1 f3)
+    (above f2 f3)
+    (lift-at f3)
+  )
+
+  (:goal (and
+    (served p1)
+    (served p2)
+    (served p3)
+  ))
+)
+
+```
+It was found to be unsolvable, but it was expected that the domain should be solvable on this problem. This is an indication that a precondition or effect of an action in the domain are missing.
+
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain miconic)\n  (:requirements :strips :typing)\n  (:types floor passenger)\n  (:predicates\n    (lift-at ?f - floor)\n    (destin ?p - passenger ?f - floor)\n    (origin ?p - passenger ?f - floor)\n    (boarded ?p - passenger)\n    (served ?p - passenger)\n    (not-served ?p - passenger)\n    (not-boarded ?p - passenger)\n    (above ?f1 - floor ?f2 - floor)\n    (adjacent ?f1 - floor ?f2 - floor)\n  )\n  (:action depart :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (adjacent ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action up :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?to ?from))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action down :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action board :parameters (?p - passenger ?f - floor)\n    :precondition (and (lift-at ?f) (origin ?p ?f) (not-boarded ?p))\n    :effect (and (not (origin ?p ?f)) (boarded ?p) (not (not-boarded ?p))))\n  (:action alight :parameters (?p - passenger ?f - floor)\n    :precondition (and (lift-at ?f) (boarded ?p) (destin ?p ?f))\n    :effect (and (not (boarded ?p)) (served ?p) (not (destin ?p ?f))))\n)"}
+
+
+HUMAN
+
+Action names do not match the expected action names. Extra actions: alight.  Please revise the domain and try again.
+
+
+AI
+
+{"pddl_domain": "(define (domain miconic)\n  (:requirements :strips :typing)\n  (:types floor passenger)\n  (:predicates\n    (lift-at ?f - floor)\n    (destin ?p - passenger ?f - floor)\n    (origin ?p - passenger ?f - floor)\n    (boarded ?p - passenger)\n    (served ?p - passenger)\n    (not-served ?p - passenger)\n    (not-boarded ?p - passenger)\n    (above ?f1 - floor ?f2 - floor)\n    (adjacent ?f1 - floor ?f2 - floor)\n  )\n  (:action depart :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (adjacent ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action up :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?to ?from))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action down :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action board :parameters (?p - passenger ?f - floor)\n    :precondition (and (lift-at ?f) (origin ?p ?f) (not-boarded ?p))\n    :effect (and (not (origin ?p ?f)) (boarded ?p) (not (not-boarded ?p))))\n)\n"}
+
+
+HUMAN
+
+Given the above domain you just generated, attempting to use it with the following problem:
+```
+(define (problem miconic-prob-3f-3p)
+  (:domain miconic)
+
+  (:objects
+    p1 p2 p3 - passenger
+    f1 f2 f3 - floor
+  )
+
+  (:init
+    (origin p1 f3)
+    (destin p1 f2)
+    (not-boarded p1)
+    (not-served p1)
+    (origin p2 f2)
+    (destin p2 f1)
+    (not-boarded p2)
+    (not-served p2)
+    (origin p3 f2)
+    (destin p3 f3)
+    (not-boarded p3)
+    (not-served p3)
+    (above f1 f2)
+    (above f1 f3)
+    (above f2 f3)
+    (lift-at f3)
+  )
+
+  (:goal (and
+    (served p1)
+    (served p2)
+    (served p3)
+  ))
+)
+
+```
+It was found to be unsolvable, but it was expected that the domain should be solvable on this problem. This is an indication that a precondition or effect of an action in the domain are missing.
+
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+
+
+AI
+
+{"pddl_domain": "(define (domain miconic)\n  (:requirements :strips :typing)\n  (:types floor passenger)\n  (:predicates\n    (lift-at ?f - floor)\n    (destin ?p - passenger ?f - floor)\n    (origin ?p - passenger ?f - floor)\n    (boarded ?p - passenger)\n    (served ?p - passenger)\n    (not-served ?p - passenger)\n    (not-boarded ?p - passenger)\n    (above ?f1 - floor ?f2 - floor)\n    (adjacent ?f1 - floor ?f2 - floor)\n  )\n  (:action depart :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (adjacent ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action up :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?to ?from))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action down :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action board :parameters (?p - passenger ?f - floor)\n    :precondition (and (lift-at ?f) (origin ?p ?f) (not-boarded ?p))\n    :effect (and (not (origin ?p ?f)) (boarded ?p) (not (not-boarded ?p))))\n  (:action alight :parameters (?p - passenger ?f - floor)\n    :precondition (and (lift-at ?f) (boarded ?p) (destin ?p ?f))\n    :effect (and (not (boarded ?p)) (served ?p) (not (destin ?p ?f))))\n)"}
+
+
+HUMAN
+
+Action names do not match the expected action names. Extra actions: alight.  Please revise the domain and try again.
+
+
+AI
+
+{"pddl_domain": "(define (domain miconic)\n  (:requirements :strips :typing)\n  (:types floor passenger)\n  (:predicates\n    (lift-at ?f - floor)\n    (destin ?p - passenger ?f - floor)\n    (origin ?p - passenger ?f - floor)\n    (boarded ?p - passenger)\n    (served ?p - passenger)\n    (not-served ?p - passenger)\n    (not-boarded ?p - passenger)\n    (above ?f1 - floor ?f2 - floor)\n    (adjacent ?f1 - floor ?f2 - floor)\n  )\n  (:action depart :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (adjacent ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action up :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?to ?from))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action down :parameters (?from - floor ?to - floor)\n    :precondition (and (lift-at ?from) (above ?from ?to))\n    :effect (and (not (lift-at ?from)) (lift-at ?to)))\n  (:action board :parameters (?p - passenger ?f - floor)\n    :precondition (and (lift-at ?f) (origin ?p ?f) (not-boarded ?p))\n    :effect (and (not (origin ?p ?f)) (boarded ?p) (not (not-boarded ?p))))\n)\n"}
+
+

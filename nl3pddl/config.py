@@ -15,7 +15,6 @@ HDE_THRESHOLD = config["hde-threshold"]
 KSTAR_TIMEOUT = config["kstar-timeout"]
 THREADS = config["threads"]
 KSTAR_N_PLANS = config["kstar-n-plans"]
-ALTERNATION_STEPS = config["alternation-steps"]
 
 MODELS = config["models"]
 GIVE_PRED_DESCRIPTIONS = config["give-pred-description"]

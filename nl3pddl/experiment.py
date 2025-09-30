@@ -21,12 +21,12 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph.message import add_messages
 
-from .config import THREADS, ALTERNATION_STEPS
+from .config import THREADS
 from .check_output import check_action_output, check_domain_syntax_output
 from .gen_prompts import action_message, domain_template, init_msgs, raw_domain_msg
 from .dataset import Dataset
 from .params import Params, action_names, domain_name, feedback_pipeline_str, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
-from .feedback_eval import landmark_feedback, val_evaluate, val_feedback
+from .feedback_eval import single_landmark_feedback, val_evaluate, single_val_feedback
 from .logger import logger
 
 # This is a pydantic model that we force the LLM to output in
@@ -62,8 +62,11 @@ class State(TypedDict):
     run_id: str
     # Experiment parameters, should not be modified during the run
     PARAMS: Params
-    #LLM Message History
+    #LLM Message History up to the current tree level
     messages: Annotated[list, add_messages]
+    #Proposed messages
+    proposed: list[HumanMessage]
+    proposed_responses: list[DomainSchema]
     # The json object of the message returned by the model
     json_last: Any
     # The index of the action we are currently trying to write
@@ -333,13 +336,13 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         val_feedback_msg : HumanMessage | None = None
         try:
             if "landmark" in p.feedback_pipeline:
-                landmark_feedback_msg = landmark_feedback(d, p, state["json_last"].pddl_domain)
+                landmark_feedback_msg = single_landmark_feedback(d, p, state["json_last"].pddl_domain)
                 logger.debug(
                     "Checking landmarks... %s",
                     "passed" if landmark_feedback_msg is None else "failed"
                 )
             if "validate" in p.feedback_pipeline:
-                val_feedback_msg = val_feedback(d, p, state["json_last"].pddl_domain)
+                val_feedback_msg = single_val_feedback(d, p, state["json_last"].pddl_domain)
                 logger.debug(
                     "Validating domain... %s",
                     "passed" if val_feedback_msg is None else "failed"

@@ -67,7 +67,7 @@ def raw_validate(
         shutil.rmtree("found_plans")
     return None
 
-def val_feedback(d : Dataset, p : Params, new_domain_str : str) ->\
+def single_val_feedback(d : Dataset, p : Params, new_domain_str : str) ->\
 HumanMessage | None:
     """
     Check if the new domain is valid for all problems and plans, if not, 
@@ -130,7 +130,7 @@ def raw_kstar(
     )
     return plans
 
-def landmark_feedback(
+def single_landmark_feedback(
     d : Dataset, 
     p : Params, 
     new_domain_str : str
@@ -177,3 +177,77 @@ def landmark_feedback(
                         plan=new_plan_str
                     ))
     return None
+
+#TODO: Parts of this is pretty similar to single_val_feedback,
+# consider refactoring to reduce code duplication.
+def multi_val_feedback(d : Dataset, p : Params, new_domain_str : str) ->\
+list[HumanMessage]:
+    """
+    Check if the new domain is valid for all problems and plans, returns
+    ALL error messages with the problem and plan that failed validation, as well as the error message from VAL.
+    """
+    # Get the domain and problem paths
+    problem_paths = d.feedback_problem_paths[p.domain_path]
+    results = []
+    for problem_path in problem_paths:
+        for plan_path in d.feedback_plan_paths[problem_path]:
+            result = raw_validate(new_domain_str, problem_path, plan_path)
+            if result is not None and (result == "" or result.strip()) == "":
+                result = "The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL."
+            if result is not None:
+                problem_raw = d.feedback_problem_raws[problem_path]
+                plan_raw = d.feedback_plan_raws[plan_path]
+                results.append(HumanMessage(VAL_PROMPT_TEMPLATE.format(
+                    problem=problem_raw,
+                    plan=plan_raw,
+                    val_output=result
+                )))
+    return results
+
+def multi_landmark_feedback(
+    d : Dataset, 
+    p : Params, 
+    new_domain_str : str
+) -> HumanMessage | None:
+    """
+    Version of single_landmark_feedback that returns ALL unsatisfied landmarks, not just the first one found.
+    """
+    results = []
+    # Get the new domain's landmarks
+    problem_paths = d.feedback_problem_paths[p.domain_path]
+    for problem_path in problem_paths:
+        landmarks = d.landmarks[problem_path]
+        plan_obj = raw_kstar(new_domain_str, problem_path)
+        if plan_obj is None:
+            continue
+        if plan_obj["unsolvable"]:
+            results.append(HumanMessage(
+                UNSOLVABLE_PROMPT_TEMPLATE.format(
+                    problem=d.feedback_problem_raws[problem_path]
+                )
+            ))
+        if not plan_obj["plans"] or len(plan_obj["plans"]) == 0:
+            logger.warning(
+                "No plans generated for problem %s in domain %s",
+                problem_path, p.domain_path
+            )
+            continue
+        new_plans = plan_obj["plans"]
+        for new_plan in new_plans:
+            # By dumping the plan to a string, we can check if an action is satisfied just by checking if the action is in the string.
+            new_plan_str = "\n".join(f"({a})" for a in new_plan["actions"])
+            for landmark in landmarks:
+                landmark_str = "\n".join([f"({l})" for l in landmark])
+                landmark_satisfied = False
+                for landmark_disjunt in landmark:
+                    if landmark_disjunt in new_plan_str:
+                        landmark_satisfied = True
+                        break
+                if not landmark_satisfied:
+                    problem_raw = d.feedback_problem_raws[problem_path]
+                    results.append(HumanMessage(LANDMARK_PROMPT_TEMPLATE.format(
+                        problem=problem_raw,
+                        landmark=landmark_str,
+                        plan=new_plan_str
+                    )))
+    return results
