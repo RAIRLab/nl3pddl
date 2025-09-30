@@ -1,0 +1,322 @@
+{
+    "domain": "checkers-jumping",
+    "problem": "problem-2.pddl",
+    "problem_num": 2,
+    "trivial_state_landmarks": [
+        "Atom empty(space4)",
+        "Atom at(blue1, space5)",
+        "Atom at(red3, space3)",
+        "Atom at(red2, space2)",
+        "Atom at(blue2, space6)",
+        "Atom at(blue3, space7)",
+        "Atom at(red1, space1)"
+    ],
+    "non_trivial_state_landmarks": [
+        "Atom at(blue1, space1)",
+        "Atom at(red3, space7)",
+        "Atom at(red2, space6)",
+        "Atom at(blue2, space2)",
+        "Atom at(blue3, space3)",
+        "Atom at(red1, space5)",
+        "Atom empty(space1)",
+        "Atom empty(space2)",
+        "Atom empty(space3)",
+        "Atom empty(space5)",
+        "Atom empty(space6)",
+        "Atom empty(space7)"
+    ],
+    "landmarks": [
+        [
+            "slide-blue blue1 space5 space4",
+            "jump-blue blue1 red1 space5 space4 space3",
+            "jump-blue blue1 red3 space5 space4 space3",
+            "jump-blue blue1 red2 space5 space4 space3"
+        ],
+        [
+            "slide-blue blue1 space2 space1",
+            "jump-blue blue1 red1 space3 space2 space1",
+            "jump-blue blue1 red2 space3 space2 space1"
+        ],
+        [
+            "jump-blue blue2 red1 space4 space3 space2",
+            "jump-blue blue2 red3 space4 space3 space2",
+            "jump-blue blue2 red2 space4 space3 space2",
+            "slide-blue blue2 space3 space2"
+        ],
+        [
+            "jump-red red2 blue1 space2 space3 space4",
+            "jump-red red2 blue3 space2 space3 space4",
+            "slide-red red2 space2 space3",
+            "jump-red red2 blue2 space2 space3 space4"
+        ],
+        [
+            "jump-blue blue2 red3 space6 space5 space4",
+            "slide-blue blue2 space6 space5",
+            "jump-blue blue2 red2 space6 space5 space4",
+            "jump-blue blue2 red1 space6 space5 space4"
+        ],
+        [
+            "jump-blue blue3 red1 space7 space6 space5",
+            "slide-blue blue3 space7 space6",
+            "jump-blue blue3 red3 space7 space6 space5",
+            "jump-blue blue3 red2 space7 space6 space5"
+        ],
+        [
+            "jump-red red1 blue1 space3 space4 space5",
+            "jump-red red1 blue2 space3 space4 space5",
+            "jump-red red1 blue3 space3 space4 space5",
+            "slide-red red1 space4 space5"
+        ],
+        [
+            "jump-red red1 blue2 space1 space2 space3",
+            "jump-red red1 blue1 space1 space2 space3",
+            "slide-red red1 space1 space2",
+            "jump-red red1 blue3 space1 space2 space3"
+        ],
+        [
+            "jump-red red2 blue1 space4 space5 space6",
+            "slide-red red2 space5 space6",
+            "jump-red red2 blue3 space4 space5 space6",
+            "jump-red red2 blue2 space4 space5 space6"
+        ],
+        [
+            "jump-blue blue3 red3 space5 space4 space3",
+            "jump-blue blue3 red2 space5 space4 space3",
+            "jump-blue blue3 red1 space5 space4 space3",
+            "slide-blue blue3 space4 space3"
+        ],
+        [
+            "jump-red red3 blue3 space5 space6 space7",
+            "slide-red red3 space6 space7",
+            "jump-red red3 blue2 space5 space6 space7"
+        ],
+        [
+            "slide-red red3 space3 space4",
+            "jump-red red3 blue2 space3 space4 space5",
+            "jump-red red3 blue3 space3 space4 space5",
+            "jump-red red3 blue1 space3 space4 space5"
+        ]
+    ],
+    "raw_landmarks": {
+        "planner_output": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/james/repos/nl2pddl3/.venv/bin/python /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/translate/translate.py /home/james/repos/nl2pddl3/data/domains/checkers-jumping/ground.pddl /home/james/repos/nl2pddl3/data/gen_problems/feedback/checkers-jumping/problem-2.pddl --sas-file output.sas\nParsing...\nParsing: [0.000s CPU, 0.002s wall-clock]\nNormalizing task... [0.000s CPU, 0.000s wall-clock]\nInstantiating...\nGenerating Datalog program... [0.000s CPU, 0.000s wall-clock]\nNormalizing Datalog program...\nNormalizing Datalog program: [0.000s CPU, 0.001s wall-clock]\nPreparing model... [0.000s CPU, 0.001s wall-clock]\nGenerated 43 rules.\nComputing model... [0.000s CPU, 0.003s wall-clock]\n197 relevant atoms\n428 auxiliary atoms\n625 final queue length\n781 total queue pushes\nCompleting instantiation... [0.010s CPU, 0.002s wall-clock]\nInstantiating: [0.010s CPU, 0.008s wall-clock]\nComputing fact groups...\nFinding invariants...\n5 initial candidates\nFinding invariants: [0.000s CPU, 0.002s wall-clock]\nChecking invariant weight... [0.000s CPU, 0.000s wall-clock]\nInstantiating groups... [0.000s CPU, 0.000s wall-clock]\nCollecting mutex groups... [0.000s CPU, 0.000s wall-clock]\nChoosing groups...\n0 uncovered facts\nChoosing groups: [0.000s CPU, 0.000s wall-clock]\nBuilding translation key... [0.000s CPU, 0.000s wall-clock]\nComputing fact groups: [0.000s CPU, 0.003s wall-clock]\nBuilding STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]\nBuilding dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]\nBuilding mutex information...\nBuilding mutex information: [0.000s CPU, 0.000s wall-clock]\nTranslating task...\nProcessing axioms...\nSimplifying axioms... [0.000s CPU, 0.000s wall-clock]\nTranslator axioms removed by simplifying: 0\nComputing negative axioms... [0.000s CPU, 0.000s wall-clock]\nProcessing axioms: [0.000s CPU, 0.000s wall-clock]\nTranslating task: [0.000s CPU, 0.002s wall-clock]\n0 effect conditions simplified\n0 implied preconditions added\nDetecting unreachable propositions...\n0 operators removed\n0 axioms removed\n7 propositions removed\nDetecting unreachable propositions: [0.000s CPU, 0.001s wall-clock]\nReordering and filtering variables...\n7 of 7 variables necessary.\n7 of 14 mutex groups necessary.\n96 of 96 operators necessary.\n0 of 0 axiom rules necessary.\nReordering and filtering variables: [0.000s CPU, 0.000s wall-clock]\nTranslator variables: 7\nTranslator derived variables: 0\nTranslator facts: 43\nTranslator goal facts: 7\nTranslator mutex groups: 7\nTranslator total mutex groups size: 43\nTranslator operators: 96\nTranslator axioms: 0\nTranslator task size: 646\nTranslator peak memory: 28772 KB\nWriting output... [0.000s CPU, 0.001s wall-clock]\nDone! [0.010s CPU, 0.017s wall-clock]\ntranslate exit code: 0\n\nINFO     Running search (/home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin).\nINFO     search stdin: output.sas\nINFO     search time limit: None\nINFO     search memory limit: None\nINFO     search command line string: /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/downward --evaluator 'h=lmcount(lm_factory=lm_exhaust(),dump_action_landmarks=true)' --always --search 'lazy_greedy([h,const(infinity())])' --internal-plan-file sas_plan < output.sas\n[t=7.7318e-05s, 11192 KB] reading input...\n[t=0.000599812s, 11324 KB] done reading input!\n[t=0.0016322s, 11720 KB] Initializing landmark count heuristic...\n[t=0.00169955s, 11720 KB] Generating landmark graph...\n[t=0.00173326s, 11720 KB] Initializing Exploration...\n[t=0.00179927s, 11720 KB] Generating landmarks by testing all facts with RPG method\n[t=0.00216028s, 11720 KB] Removed 0 reasonable or obedient reasonable orders\n[t=0.00222573s, 11720 KB] Landmarks generation time: 0.000527166s\n[t=0.00224707s, 11720 KB] Discovered 19 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00225685s, 11720 KB] 0 edges\n[t=0.00226571s, 11720 KB] Landmark graph generation time: 0.000574487s\n[t=0.00227455s, 11720 KB] Landmark graph contains 19 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00228275s, 11720 KB] Landmark graph contains 0 orderings.\n[t=0.00229257s, 11720 KB] Dumping landmarks from landmark graph: \n[t=0.00239347s, 11720 KB] Action landmarks end.\n[t=0.00248916s, 11720 KB] Building successor generator...done!\n[t=0.00257627s, 11720 KB] peak memory difference for successor generator creation: 0 KB\n[t=0.00258648s, 11720 KB] time for successor generation creation: 3.8638e-05s\n[t=0.00259769s, 11720 KB] Variables: 7\n[t=0.00261895s, 11720 KB] FactPairs: 43\n[t=0.00263117s, 11720 KB] Bytes per state: 4\n[t=0.00273029s, 11720 KB] Conducting lazy best first search, (real) bound = 2147483647\n[t=0.002807s, 11720 KB] 7 initial landmarks, 7 goal landmarks\n[t=0.00282733s, 11720 KB] Initial heuristic value for lmcount(lm_factory = lm_exhaust, dump_action_landmarks = true): 12\n[t=0.00284869s, 11720 KB] Completely explored state space -- no solution!\n[t=0.00286163s, 11720 KB] Actual search time: 4.9082e-05s\n[t=0.00288389s, 11720 KB] Expanded 0 state(s).\n[t=0.00288389s, 11720 KB] Reopened 0 state(s).\n[t=0.00288389s, 11720 KB] Evaluated 1 state(s).\n[t=0.00288389s, 11720 KB] Evaluations: 1\n[t=0.00288389s, 11720 KB] Generated 0 state(s).\n[t=0.00288389s, 11720 KB] Dead ends: 1 state(s).\n[t=0.00288389s, 11720 KB] Number of registered states: 1\n[t=0.00288389s, 11720 KB] Int hash set load factor: 1/1 = 1\n[t=0.00288389s, 11720 KB] Int hash set resizes: 0\n[t=0.00288389s, 11720 KB] Search time: 0.000153893s\n[t=0.00288389s, 11720 KB] Total time: 0.00288389s\nSearch stopped without finding a solution.\nPeak memory: 11720 KB\nRemove intermediate file output.sas\nsearch exit code: 12\n\nDriver aborting after search\nINFO     Planner time: 0.10s\n",
+        "planner_error": "",
+        "landmarks": [
+            {
+                "facts": [
+                    "Atom at(blue1, space1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-blue blue1 red1 space3 space2 space1",
+                    "jump-blue blue1 red2 space3 space2 space1",
+                    "slide-blue blue1 space2 space1"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(red3, space7)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-red red3 blue2 space5 space6 space7",
+                    "jump-red red3 blue3 space5 space6 space7",
+                    "slide-red red3 space6 space7"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(red2, space6)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-red red2 blue1 space4 space5 space6",
+                    "jump-red red2 blue2 space4 space5 space6",
+                    "jump-red red2 blue3 space4 space5 space6",
+                    "slide-red red2 space5 space6"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(blue2, space2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-blue blue2 red1 space4 space3 space2",
+                    "jump-blue blue2 red2 space4 space3 space2",
+                    "jump-blue blue2 red3 space4 space3 space2",
+                    "slide-blue blue2 space3 space2"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(blue3, space3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-blue blue3 red1 space5 space4 space3",
+                    "jump-blue blue3 red2 space5 space4 space3",
+                    "jump-blue blue3 red3 space5 space4 space3",
+                    "slide-blue blue3 space4 space3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(red1, space5)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-red red1 blue1 space3 space4 space5",
+                    "jump-red red1 blue2 space3 space4 space5",
+                    "jump-red red1 blue3 space3 space4 space5",
+                    "slide-red red1 space4 space5"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom empty(space4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-blue blue1 red1 space4 space3 space2",
+                    "jump-blue blue1 red2 space4 space3 space2",
+                    "jump-blue blue1 red3 space4 space3 space2",
+                    "jump-blue blue2 red1 space4 space3 space2",
+                    "jump-blue blue2 red2 space4 space3 space2",
+                    "jump-blue blue2 red3 space4 space3 space2",
+                    "jump-blue blue3 red1 space4 space3 space2",
+                    "jump-blue blue3 red2 space4 space3 space2",
+                    "jump-blue blue3 red3 space4 space3 space2",
+                    "jump-red red1 blue1 space4 space5 space6",
+                    "jump-red red1 blue2 space4 space5 space6",
+                    "jump-red red1 blue3 space4 space5 space6",
+                    "jump-red red2 blue1 space4 space5 space6",
+                    "jump-red red2 blue2 space4 space5 space6",
+                    "jump-red red2 blue3 space4 space5 space6",
+                    "jump-red red3 blue1 space4 space5 space6",
+                    "jump-red red3 blue2 space4 space5 space6",
+                    "jump-red red3 blue3 space4 space5 space6",
+                    "slide-blue blue1 space4 space3",
+                    "slide-blue blue2 space4 space3",
+                    "slide-blue blue3 space4 space3",
+                    "slide-red red1 space4 space5",
+                    "slide-red red2 space4 space5",
+                    "slide-red red3 space4 space5"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(blue1, space5)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom at(red3, space3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom at(red2, space2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom at(blue2, space6)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom at(blue3, space7)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom at(red1, space1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(space1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-red red1 blue1 space1 space2 space3",
+                    "jump-red red1 blue2 space1 space2 space3",
+                    "jump-red red1 blue3 space1 space2 space3",
+                    "slide-red red1 space1 space2"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom empty(space2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-red red2 blue1 space2 space3 space4",
+                    "jump-red red2 blue2 space2 space3 space4",
+                    "jump-red red2 blue3 space2 space3 space4",
+                    "slide-red red2 space2 space3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom empty(space3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-red red3 blue1 space3 space4 space5",
+                    "jump-red red3 blue2 space3 space4 space5",
+                    "jump-red red3 blue3 space3 space4 space5",
+                    "slide-red red3 space3 space4"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom empty(space5)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-blue blue1 red1 space5 space4 space3",
+                    "jump-blue blue1 red2 space5 space4 space3",
+                    "jump-blue blue1 red3 space5 space4 space3",
+                    "slide-blue blue1 space5 space4"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom empty(space6)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-blue blue2 red1 space6 space5 space4",
+                    "jump-blue blue2 red2 space6 space5 space4",
+                    "jump-blue blue2 red3 space6 space5 space4",
+                    "slide-blue blue2 space6 space5"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom empty(space7)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "jump-blue blue3 red1 space7 space6 space5",
+                    "jump-blue blue3 red2 space7 space6 space5",
+                    "jump-blue blue3 red3 space7 space6 space5",
+                    "slide-blue blue3 space7 space6"
+                ]
+            }
+        ]
+    }
+}

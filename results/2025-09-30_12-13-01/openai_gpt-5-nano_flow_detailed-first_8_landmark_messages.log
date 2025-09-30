@@ -1,0 +1,16 @@
+NON VAR INFO =========================================
+
+TRIAL: 8
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: gpt-5-nano
+DOMAIN PATH: data/domains/flow
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: landmark
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: FileNotFoundError, [Errno 2] No such file or directory: 'submodules/VAL/build/bin/Validate'

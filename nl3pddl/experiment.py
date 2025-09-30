@@ -21,7 +21,7 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph.message import add_messages
 
-from .config import THREADS, ALTERNATION_STEPS
+from .config import THREADS, ALTERNATION_STEPS, DEBUG
 from .check_output import check_action_output, check_domain_syntax_output
 from .gen_prompts import action_message, domain_template, init_msgs, raw_domain_msg
 from .dataset import Dataset
@@ -626,7 +626,7 @@ def experiment_init() -> None:
         raise RuntimeError("OPENAI_API_KEY environment variable not set.\
                             Please set it in your .env file.")
     if not os.environ.get("DEEPSEEK_API_KEY"):
-        raise RuntimeError("DEEPEEK_API_KEY environment variable not set.\
+        raise RuntimeError("DEEPSEEK_API_KEY environment variable not set.\
                             Please set it in your .env file.")
 
 def run_experiment() -> None:
@@ -652,6 +652,9 @@ def run_experiment() -> None:
 
     # Run the experiments in parallel and write the results
     args = [(dataset, params, date_time) for params in param_grid(dataset)]
+    if DEBUG:
+        print(args)
+
     with mp.Pool(processes=num_processes) as pool:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)

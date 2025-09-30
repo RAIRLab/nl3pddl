@@ -1,0 +1,1374 @@
+{
+    "domain": "flow",
+    "problem": "problem-1.pddl",
+    "problem_num": 1,
+    "trivial_state_landmarks": [
+        "Atom empty(p_0_0)",
+        "Atom empty(p_0_4)",
+        "Atom empty(p_0_3)",
+        "Atom empty(p_1_4)",
+        "Atom empty(p_0_2)",
+        "Atom empty(p_0_1)",
+        "Atom empty(p_1_3)",
+        "Atom empty(p_2_4)",
+        "Atom empty(p_3_4)",
+        "Atom empty(p_4_4)",
+        "Atom empty(p_1_0)",
+        "Atom empty(p_2_0)",
+        "Atom empty(p_2_3)",
+        "Atom empty(p_3_3)",
+        "Atom empty(p_4_3)",
+        "Atom empty(p_4_2)",
+        "Atom empty(p_1_2)",
+        "Atom empty(p_1_1)",
+        "Atom empty(p_3_0)",
+        "Atom empty(p_4_0)",
+        "Atom empty(p_4_1)",
+        "Atom empty(p_3_2)",
+        "Atom empty(p_2_2)",
+        "Atom empty(p_2_1)",
+        "Atom empty(p_3_1)",
+        "Atom offboard()"
+    ],
+    "non_trivial_state_landmarks": [
+        "Atom not-empty(p_0_4)",
+        "Atom not-empty(p_0_3)",
+        "Atom not-empty(p_0_2)",
+        "Atom not-empty(p_0_1)",
+        "Atom not-empty(p_0_0)",
+        "Atom not-empty(p_1_0)",
+        "Atom not-empty(p_1_2)",
+        "Atom not-empty(p_1_3)",
+        "Atom not-empty(p_1_4)",
+        "Atom not-empty(p_2_4)",
+        "Atom not-empty(p_2_3)",
+        "Atom not-empty(p_2_1)",
+        "Atom not-empty(p_2_0)",
+        "Atom not-empty(p_3_0)",
+        "Atom flow-complete(c_1)",
+        "Atom not-empty(p_3_2)",
+        "Atom flow-complete(c_2)",
+        "Atom not-empty(p_4_2)",
+        "Atom not-empty(p_3_3)",
+        "Atom not-empty(p_4_1)",
+        "Atom not-empty(p_4_0)",
+        "Atom not-empty(p_3_1)",
+        "Atom not-empty(p_2_2)",
+        "Atom not-empty(p_1_1)",
+        "Atom not-empty(p_4_4)",
+        "Atom not-empty(p_4_3)",
+        "Atom not-empty(p_3_4)",
+        "Atom flow-complete(c_3)",
+        "NegatedAtom offboard()",
+        "NegatedAtom not-empty(p_0_4)",
+        "NegatedAtom not-empty(p_0_3)",
+        "NegatedAtom not-empty(p_0_2)",
+        "NegatedAtom not-empty(p_0_1)",
+        "NegatedAtom not-empty(p_0_0)",
+        "NegatedAtom not-empty(p_1_0)",
+        "NegatedAtom not-empty(p_1_2)",
+        "NegatedAtom not-empty(p_1_3)",
+        "NegatedAtom not-empty(p_1_4)",
+        "NegatedAtom not-empty(p_2_4)",
+        "NegatedAtom not-empty(p_2_3)",
+        "NegatedAtom not-empty(p_2_1)",
+        "NegatedAtom not-empty(p_2_0)",
+        "NegatedAtom not-empty(p_3_0)",
+        "NegatedAtom flow-complete(c_1)",
+        "NegatedAtom not-empty(p_3_2)",
+        "NegatedAtom flow-complete(c_2)",
+        "NegatedAtom not-empty(p_4_2)",
+        "NegatedAtom not-empty(p_3_3)",
+        "NegatedAtom not-empty(p_4_1)",
+        "NegatedAtom not-empty(p_4_0)",
+        "NegatedAtom not-empty(p_3_1)",
+        "NegatedAtom not-empty(p_2_2)",
+        "NegatedAtom not-empty(p_1_1)",
+        "NegatedAtom not-empty(p_4_4)",
+        "NegatedAtom not-empty(p_4_3)",
+        "NegatedAtom not-empty(p_3_4)",
+        "NegatedAtom flow-complete(c_3)"
+    ],
+    "landmarks": [
+        [
+            "move p_0_1 p_0_0 c_2",
+            "move p_0_1 p_0_0 c_1",
+            "move p_1_0 p_0_0 c_2",
+            "move p_0_1 p_0_0 c_3",
+            "move p_1_0 p_0_0 c_3",
+            "move p_1_0 p_0_0 c_1"
+        ],
+        [
+            "move p_2_0 p_1_0 c_2",
+            "move p_0_0 p_1_0 c_2",
+            "move p_0_0 p_1_0 c_3",
+            "move p_0_0 p_1_0 c_1",
+            "move p_2_0 p_1_0 c_3",
+            "move p_1_1 p_1_0 c_1",
+            "move p_1_1 p_1_0 c_3",
+            "move p_1_1 p_1_0 c_2",
+            "move p_2_0 p_1_0 c_1"
+        ],
+        [
+            "move p_2_1 p_2_0 c_1",
+            "move p_3_0 p_2_0 c_3",
+            "move p_1_0 p_2_0 c_3",
+            "move p_3_0 p_2_0 c_2",
+            "move p_1_0 p_2_0 c_2",
+            "move p_2_1 p_2_0 c_3",
+            "move p_3_0 p_2_0 c_1",
+            "move p_1_0 p_2_0 c_1",
+            "move p_2_1 p_2_0 c_2"
+        ],
+        [
+            "move p_0_2 p_0_1 c_2",
+            "move p_0_2 p_0_1 c_3",
+            "move p_1_1 p_0_1 c_3",
+            "move p_0_0 p_0_1 c_3",
+            "move p_0_0 p_0_1 c_2",
+            "move p_1_1 p_0_1 c_1",
+            "move p_1_1 p_0_1 c_2",
+            "move p_0_0 p_0_1 c_1",
+            "move p_0_2 p_0_1 c_1"
+        ],
+        [
+            "move p_3_3 p_3_4 c_1",
+            "move p_4_4 p_3_4 c_3",
+            "move p_2_4 p_3_4 c_3",
+            "move p_2_4 p_3_4 c_2",
+            "move p_3_3 p_3_4 c_3",
+            "move p_4_4 p_3_4 c_2",
+            "move p_3_3 p_3_4 c_2",
+            "move p_2_4 p_3_4 c_1",
+            "move p_4_4 p_3_4 c_1"
+        ],
+        [
+            "move p_0_3 p_0_4 c_1",
+            "move p_1_4 p_0_4 c_3",
+            "move p_1_4 p_0_4 c_1",
+            "move p_0_3 p_0_4 c_3",
+            "move p_0_3 p_0_4 c_2",
+            "move p_1_4 p_0_4 c_2"
+        ],
+        [
+            "move p_2_3 p_2_4 c_3",
+            "move p_1_4 p_2_4 c_3",
+            "move p_2_3 p_2_4 c_1",
+            "move p_2_3 p_2_4 c_2",
+            "move p_1_4 p_2_4 c_2",
+            "move p_3_4 p_2_4 c_2",
+            "move p_3_4 p_2_4 c_3",
+            "move p_3_4 p_2_4 c_1",
+            "move p_1_4 p_2_4 c_1"
+        ],
+        [
+            "move p_2_2 p_2_1 c_2",
+            "move p_2_2 p_2_1 c_1",
+            "move p_2_0 p_2_1 c_3",
+            "move p_1_1 p_2_1 c_2",
+            "move p_3_1 p_2_1 c_2",
+            "move p_1_1 p_2_1 c_1",
+            "move p_2_0 p_2_1 c_2",
+            "move p_3_1 p_2_1 c_1",
+            "move p_2_2 p_2_1 c_3",
+            "move p_3_1 p_2_1 c_3",
+            "move p_1_1 p_2_1 c_3",
+            "move p_2_0 p_2_1 c_1"
+        ],
+        [
+            "move p_1_3 p_2_3 c_3",
+            "move p_1_3 p_2_3 c_1",
+            "move p_2_4 p_2_3 c_3",
+            "move p_2_2 p_2_3 c_2",
+            "move p_1_3 p_2_3 c_2",
+            "move p_2_4 p_2_3 c_1",
+            "move p_3_3 p_2_3 c_1",
+            "move p_3_3 p_2_3 c_3",
+            "move p_2_4 p_2_3 c_2",
+            "move p_2_2 p_2_3 c_1",
+            "move p_3_3 p_2_3 c_2",
+            "move p_2_2 p_2_3 c_3"
+        ],
+        [
+            "finish p_3_1 p_4_1 c_2",
+            "finish p_4_0 p_4_1 c_2",
+            "move p_4_0 p_4_1 c_1",
+            "move p_3_1 p_4_1 c_3",
+            "move p_4_0 p_4_1 c_3",
+            "move p_4_2 p_4_1 c_1",
+            "move p_3_1 p_4_1 c_1",
+            "move p_4_2 p_4_1 c_2",
+            "move p_4_2 p_4_1 c_3",
+            "move p_3_1 p_4_1 c_2",
+            "move p_4_0 p_4_1 c_2",
+            "start p_4_1 c_2",
+            "finish p_4_2 p_4_1 c_2"
+        ],
+        [
+            "move p_3_0 p_3_1 c_3",
+            "finish p_2_1 p_3_1 c_1",
+            "move p_2_1 p_3_1 c_2",
+            "move p_4_1 p_3_1 c_2",
+            "finish p_3_2 p_3_1 c_1",
+            "finish p_4_1 p_3_1 c_1",
+            "finish p_3_0 p_3_1 c_1",
+            "move p_4_1 p_3_1 c_1",
+            "move p_3_2 p_3_1 c_1",
+            "move p_3_0 p_3_1 c_2",
+            "move p_2_1 p_3_1 c_1",
+            "move p_3_2 p_3_1 c_2",
+            "start p_3_1 c_1",
+            "move p_3_0 p_3_1 c_1",
+            "move p_2_1 p_3_1 c_3",
+            "move p_4_1 p_3_1 c_3",
+            "move p_3_2 p_3_1 c_3"
+        ],
+        [
+            "move p_4_2 p_4_3 c_1",
+            "finish p_4_2 p_4_3 c_3",
+            "move p_4_2 p_4_3 c_2",
+            "move p_4_4 p_4_3 c_1",
+            "move p_4_4 p_4_3 c_2",
+            "move p_3_3 p_4_3 c_3",
+            "move p_4_4 p_4_3 c_3",
+            "move p_3_3 p_4_3 c_1",
+            "start p_4_3 c_3",
+            "move p_3_3 p_4_3 c_2",
+            "finish p_4_4 p_4_3 c_3",
+            "move p_4_2 p_4_3 c_3",
+            "finish p_3_3 p_4_3 c_3"
+        ],
+        [
+            "move p_3_2 p_4_2 c_1",
+            "move p_3_2 p_4_2 c_3",
+            "move p_4_1 p_4_2 c_3",
+            "move p_4_3 p_4_2 c_1",
+            "move p_4_3 p_4_2 c_3",
+            "move p_4_3 p_4_2 c_2",
+            "move p_3_2 p_4_2 c_2",
+            "move p_4_1 p_4_2 c_1",
+            "move p_4_1 p_4_2 c_2"
+        ],
+        [
+            "move p_2_2 p_3_2 c_2",
+            "move p_3_3 p_3_2 c_1",
+            "move p_3_1 p_3_2 c_1",
+            "move p_4_2 p_3_2 c_1",
+            "move p_3_3 p_3_2 c_2",
+            "move p_4_2 p_3_2 c_3",
+            "move p_3_3 p_3_2 c_3",
+            "move p_3_1 p_3_2 c_2",
+            "move p_4_2 p_3_2 c_2",
+            "move p_3_1 p_3_2 c_3",
+            "move p_2_2 p_3_2 c_3",
+            "move p_2_2 p_3_2 c_1"
+        ],
+        [
+            "move p_0_2 p_0_3 c_1",
+            "move p_0_4 p_0_3 c_2",
+            "move p_0_4 p_0_3 c_3",
+            "move p_1_3 p_0_3 c_1",
+            "move p_1_3 p_0_3 c_2",
+            "move p_0_2 p_0_3 c_2",
+            "move p_0_2 p_0_3 c_3",
+            "move p_1_3 p_0_3 c_3",
+            "move p_0_4 p_0_3 c_1"
+        ],
+        [
+            "move p_3_1 p_3_0 c_3",
+            "move p_4_0 p_3_0 c_1",
+            "move p_2_0 p_3_0 c_3",
+            "move p_2_0 p_3_0 c_2",
+            "move p_3_1 p_3_0 c_2",
+            "move p_4_0 p_3_0 c_3",
+            "move p_3_1 p_3_0 c_1",
+            "move p_4_0 p_3_0 c_2",
+            "move p_2_0 p_3_0 c_1"
+        ],
+        [
+            "finish p_2_1 p_3_1 c_1",
+            "finish p_4_1 p_4_0 c_1",
+            "finish p_3_2 p_3_1 c_1",
+            "finish p_4_1 p_3_1 c_1",
+            "finish p_3_0 p_3_1 c_1",
+            "finish p_3_0 p_4_0 c_1"
+        ],
+        [
+            "move p_0_3 p_0_2 c_1",
+            "move p_0_1 p_0_2 c_1",
+            "move p_0_3 p_0_2 c_2",
+            "move p_0_3 p_0_2 c_3",
+            "move p_1_2 p_0_2 c_1",
+            "move p_1_2 p_0_2 c_3",
+            "move p_1_2 p_0_2 c_2",
+            "move p_0_1 p_0_2 c_2",
+            "move p_0_1 p_0_2 c_3"
+        ],
+        [
+            "finish p_1_2 p_2_2 c_3",
+            "finish p_4_2 p_4_3 c_3",
+            "finish p_2_1 p_2_2 c_3",
+            "finish p_2_3 p_2_2 c_3",
+            "finish p_3_2 p_2_2 c_3",
+            "finish p_4_4 p_4_3 c_3",
+            "finish p_3_3 p_4_3 c_3"
+        ],
+        [
+            "move p_3_4 p_3_3 c_1",
+            "move p_3_2 p_3_3 c_2",
+            "move p_3_4 p_3_3 c_3",
+            "move p_4_3 p_3_3 c_3",
+            "move p_4_3 p_3_3 c_1",
+            "move p_3_2 p_3_3 c_3",
+            "move p_3_2 p_3_3 c_1",
+            "move p_2_3 p_3_3 c_3",
+            "move p_4_3 p_3_3 c_2",
+            "move p_2_3 p_3_3 c_1",
+            "move p_3_4 p_3_3 c_2",
+            "move p_2_3 p_3_3 c_2"
+        ],
+        [
+            "move p_1_2 p_1_3 c_1",
+            "move p_1_4 p_1_3 c_3",
+            "move p_2_3 p_1_3 c_1",
+            "move p_1_4 p_1_3 c_2",
+            "move p_1_2 p_1_3 c_3",
+            "move p_0_3 p_1_3 c_3",
+            "move p_1_2 p_1_3 c_2",
+            "move p_1_4 p_1_3 c_1",
+            "move p_2_3 p_1_3 c_2",
+            "move p_2_3 p_1_3 c_3",
+            "move p_0_3 p_1_3 c_1",
+            "move p_0_3 p_1_3 c_2"
+        ],
+        [
+            "move p_1_3 p_1_4 c_1",
+            "move p_1_3 p_1_4 c_3",
+            "move p_0_4 p_1_4 c_2",
+            "move p_2_4 p_1_4 c_1",
+            "move p_2_4 p_1_4 c_2",
+            "move p_0_4 p_1_4 c_1",
+            "move p_2_4 p_1_4 c_3",
+            "move p_1_3 p_1_4 c_2",
+            "move p_0_4 p_1_4 c_3"
+        ],
+        [
+            "move p_2_1 p_2_2 c_3",
+            "move p_2_3 p_2_2 c_3",
+            "move p_1_2 p_2_2 c_1",
+            "finish p_1_2 p_2_2 c_3",
+            "start p_2_2 c_3",
+            "finish p_2_1 p_2_2 c_3",
+            "finish p_2_3 p_2_2 c_3",
+            "move p_2_3 p_2_2 c_2",
+            "move p_3_2 p_2_2 c_2",
+            "finish p_3_2 p_2_2 c_3",
+            "move p_1_2 p_2_2 c_2",
+            "move p_2_1 p_2_2 c_2",
+            "move p_2_3 p_2_2 c_1",
+            "move p_3_2 p_2_2 c_1",
+            "move p_3_2 p_2_2 c_3",
+            "move p_2_1 p_2_2 c_1",
+            "move p_1_2 p_2_2 c_3"
+        ],
+        [
+            "start p_4_0 c_1",
+            "start p_2_2 c_3",
+            "start p_3_1 c_1",
+            "start p_1_1 c_2",
+            "start p_4_3 c_3",
+            "start p_4_1 c_2"
+        ],
+        [
+            "finish p_2_1 p_1_1 c_2",
+            "finish p_1_2 p_1_1 c_2",
+            "finish p_4_0 p_4_1 c_2",
+            "finish p_1_0 p_1_1 c_2",
+            "finish p_3_1 p_4_1 c_2",
+            "finish p_0_1 p_1_1 c_2",
+            "finish p_4_2 p_4_1 c_2"
+        ],
+        [
+            "move p_3_0 p_4_0 c_1",
+            "finish p_4_1 p_4_0 c_1",
+            "start p_4_0 c_1",
+            "move p_3_0 p_4_0 c_3",
+            "move p_3_0 p_4_0 c_2",
+            "move p_4_1 p_4_0 c_2",
+            "move p_4_1 p_4_0 c_3",
+            "move p_4_1 p_4_0 c_1",
+            "finish p_3_0 p_4_0 c_1"
+        ],
+        [
+            "move p_3_4 p_4_4 c_3",
+            "move p_3_4 p_4_4 c_1",
+            "move p_4_3 p_4_4 c_3",
+            "move p_3_4 p_4_4 c_2",
+            "move p_4_3 p_4_4 c_2",
+            "move p_4_3 p_4_4 c_1"
+        ],
+        [
+            "finish p_2_1 p_1_1 c_2",
+            "finish p_1_2 p_1_1 c_2",
+            "move p_1_2 p_1_1 c_3",
+            "finish p_1_0 p_1_1 c_2",
+            "move p_2_1 p_1_1 c_2",
+            "move p_2_1 p_1_1 c_3",
+            "move p_1_2 p_1_1 c_1",
+            "move p_2_1 p_1_1 c_1",
+            "move p_0_1 p_1_1 c_3",
+            "move p_0_1 p_1_1 c_1",
+            "move p_0_1 p_1_1 c_2",
+            "start p_1_1 c_2",
+            "move p_1_2 p_1_1 c_2",
+            "move p_1_0 p_1_1 c_1",
+            "move p_1_0 p_1_1 c_2",
+            "finish p_0_1 p_1_1 c_2",
+            "move p_1_0 p_1_1 c_3"
+        ],
+        [],
+        [
+            "move p_2_2 p_1_2 c_1",
+            "move p_1_3 p_1_2 c_2",
+            "move p_2_2 p_1_2 c_2",
+            "move p_0_2 p_1_2 c_2",
+            "move p_0_2 p_1_2 c_1",
+            "move p_1_3 p_1_2 c_1",
+            "move p_0_2 p_1_2 c_3",
+            "move p_1_1 p_1_2 c_2",
+            "move p_2_2 p_1_2 c_3",
+            "move p_1_1 p_1_2 c_1",
+            "move p_1_3 p_1_2 c_3",
+            "move p_1_1 p_1_2 c_3"
+        ]
+    ],
+    "raw_landmarks": {
+        "planner_output": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/james/repos/nl2pddl3/.venv/bin/python /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/translate/translate.py /home/james/repos/nl2pddl3/data/domains/flow/ground.pddl /home/james/repos/nl2pddl3/data/gen_problems/feedback/flow/problem-1.pddl --sas-file output.sas\nParsing...\nParsing: [0.000s CPU, 0.003s wall-clock]\nNormalizing task... [0.000s CPU, 0.000s wall-clock]\nInstantiating...\nGenerating Datalog program... [0.000s CPU, 0.001s wall-clock]\nNormalizing Datalog program...\nNormalizing Datalog program: [0.000s CPU, 0.001s wall-clock]\nPreparing model... [0.000s CPU, 0.001s wall-clock]\nGenerated 26 rules.\nComputing model... [0.010s CPU, 0.007s wall-clock]\n641 relevant atoms\n628 auxiliary atoms\n1269 final queue length\n1909 total queue pushes\nCompleting instantiation... [0.000s CPU, 0.008s wall-clock]\nInstantiating: [0.010s CPU, 0.019s wall-clock]\nComputing fact groups...\nFinding invariants...\n13 initial candidates\nFinding invariants: [0.010s CPU, 0.003s wall-clock]\nChecking invariant weight... [0.000s CPU, 0.001s wall-clock]\nInstantiating groups... [0.000s CPU, 0.001s wall-clock]\nCollecting mutex groups... [0.000s CPU, 0.000s wall-clock]\nChoosing groups...\n29 uncovered facts\nChoosing groups: [0.000s CPU, 0.001s wall-clock]\nBuilding translation key... [0.000s CPU, 0.000s wall-clock]\nComputing fact groups: [0.010s CPU, 0.007s wall-clock]\nBuilding STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]\nBuilding dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]\nBuilding mutex information...\nBuilding mutex information: [0.000s CPU, 0.000s wall-clock]\nTranslating task...\nProcessing axioms...\nSimplifying axioms... [0.000s CPU, 0.000s wall-clock]\nTranslator axioms removed by simplifying: 0\nComputing negative axioms... [0.000s CPU, 0.000s wall-clock]\nProcessing axioms: [0.000s CPU, 0.000s wall-clock]\nTranslating task: [0.010s CPU, 0.009s wall-clock]\n6 effect conditions simplified\n0 implied preconditions added\nDetecting unreachable propositions...\n0 operators removed\n0 axioms removed\n0 propositions removed\nDetecting unreachable propositions: [0.010s CPU, 0.006s wall-clock]\nReordering and filtering variables...\n54 of 79 variables necessary.\n25 of 75 mutex groups necessary.\n266 of 266 operators necessary.\n0 of 0 axiom rules necessary.\nReordering and filtering variables: [0.000s CPU, 0.002s wall-clock]\nTranslator variables: 54\nTranslator derived variables: 0\nTranslator facts: 183\nTranslator goal facts: 28\nTranslator mutex groups: 25\nTranslator total mutex groups size: 50\nTranslator operators: 266\nTranslator axioms: 0\nTranslator task size: 1951\nTranslator peak memory: 29788 KB\nWriting output... [0.000s CPU, 0.001s wall-clock]\nDone! [0.040s CPU, 0.049s wall-clock]\ntranslate exit code: 0\n\nINFO     Running search (/home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin).\nINFO     search stdin: output.sas\nINFO     search time limit: None\nINFO     search memory limit: None\nINFO     search command line string: /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/downward --evaluator 'h=lmcount(lm_factory=lm_exhaust(),dump_action_landmarks=true)' --always --search 'lazy_greedy([h,const(infinity())])' --internal-plan-file sas_plan < output.sas\n[t=3.7821e-05s, 11192 KB] reading input...\n[t=0.00134435s, 11324 KB] done reading input!\n[t=0.00282098s, 11720 KB] Initializing landmark count heuristic...\n[t=0.00288026s, 11720 KB] Generating landmark graph...\n[t=0.00293517s, 11720 KB] Initializing Exploration...\n[t=0.00309594s, 11880 KB] Generating landmarks by testing all facts with RPG method\n[t=0.00670163s, 11880 KB] Removed 0 reasonable or obedient reasonable orders\n[t=0.00675535s, 11880 KB] Landmarks generation time: 0.00387028s\n[t=0.00677069s, 11880 KB] Discovered 83 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00677927s, 11880 KB] 0 edges\n[t=0.00678725s, 11880 KB] Landmark graph generation time: 0.00391483s\n[t=0.00679545s, 11880 KB] Landmark graph contains 83 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00680309s, 11880 KB] Landmark graph contains 0 orderings.\n[t=0.00681349s, 11880 KB] Dumping landmarks from landmark graph: \n[t=0.00697958s, 11880 KB] Action landmarks end.\n[t=0.00712586s, 11880 KB] Building successor generator...done!\n[t=0.00729243s, 11880 KB] peak memory difference for successor generator creation: 0 KB\n[t=0.00730219s, 11880 KB] time for successor generation creation: 0.000107014s\n[t=0.00731353s, 11880 KB] Variables: 54\n[t=0.00732309s, 11880 KB] FactPairs: 183\n[t=0.00733079s, 11880 KB] Bytes per state: 16\n[t=0.00742057s, 11880 KB] Conducting lazy best first search, (real) bound = 2147483647\n[t=0.00749194s, 11880 KB] 54 initial landmarks, 28 goal landmarks\n[t=0.00751133s, 11880 KB] Initial heuristic value for lmcount(lm_factory = lm_exhaust, dump_action_landmarks = true): 29\n[t=0.00752242s, 11880 KB] Completely explored state space -- no solution!\n[t=0.0075309s, 11880 KB] Actual search time: 3.3671e-05s\n[t=0.00754043s, 11880 KB] Expanded 0 state(s).\n[t=0.00754043s, 11880 KB] Reopened 0 state(s).\n[t=0.00754043s, 11880 KB] Evaluated 1 state(s).\n[t=0.00754043s, 11880 KB] Evaluations: 1\n[t=0.00754043s, 11880 KB] Generated 0 state(s).\n[t=0.00754043s, 11880 KB] Dead ends: 1 state(s).\n[t=0.00754043s, 11880 KB] Number of registered states: 1\n[t=0.00754043s, 11880 KB] Int hash set load factor: 1/1 = 1\n[t=0.00754043s, 11880 KB] Int hash set resizes: 0\n[t=0.00754043s, 11880 KB] Search time: 0.000120043s\n[t=0.00754043s, 11880 KB] Total time: 0.00754043s\nSearch stopped without finding a solution.\nPeak memory: 11880 KB\nRemove intermediate file output.sas\nsearch exit code: 12\n\nDriver aborting after search\nINFO     Planner time: 0.16s\n",
+        "planner_error": "",
+        "landmarks": [
+            {
+                "facts": [
+                    "Atom not-empty(p_0_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_0_3 p_0_4 c_1",
+                    "move p_0_3 p_0_4 c_2",
+                    "move p_0_3 p_0_4 c_3",
+                    "move p_1_4 p_0_4 c_1",
+                    "move p_1_4 p_0_4 c_2",
+                    "move p_1_4 p_0_4 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_0_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_0_2 p_0_3 c_1",
+                    "move p_0_2 p_0_3 c_2",
+                    "move p_0_2 p_0_3 c_3",
+                    "move p_0_4 p_0_3 c_1",
+                    "move p_0_4 p_0_3 c_2",
+                    "move p_0_4 p_0_3 c_3",
+                    "move p_1_3 p_0_3 c_1",
+                    "move p_1_3 p_0_3 c_2",
+                    "move p_1_3 p_0_3 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_0_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_0_1 p_0_2 c_1",
+                    "move p_0_1 p_0_2 c_2",
+                    "move p_0_1 p_0_2 c_3",
+                    "move p_0_3 p_0_2 c_1",
+                    "move p_0_3 p_0_2 c_2",
+                    "move p_0_3 p_0_2 c_3",
+                    "move p_1_2 p_0_2 c_1",
+                    "move p_1_2 p_0_2 c_2",
+                    "move p_1_2 p_0_2 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_0_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_0_0 p_0_1 c_1",
+                    "move p_0_0 p_0_1 c_2",
+                    "move p_0_0 p_0_1 c_3",
+                    "move p_0_2 p_0_1 c_1",
+                    "move p_0_2 p_0_1 c_2",
+                    "move p_0_2 p_0_1 c_3",
+                    "move p_1_1 p_0_1 c_1",
+                    "move p_1_1 p_0_1 c_2",
+                    "move p_1_1 p_0_1 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_0_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_0_1 p_0_0 c_1",
+                    "move p_0_1 p_0_0 c_2",
+                    "move p_0_1 p_0_0 c_3",
+                    "move p_1_0 p_0_0 c_1",
+                    "move p_1_0 p_0_0 c_2",
+                    "move p_1_0 p_0_0 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_1_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_0_0 p_1_0 c_1",
+                    "move p_0_0 p_1_0 c_2",
+                    "move p_0_0 p_1_0 c_3",
+                    "move p_1_1 p_1_0 c_1",
+                    "move p_1_1 p_1_0 c_2",
+                    "move p_1_1 p_1_0 c_3",
+                    "move p_2_0 p_1_0 c_1",
+                    "move p_2_0 p_1_0 c_2",
+                    "move p_2_0 p_1_0 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_1_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_0_2 p_1_2 c_1",
+                    "move p_0_2 p_1_2 c_2",
+                    "move p_0_2 p_1_2 c_3",
+                    "move p_1_1 p_1_2 c_1",
+                    "move p_1_1 p_1_2 c_2",
+                    "move p_1_1 p_1_2 c_3",
+                    "move p_1_3 p_1_2 c_1",
+                    "move p_1_3 p_1_2 c_2",
+                    "move p_1_3 p_1_2 c_3",
+                    "move p_2_2 p_1_2 c_1",
+                    "move p_2_2 p_1_2 c_2",
+                    "move p_2_2 p_1_2 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_1_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_0_3 p_1_3 c_1",
+                    "move p_0_3 p_1_3 c_2",
+                    "move p_0_3 p_1_3 c_3",
+                    "move p_1_2 p_1_3 c_1",
+                    "move p_1_2 p_1_3 c_2",
+                    "move p_1_2 p_1_3 c_3",
+                    "move p_1_4 p_1_3 c_1",
+                    "move p_1_4 p_1_3 c_2",
+                    "move p_1_4 p_1_3 c_3",
+                    "move p_2_3 p_1_3 c_1",
+                    "move p_2_3 p_1_3 c_2",
+                    "move p_2_3 p_1_3 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_1_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_0_4 p_1_4 c_1",
+                    "move p_0_4 p_1_4 c_2",
+                    "move p_0_4 p_1_4 c_3",
+                    "move p_1_3 p_1_4 c_1",
+                    "move p_1_3 p_1_4 c_2",
+                    "move p_1_3 p_1_4 c_3",
+                    "move p_2_4 p_1_4 c_1",
+                    "move p_2_4 p_1_4 c_2",
+                    "move p_2_4 p_1_4 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_2_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_1_4 p_2_4 c_1",
+                    "move p_1_4 p_2_4 c_2",
+                    "move p_1_4 p_2_4 c_3",
+                    "move p_2_3 p_2_4 c_1",
+                    "move p_2_3 p_2_4 c_2",
+                    "move p_2_3 p_2_4 c_3",
+                    "move p_3_4 p_2_4 c_1",
+                    "move p_3_4 p_2_4 c_2",
+                    "move p_3_4 p_2_4 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_2_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_1_3 p_2_3 c_1",
+                    "move p_1_3 p_2_3 c_2",
+                    "move p_1_3 p_2_3 c_3",
+                    "move p_2_2 p_2_3 c_1",
+                    "move p_2_2 p_2_3 c_2",
+                    "move p_2_2 p_2_3 c_3",
+                    "move p_2_4 p_2_3 c_1",
+                    "move p_2_4 p_2_3 c_2",
+                    "move p_2_4 p_2_3 c_3",
+                    "move p_3_3 p_2_3 c_1",
+                    "move p_3_3 p_2_3 c_2",
+                    "move p_3_3 p_2_3 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_2_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_1_1 p_2_1 c_1",
+                    "move p_1_1 p_2_1 c_2",
+                    "move p_1_1 p_2_1 c_3",
+                    "move p_2_0 p_2_1 c_1",
+                    "move p_2_0 p_2_1 c_2",
+                    "move p_2_0 p_2_1 c_3",
+                    "move p_2_2 p_2_1 c_1",
+                    "move p_2_2 p_2_1 c_2",
+                    "move p_2_2 p_2_1 c_3",
+                    "move p_3_1 p_2_1 c_1",
+                    "move p_3_1 p_2_1 c_2",
+                    "move p_3_1 p_2_1 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_2_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_1_0 p_2_0 c_1",
+                    "move p_1_0 p_2_0 c_2",
+                    "move p_1_0 p_2_0 c_3",
+                    "move p_2_1 p_2_0 c_1",
+                    "move p_2_1 p_2_0 c_2",
+                    "move p_2_1 p_2_0 c_3",
+                    "move p_3_0 p_2_0 c_1",
+                    "move p_3_0 p_2_0 c_2",
+                    "move p_3_0 p_2_0 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_3_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_2_0 p_3_0 c_1",
+                    "move p_2_0 p_3_0 c_2",
+                    "move p_2_0 p_3_0 c_3",
+                    "move p_3_1 p_3_0 c_1",
+                    "move p_3_1 p_3_0 c_2",
+                    "move p_3_1 p_3_0 c_3",
+                    "move p_4_0 p_3_0 c_1",
+                    "move p_4_0 p_3_0 c_2",
+                    "move p_4_0 p_3_0 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom flow-complete(c_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "finish p_2_1 p_3_1 c_1",
+                    "finish p_3_0 p_3_1 c_1",
+                    "finish p_3_0 p_4_0 c_1",
+                    "finish p_3_2 p_3_1 c_1",
+                    "finish p_4_1 p_3_1 c_1",
+                    "finish p_4_1 p_4_0 c_1"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_3_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_2_2 p_3_2 c_1",
+                    "move p_2_2 p_3_2 c_2",
+                    "move p_2_2 p_3_2 c_3",
+                    "move p_3_1 p_3_2 c_1",
+                    "move p_3_1 p_3_2 c_2",
+                    "move p_3_1 p_3_2 c_3",
+                    "move p_3_3 p_3_2 c_1",
+                    "move p_3_3 p_3_2 c_2",
+                    "move p_3_3 p_3_2 c_3",
+                    "move p_4_2 p_3_2 c_1",
+                    "move p_4_2 p_3_2 c_2",
+                    "move p_4_2 p_3_2 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom flow-complete(c_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "finish p_0_1 p_1_1 c_2",
+                    "finish p_1_0 p_1_1 c_2",
+                    "finish p_1_2 p_1_1 c_2",
+                    "finish p_2_1 p_1_1 c_2",
+                    "finish p_3_1 p_4_1 c_2",
+                    "finish p_4_0 p_4_1 c_2",
+                    "finish p_4_2 p_4_1 c_2"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_4_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_3_2 p_4_2 c_1",
+                    "move p_3_2 p_4_2 c_2",
+                    "move p_3_2 p_4_2 c_3",
+                    "move p_4_1 p_4_2 c_1",
+                    "move p_4_1 p_4_2 c_2",
+                    "move p_4_1 p_4_2 c_3",
+                    "move p_4_3 p_4_2 c_1",
+                    "move p_4_3 p_4_2 c_2",
+                    "move p_4_3 p_4_2 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_3_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_2_3 p_3_3 c_1",
+                    "move p_2_3 p_3_3 c_2",
+                    "move p_2_3 p_3_3 c_3",
+                    "move p_3_2 p_3_3 c_1",
+                    "move p_3_2 p_3_3 c_2",
+                    "move p_3_2 p_3_3 c_3",
+                    "move p_3_4 p_3_3 c_1",
+                    "move p_3_4 p_3_3 c_2",
+                    "move p_3_4 p_3_3 c_3",
+                    "move p_4_3 p_3_3 c_1",
+                    "move p_4_3 p_3_3 c_2",
+                    "move p_4_3 p_3_3 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_4_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "finish p_3_1 p_4_1 c_2",
+                    "finish p_4_0 p_4_1 c_2",
+                    "finish p_4_2 p_4_1 c_2",
+                    "move p_3_1 p_4_1 c_1",
+                    "move p_3_1 p_4_1 c_2",
+                    "move p_3_1 p_4_1 c_3",
+                    "move p_4_0 p_4_1 c_1",
+                    "move p_4_0 p_4_1 c_2",
+                    "move p_4_0 p_4_1 c_3",
+                    "move p_4_2 p_4_1 c_1",
+                    "move p_4_2 p_4_1 c_2",
+                    "move p_4_2 p_4_1 c_3",
+                    "start p_4_1 c_2"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_4_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "finish p_3_0 p_4_0 c_1",
+                    "finish p_4_1 p_4_0 c_1",
+                    "move p_3_0 p_4_0 c_1",
+                    "move p_3_0 p_4_0 c_2",
+                    "move p_3_0 p_4_0 c_3",
+                    "move p_4_1 p_4_0 c_1",
+                    "move p_4_1 p_4_0 c_2",
+                    "move p_4_1 p_4_0 c_3",
+                    "start p_4_0 c_1"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_3_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "finish p_2_1 p_3_1 c_1",
+                    "finish p_3_0 p_3_1 c_1",
+                    "finish p_3_2 p_3_1 c_1",
+                    "finish p_4_1 p_3_1 c_1",
+                    "move p_2_1 p_3_1 c_1",
+                    "move p_2_1 p_3_1 c_2",
+                    "move p_2_1 p_3_1 c_3",
+                    "move p_3_0 p_3_1 c_1",
+                    "move p_3_0 p_3_1 c_2",
+                    "move p_3_0 p_3_1 c_3",
+                    "move p_3_2 p_3_1 c_1",
+                    "move p_3_2 p_3_1 c_2",
+                    "move p_3_2 p_3_1 c_3",
+                    "move p_4_1 p_3_1 c_1",
+                    "move p_4_1 p_3_1 c_2",
+                    "move p_4_1 p_3_1 c_3",
+                    "start p_3_1 c_1"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_2_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "finish p_1_2 p_2_2 c_3",
+                    "finish p_2_1 p_2_2 c_3",
+                    "finish p_2_3 p_2_2 c_3",
+                    "finish p_3_2 p_2_2 c_3",
+                    "move p_1_2 p_2_2 c_1",
+                    "move p_1_2 p_2_2 c_2",
+                    "move p_1_2 p_2_2 c_3",
+                    "move p_2_1 p_2_2 c_1",
+                    "move p_2_1 p_2_2 c_2",
+                    "move p_2_1 p_2_2 c_3",
+                    "move p_2_3 p_2_2 c_1",
+                    "move p_2_3 p_2_2 c_2",
+                    "move p_2_3 p_2_2 c_3",
+                    "move p_3_2 p_2_2 c_1",
+                    "move p_3_2 p_2_2 c_2",
+                    "move p_3_2 p_2_2 c_3",
+                    "start p_2_2 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_1_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "finish p_0_1 p_1_1 c_2",
+                    "finish p_1_0 p_1_1 c_2",
+                    "finish p_1_2 p_1_1 c_2",
+                    "finish p_2_1 p_1_1 c_2",
+                    "move p_0_1 p_1_1 c_1",
+                    "move p_0_1 p_1_1 c_2",
+                    "move p_0_1 p_1_1 c_3",
+                    "move p_1_0 p_1_1 c_1",
+                    "move p_1_0 p_1_1 c_2",
+                    "move p_1_0 p_1_1 c_3",
+                    "move p_1_2 p_1_1 c_1",
+                    "move p_1_2 p_1_1 c_2",
+                    "move p_1_2 p_1_1 c_3",
+                    "move p_2_1 p_1_1 c_1",
+                    "move p_2_1 p_1_1 c_2",
+                    "move p_2_1 p_1_1 c_3",
+                    "start p_1_1 c_2"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_4_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_3_4 p_4_4 c_1",
+                    "move p_3_4 p_4_4 c_2",
+                    "move p_3_4 p_4_4 c_3",
+                    "move p_4_3 p_4_4 c_1",
+                    "move p_4_3 p_4_4 c_2",
+                    "move p_4_3 p_4_4 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_4_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "finish p_3_3 p_4_3 c_3",
+                    "finish p_4_2 p_4_3 c_3",
+                    "finish p_4_4 p_4_3 c_3",
+                    "move p_3_3 p_4_3 c_1",
+                    "move p_3_3 p_4_3 c_2",
+                    "move p_3_3 p_4_3 c_3",
+                    "move p_4_2 p_4_3 c_1",
+                    "move p_4_2 p_4_3 c_2",
+                    "move p_4_2 p_4_3 c_3",
+                    "move p_4_4 p_4_3 c_1",
+                    "move p_4_4 p_4_3 c_2",
+                    "move p_4_4 p_4_3 c_3",
+                    "start p_4_3 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom not-empty(p_3_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move p_2_4 p_3_4 c_1",
+                    "move p_2_4 p_3_4 c_2",
+                    "move p_2_4 p_3_4 c_3",
+                    "move p_3_3 p_3_4 c_1",
+                    "move p_3_3 p_3_4 c_2",
+                    "move p_3_3 p_3_4 c_3",
+                    "move p_4_4 p_3_4 c_1",
+                    "move p_4_4 p_3_4 c_2",
+                    "move p_4_4 p_3_4 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom flow-complete(c_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "finish p_1_2 p_2_2 c_3",
+                    "finish p_2_1 p_2_2 c_3",
+                    "finish p_2_3 p_2_2 c_3",
+                    "finish p_3_2 p_2_2 c_3",
+                    "finish p_3_3 p_4_3 c_3",
+                    "finish p_4_2 p_4_3 c_3",
+                    "finish p_4_4 p_4_3 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom empty(p_0_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_0_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_0_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_1_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_0_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_0_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_1_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_2_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_3_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_4_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_1_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_2_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_2_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_3_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_4_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_4_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_1_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_1_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_3_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_4_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_4_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_3_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_2_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_2_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom empty(p_3_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom offboard()"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "finish p_0_1 p_1_1 c_2",
+                    "finish p_1_0 p_1_1 c_2",
+                    "finish p_1_2 p_1_1 c_2",
+                    "finish p_1_2 p_2_2 c_3",
+                    "finish p_2_1 p_1_1 c_2",
+                    "finish p_2_1 p_2_2 c_3",
+                    "finish p_2_1 p_3_1 c_1",
+                    "finish p_2_3 p_2_2 c_3",
+                    "finish p_3_0 p_3_1 c_1",
+                    "finish p_3_0 p_4_0 c_1",
+                    "finish p_3_1 p_4_1 c_2",
+                    "finish p_3_2 p_2_2 c_3",
+                    "finish p_3_2 p_3_1 c_1",
+                    "finish p_3_3 p_4_3 c_3",
+                    "finish p_4_0 p_4_1 c_2",
+                    "finish p_4_1 p_3_1 c_1",
+                    "finish p_4_1 p_4_0 c_1",
+                    "finish p_4_2 p_4_1 c_2",
+                    "finish p_4_2 p_4_3 c_3",
+                    "finish p_4_4 p_4_3 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "NegatedAtom offboard()"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "start p_1_1 c_2",
+                    "start p_2_2 c_3",
+                    "start p_3_1 c_1",
+                    "start p_4_0 c_1",
+                    "start p_4_1 c_2",
+                    "start p_4_3 c_3"
+                ]
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_0_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_0_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_0_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_0_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_0_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_1_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_1_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_1_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_1_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_2_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_2_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_2_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_2_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_3_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom flow-complete(c_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_3_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom flow-complete(c_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_4_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_3_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_4_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_4_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_3_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_2_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_1_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_4_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_4_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom not-empty(p_3_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom flow-complete(c_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            }
+        ]
+    }
+}

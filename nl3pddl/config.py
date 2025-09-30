@@ -21,3 +21,4 @@ MODELS = config["models"]
 GIVE_PRED_DESCRIPTIONS = config["give-pred-description"]
 DESC_CLASSES = config["description-classes"]
 FEEDBACK_PIPELINES = config["feedback-pipelines"]
+DEBUG=True

@@ -1347,7 +1347,7 @@ wheels = [
 ]
 
 [[package]]
-name = "nl2pddl3"
+name = "nl3pddl"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

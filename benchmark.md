@@ -1,4 +1,7 @@
+### -r
 python driver.py -r  390.36s user 49.27s system 13% cpu 53:32.81 total
+
+### -g
 Generated PDDL problem: data/gen_problems/feedback/blocks/problem-1.pddl
 Generated data/gen_problems/feedback/blocks/problem-1.pddl
 Unexpected Error occurred
