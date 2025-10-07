@@ -26,7 +26,7 @@ from .check_output import check_action_output, check_domain_syntax_output
 from .gen_prompts import action_message, domain_template, init_msgs, raw_domain_msg
 from .dataset import Dataset
 from .params import Params, action_names, domain_name, feedback_pipeline_str, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
-from .feedback_eval import single_landmark_feedback, val_evaluate, single_val_feedback
+from .feedback_eval import multi_landmark_feedback, single_landmark_feedback, val_evaluate, single_val_feedback, val_feedback_test
 from .logger import logger
 
 # This is a pydantic model that we force the LLM to output in
@@ -68,7 +68,7 @@ class State(TypedDict):
     proposed: list[HumanMessage]
     proposed_responses: list[DomainSchema]
     # The json object of the message returned by the model
-    json_last: Any
+    json_last: list[Any]
     # The index of the action we are currently trying to write
     action_index: int
     # The current action has passed validation
@@ -245,19 +245,31 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             "langgraph_path": state["langgraph_path"] + ["call_action_model"]
         }
 
+    # def call_domain_model(state: State):
+    #     try: 
+    #         logger.debug("Calling domain model")
+    #         json_obj = domain_model.invoke(state["messages"])
+    #         raw = json.dumps(json_obj.model_dump())
+    #     except Exception as e:
+    #         # TODO: Fix
+    #         msg = f"Error during feedback generation: {str(e)}" 
+    #         logger.error(msg)
+    #         raise RuntimeError(f"Failed to call domain model: {msg}")
+    #     return {
+    #         "messages": [AIMessage(raw)],
+    #         "json_last": json_obj,
+    #         "langgraph_path": state["langgraph_path"] + ["call_domain_model"]
+    #     }
+    
     def call_domain_model(state: State):
-        try: 
-            logger.debug("Calling domain model")
-            json_obj = domain_model.invoke(state["messages"])
-            raw = json.dumps(json_obj.model_dump())
-        except Exception as e:
-            # TODO: Fix
-            msg = f"Error during feedback generation: {str(e)}" 
-            logger.error(msg)
-            raise RuntimeError(f"Failed to call domain model: {msg}")
+        
+        inputs = [state["messages"] + [msg] for msg in state["proposed"]]
+        json_objs = domain_model.batch(inputs)
+        raws = [json.dumps(json_obj.model_dump()) for json_obj in json_objs]
+
         return {
-            "messages": [AIMessage(raw)],
-            "json_last": json_obj,
+            "proposed_responses": [raws],
+            "json_last": json_objs,
             "langgraph_path": state["langgraph_path"] + ["call_domain_model"]
         }
 
@@ -306,46 +318,89 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             state["actions"]
         )
         return {
+            ""
             "messages" : [raw_domain_msg(full_domain_raw)],
-            "json_last": DomainSchema(**{"pddl_domain":full_domain_raw}),
+            "json_last": [DomainSchema(**{"pddl_domain":full_domain_raw})],
             "langgraph_path": state["langgraph_path"] + ["build_domain"]
         }
 
+    # def check_domain_syntax(state: State):
+    #     try:
+    #         res = check_domain_syntax_output(d, p, state["json_last"])
+    #         logger.debug(
+    #             "Checking domain syntax... %s",
+    #             "valid" if res is None else "invalid"
+    #         )
+    #     except Exception as e:
+    #         msg = f"Error during domain syntax check: {str(e)}"
+    #         raise RuntimeError(msg)
+    #     return {
+    #         "messages": [res] if res else [],
+    #         "domain_syntax_passed" : res is None,
+    #         "hde_iterations" : state["hde_iterations"] + 1,
+    #         "domain_check_runs" : state["domain_check_runs"] + (0 if res is None else 1),
+    #         # "feedback_index": feedback_index,
+    #         # "feedback_cycles": feedback_cycles,
+    #         "langgraph_path": state["langgraph_path"] + ["check_domain_syntax"]
+    #     }
+    
     def check_domain_syntax(state: State):
-        try:
-            res = check_domain_syntax_output(d, p, state["json_last"])
-            logger.debug(
-                "Checking domain syntax... %s",
-                "valid" if res is None else "invalid"
-            )
-        except Exception as e:
-            msg = f"Error during domain syntax check: {str(e)}"
-            raise RuntimeError(msg)
+        json_lasts = state["json_last"]
+        ress = []
+        for s in json_lasts:
+            try:
+                ress.append(check_domain_syntax_output(d, p, s))
+            except Exception as e:
+                continue
         return {
-            "messages": [res] if res else [],
-            "domain_syntax_passed" : res is None,
+            # TODO: need to actually append the last message to proposed if the syntax check failed
+            "proposed": [state["messages"] + r for r in ress if r is not None],
+            # Filter json responses to only those that passed syntax check
+            "json_last": [s for i, s in enumerate(json_lasts) if ress[i] is None],
+            # We pass the syntax check if any of the proposed messages passed it
+            "domain_syntax_passed" : any(r is None for r in ress),
             "hde_iterations" : state["hde_iterations"] + 1,
-            "domain_check_runs" : state["domain_check_runs"] + (0 if res is None else 1),
-            # "feedback_index": feedback_index,
-            # "feedback_cycles": feedback_cycles,
+            "domain_check_runs" : state["domain_check_runs"] + (0 if any(r is None for r in ress) else 1),
             "langgraph_path": state["langgraph_path"] + ["check_domain_syntax"]
         }
-    
+
     def feedback(state: State):
-        landmark_feedback_msg : HumanMessage | None = None
-        val_feedback_msg : HumanMessage | None = None
+        landmark_feedback_msgs : list[HumanMessage] = []
+        val_feedback_msgs : list[HumanMessage] = []
+        
+        json_lasts = state["json_last"]
+        proposed_responses = state["proposed_responses"]
+        # Score all passing permutations of the new domain and select the best one
+        best_domain = None
+        best_score = (-1, -1) # (score, max_score)
+        for j in json_lasts:
+            try:
+                scores = val_feedback_test(d, p, best_domain.pddl_domain)
+                if scores[0] > best_score[0] or (scores[0] == best_score[0] and scores[1] > best_score[1]):
+                    best_score = scores
+                    best_domain = j
+            except Exception as e:
+                continue
+
+        # If our best score === max score, we have reached maximum performance
+        # And can exit the feedback loop
+        if best_score[0] == best_score[1] and best_score[0] > 0:
+            return {
+                "landmark_passed": True,
+                "val_passed": True,
+                "langgraph_path": state["langgraph_path"] + ["feedback"]
+            }
+
         try:
             if "landmark" in p.feedback_pipeline:
-                landmark_feedback_msg = single_landmark_feedback(d, p, state["json_last"].pddl_domain)
+                landmark_feedback_msgs = multi_landmark_feedback(d, p, best_domain.pddl_domain)
                 logger.debug(
                     "Checking landmarks... %s",
-                    "passed" if landmark_feedback_msg is None else "failed"
                 )
             if "validate" in p.feedback_pipeline:
-                val_feedback_msg = single_val_feedback(d, p, state["json_last"].pddl_domain)
+                val_feedback_msgs = single_val_feedback(d, p, best_domain.pddl_domain)
                 logger.debug(
                     "Validating domain... %s",
-                    "passed" if val_feedback_msg is None else "failed"
                 )
         except Exception as e:
             # TODO: Fix
@@ -355,6 +410,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             val_feedback_msg = HumanMessage(msg)
         return {
             "messages": [msg for msg in [landmark_feedback_msg, val_feedback_msg] if msg],
+            "proposed": [state["messages"] + msg for msg in landmark_feedback_msgs + val_feedback_msgs],
             "landmark_passed": landmark_feedback_msg is None, 
             "val_passed": val_feedback_msg is None,
             "landmark_runs": state["landmark_runs"] + (1 if landmark_feedback_msg is not None else 0),

@@ -251,3 +251,29 @@ def multi_landmark_feedback(
                         plan=new_plan_str
                     )))
     return results
+
+def val_feedback_test(
+        d : Dataset, 
+        p : Params,
+        new_domain_str : str
+) -> tuple[int, int]:
+    """
+    Checks how many plans are valid in the new domain from the evaluation set.
+    """
+    valid_count = 0
+    total_count = 0
+    # Get the evaluation problem paths
+    problem_paths = d.feedback_problem_paths[p.domain_path]
+    for problem_path in problem_paths:
+        problem_valid = True
+        # If any of the plans for the problem fail, report it as the
+        # problem failing HDE
+        for plan_path in d.feedback_plan_paths[problem_path]:
+            result = raw_validate(new_domain_str, problem_path, plan_path)
+            if result is None:
+                continue
+            problem_valid = False
+        if problem_valid:
+            valid_count += 1
+        total_count += 1
+    return valid_count, total_count

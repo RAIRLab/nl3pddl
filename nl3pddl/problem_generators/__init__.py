@@ -5,6 +5,8 @@ from .checkers import generate_problem as generate_checkers_problem
 from .elevators import generate_problem as generate_elevators_problem
 from .flow import generate_problem as generate_flow_problem
 from .bookseller import generate_problem as generate_bookseller_problem
+from .hiking import generate_hiking_problem
+from .keygrid import generate_keygrid_problem
 
 # GENS is a dictionary mapping problem names to their respective generation functions.
 PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
@@ -12,5 +14,7 @@ PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
     "checkers-jumping": generate_checkers_problem,
     "miconic": generate_elevators_problem,
     "flow": generate_flow_problem,
-    "bookseller": generate_bookseller_problem
+    "bookseller": generate_bookseller_problem,
+    "hiking": generate_hiking_problem,
+    "keygrid": generate_keygrid_problem
 }

@@ -1,0 +1,42 @@
+{
+    "overall": {
+        "first": "The Hiking domain involves navigating a trail with various terrain features such as hills and water bodies, aiming to reach a designated goal location.",
+        "detailed-first": "This domain models a hiking scenario where a hiker can move between adjacent locations along a trail. The environment includes different terrain types, such as hills and water bodies, which may affect the hiker's movement options. The hiker starts at a specific location and must navigate through the trail to reach a goal location. The planning problem focuses on determining a sequence of walking and climbing actions that allow the hiker to successfully traverse the terrain and reach the goal while adhering to the constraints imposed by the terrain features."
+    },
+    "predicates": {
+        "at": {
+            "first": "The hiker is at a specific location.",
+            "detailed-first": "Indicates the hiker’s current position within the hiking area. At any time, the hiker can be located at exactly one place."
+        },
+        "isHill": {
+            "first": "The location is a hill.",
+            "detailed-first": "Indicates that the location is a hill, which may affect the hiker's movement options."
+        },
+        "isWater": {
+            "first": "The location is a water body.",
+            "detailed-first": "Indicates that the location is a water body, which may impede the hiker's movement."
+        },
+        "isGoal": {
+            "first": "The location is the goal.",
+            "detailed-first": "Indicates that the location is the goal, which the hiker is trying to reach."
+        },
+        "adjacent": {
+            "first": "The locations are adjacent.",
+            "detailed-first": "Indicates that the two locations are next to each other, allowing for easier movement between them."
+        },
+        "onTrail" : {
+            "first": "The location is on the trail.",
+            "detailed-first": "Indicates that the location is on the designated hiking trail."
+        }
+    },
+    "actions": {
+        "walk": {
+            "first": "Begin walking along the trail.",
+            "detailed-first": "This action initiates walking along the designated trail, allowing the player to explore the hiking area."
+        },
+        "climb": {
+            "first": "Begin climbing the hill.",
+            "detailed-first": "This action initiates climbing the hill, allowing the player to ascend to a higher elevation and enjoy the view."
+        }
+    }
+}
