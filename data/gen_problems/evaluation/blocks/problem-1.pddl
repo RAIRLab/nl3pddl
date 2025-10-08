@@ -9,21 +9,19 @@
   )
 
   (:init
-    (ontable b4)
-    (ontable b3)
     (ontable b2)
+    (on b3 b2)
     (ontable b1)
-    (clear b4)
+    (on b4 b1)
     (clear b3)
-    (clear b2)
-    (clear b1)
+    (clear b4)
     (handempty)
   )
 
   (:goal (and
-    (ontable b1)
-    (ontable b4)
     (ontable b3)
+    (on b4 b3)
+    (ontable b1)
     (ontable b2)
   ))
 )

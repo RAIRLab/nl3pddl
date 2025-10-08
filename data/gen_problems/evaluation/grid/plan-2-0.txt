@@ -1,0 +1,3 @@
+(pickup place1 key1)
+(unlock place1 place4 key1 shape2)
+(move place1 place4)

@@ -34,7 +34,7 @@ hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 10
+trials: 5
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5
@@ -54,7 +54,7 @@ models:
     openai:
         - o4-mini
     #    - gpt-4o-mini
-        - gpt-5-nano    
+    #    - gpt-5-nano    
     # deepseek:
     #     - deepseek-chat
 
@@ -70,8 +70,8 @@ description-classes:
 # will not change the order of the stages in the pipeline.
 feedback-pipelines:
     - ["landmark"]
-#    - ["validate"]
-#    - ["landmark", "validate"]
+    - ["validate"]
+    - ["landmark", "validate"]
 
 
 # Should the model be presented with a description of predicates from the

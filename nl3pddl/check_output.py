@@ -146,9 +146,9 @@ def check_action_output(
     """
     Converts a pddl string to a PDDL action object or returns an error
     """
-    preds = message.predicates
-    types = message.types
-    action_str = message.pddl_action
+    preds = message["predicates"]
+    types = message["types"]
+    action_str = message["pddl_action"]
     # Check if the predicates are valid
     res = pred_syntax_check(preds)
     if isinstance(res, PipelineResult):
@@ -176,7 +176,7 @@ def check_domain_syntax_output(d : Dataset,p: Params, message : Any) -> None | H
     Converts a pddl string to a PDDL domain object or returns an error
     """
     ground_domain : Domain = d.domains[p.domain_path]
-    domain_str : str = message.pddl_domain
+    domain_str : str = message["pddl_domain"]
     try:
         domain : Domain = DOMAIN_PARSER(domain_str)
         if domain.name != ground_domain.name:

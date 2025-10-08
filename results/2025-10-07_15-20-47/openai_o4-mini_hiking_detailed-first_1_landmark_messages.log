@@ -1,0 +1,16 @@
+NON VAR INFO =========================================
+
+TRIAL: 1
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/hiking
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: landmark
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: AttributeError, 'NoneType' object has no attribute 'pddl_action'

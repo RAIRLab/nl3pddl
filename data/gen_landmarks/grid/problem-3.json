@@ -1,0 +1,107 @@
+{
+    "domain": "keygrid",
+    "problem": "problem-3.pddl",
+    "problem_num": 3,
+    "trivial_state_landmarks": [
+        "Atom locked(place4)",
+        "Atom at(key1, place1)",
+        "Atom arm-empty()",
+        "Atom at-robot(place1)"
+    ],
+    "non_trivial_state_landmarks": [
+        "Atom at-robot(place4)",
+        "Atom open(place4)",
+        "Atom holding(key1)"
+    ],
+    "non_applicable_state_landmarks": [
+        "NegatedAtom arm-empty()"
+    ],
+    "landmarks": [
+        [
+            "pickup place1 key1"
+        ],
+        [
+            "move place1 place4"
+        ],
+        [
+            "unlock place1 place4 key1 shape3"
+        ]
+    ],
+    "raw_output": {
+        "planner_output": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/james/repos/nl2pddl3/.venv/bin/python /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/translate/translate.py /home/james/repos/nl2pddl3/data/domains/keygrid/ground.pddl /home/james/repos/nl2pddl3/data/gen_problems/feedback/keygrid/problem-3.pddl --sas-file output.sas\nParsing...\nParsing: [0.000s CPU, 0.003s wall-clock]\nNormalizing task... [0.000s CPU, 0.000s wall-clock]\nInstantiating...\nGenerating Datalog program... [0.000s CPU, 0.000s wall-clock]\nNormalizing Datalog program...\nNormalizing Datalog program: [0.000s CPU, 0.001s wall-clock]\nPreparing model... [0.000s CPU, 0.000s wall-clock]\nGenerated 33 rules.\nComputing model... [0.000s CPU, 0.001s wall-clock]\n86 relevant atoms\n53 auxiliary atoms\n139 final queue length\n148 total queue pushes\nCompleting instantiation... [0.000s CPU, 0.000s wall-clock]\nInstantiating: [0.000s CPU, 0.003s wall-clock]\nComputing fact groups...\nFinding invariants...\n12 initial candidates\nFinding invariants: [0.000s CPU, 0.001s wall-clock]\nChecking invariant weight... [0.010s CPU, 0.000s wall-clock]\nInstantiating groups... [0.000s CPU, 0.000s wall-clock]\nCollecting mutex groups... [0.000s CPU, 0.000s wall-clock]\nChoosing groups...\n1 uncovered facts\nChoosing groups: [0.000s CPU, 0.000s wall-clock]\nBuilding translation key... [0.000s CPU, 0.000s wall-clock]\nComputing fact groups: [0.010s CPU, 0.001s wall-clock]\nBuilding STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]\nBuilding dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]\nBuilding mutex information...\nBuilding mutex information: [0.000s CPU, 0.000s wall-clock]\nTranslating task...\nProcessing axioms...\nSimplifying axioms... [0.000s CPU, 0.000s wall-clock]\nTranslator axioms removed by simplifying: 0\nComputing negative axioms... [0.000s CPU, 0.000s wall-clock]\nProcessing axioms: [0.000s CPU, 0.000s wall-clock]\nTranslating task: [0.000s CPU, 0.000s wall-clock]\n2 effect conditions simplified\n0 implied preconditions added\nDetecting unreachable propositions...\n0 operators removed\n0 axioms removed\n18 propositions removed\nDetecting unreachable propositions: [0.000s CPU, 0.000s wall-clock]\nReordering and filtering variables...\n4 of 4 variables necessary.\n1 of 4 mutex groups necessary.\n7 of 7 operators necessary.\n0 of 0 axiom rules necessary.\nReordering and filtering variables: [0.000s CPU, 0.000s wall-clock]\nTranslator variables: 4\nTranslator derived variables: 0\nTranslator facts: 9\nTranslator goal facts: 1\nTranslator mutex groups: 1\nTranslator total mutex groups size: 2\nTranslator operators: 7\nTranslator axioms: 0\nTranslator task size: 50\nTranslator peak memory: 28752 KB\nWriting output... [0.000s CPU, 0.000s wall-clock]\nDone! [0.010s CPU, 0.008s wall-clock]\ntranslate exit code: 0\n\nINFO     Running search (/home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin).\nINFO     search stdin: output.sas\nINFO     search time limit: None\nINFO     search memory limit: None\nINFO     search command line string: /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/downward --evaluator 'h=lmcount(lm_factory=lm_exhaust(),dump_action_landmarks=true)' --always --search 'lazy_greedy([h,const(infinity())])' --internal-plan-file sas_plan < output.sas\n[t=3.1774e-05s, 11192 KB] reading input...\n[t=0.000194799s, 11328 KB] done reading input!\n[t=0.00121831s, 11584 KB] Initializing landmark count heuristic...\n[t=0.00128169s, 11584 KB] Generating landmark graph...\n[t=0.00130796s, 11584 KB] Initializing Exploration...\n[t=0.00132459s, 11584 KB] Generating landmarks by testing all facts with RPG method\n[t=0.00135783s, 11584 KB] Removed 0 reasonable or obedient reasonable orders\n[t=0.00136957s, 11584 KB] Landmarks generation time: 8.406e-05s\n[t=0.00138604s, 11584 KB] Discovered 8 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00139922s, 11584 KB] 0 edges\n[t=0.0014118s, 11584 KB] Landmark graph generation time: 0.000142232s\n[t=0.00142533s, 11584 KB] Landmark graph contains 8 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00143794s, 11584 KB] Landmark graph contains 0 orderings.\n[t=0.00145747s, 11584 KB] Dumping landmarks from landmark graph: \n[t=0.00168769s, 11584 KB] Action landmarks end.\n[t=0.00183415s, 11584 KB] Building successor generator...done!\n[t=0.00191965s, 11584 KB] peak memory difference for successor generator creation: 0 KB\n[t=0.00193447s, 11584 KB] time for successor generation creation: 1.387e-05s\n[t=0.00196924s, 11584 KB] Variables: 4\n[t=0.00199113s, 11584 KB] FactPairs: 9\n[t=0.00200633s, 11584 KB] Bytes per state: 4\n[t=0.00216644s, 11584 KB] Conducting lazy best first search, (real) bound = 2147483647\n[t=0.00228456s, 11584 KB] 4 initial landmarks, 1 goal landmarks\n[t=0.00231338s, 11584 KB] Initial heuristic value for lmcount(lm_factory = lm_exhaust, dump_action_landmarks = true): 4\n[t=0.00232819s, 11584 KB] Completely explored state space -- no solution!\n[t=0.00234149s, 11584 KB] Actual search time: 7.2322e-05s\n[t=0.00239836s, 11584 KB] Expanded 0 state(s).\n[t=0.00239836s, 11584 KB] Reopened 0 state(s).\n[t=0.00239836s, 11584 KB] Evaluated 1 state(s).\n[t=0.00239836s, 11584 KB] Evaluations: 1\n[t=0.00239836s, 11584 KB] Generated 0 state(s).\n[t=0.00239836s, 11584 KB] Dead ends: 1 state(s).\n[t=0.00239836s, 11584 KB] Number of registered states: 1\n[t=0.00239836s, 11584 KB] Int hash set load factor: 1/1 = 1\n[t=0.00239836s, 11584 KB] Int hash set resizes: 0\n[t=0.00239836s, 11584 KB] Search time: 0.000232433s\n[t=0.00239836s, 11584 KB] Total time: 0.00239836s\nSearch stopped without finding a solution.\nPeak memory: 11584 KB\nRemove intermediate file output.sas\nsearch exit code: 12\n\nDriver aborting after search\nINFO     Planner time: 0.09s\n",
+        "planner_error": "",
+        "landmarks": [
+            {
+                "facts": [
+                    "Atom at-robot(place4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move place1 place4"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom locked(place4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom open(place4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "unlock place1 place4 key1 shape3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(key1, place1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "putdown place1 key1"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom holding(key1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "pickup place1 key1"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom arm-empty()"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "putdown place1 key1",
+                    "putdown place4 key1"
+                ]
+            },
+            {
+                "facts": [
+                    "NegatedAtom arm-empty()"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "pickup place1 key1"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at-robot(place1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move place4 place1"
+                ]
+            }
+        ]
+    }
+}

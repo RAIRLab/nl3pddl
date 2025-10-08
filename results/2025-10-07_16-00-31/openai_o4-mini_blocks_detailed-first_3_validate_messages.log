@@ -1,0 +1,16 @@
+NON VAR INFO =========================================
+
+TRIAL: 3
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/blocks
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: validate
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: TypeError, can only concatenate list (not "HumanMessage") to list

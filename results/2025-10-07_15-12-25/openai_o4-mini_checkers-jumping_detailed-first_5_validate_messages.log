@@ -1,0 +1,16 @@
+NON VAR INFO =========================================
+
+TRIAL: 5
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/checkers-jumping
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: validate
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: AttributeError, 'list' object has no attribute 'history'

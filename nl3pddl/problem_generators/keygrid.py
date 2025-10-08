@@ -10,7 +10,7 @@ import random
 
 def generate_keygrid_problem(n, filename):
     # Putting args in the local variables
-    places = n * 3 + 1
+    places = n * 2 + 1
     keys = n
     shapes = n
     locks = n

@@ -16,7 +16,6 @@
         "Atom lift-at(f2)",
         "Atom lift-at(f3)",
         "Atom lift-at(f5)",
-        "Atom lift-at(f6)",
         "Atom boarded(p6)",
         "Atom boarded(p5)",
         "Atom boarded(p4)",
@@ -40,79 +39,72 @@
     ],
     "landmarks": [
         [
-            "board f6 p6"
+            "depart f1 p5"
         ],
         [
             "depart f2 p4"
         ],
         [
-            "depart f2 p1"
+            "down f5 f2",
+            "down f3 f2",
+            "down f4 f2",
+            "down f6 f2",
+            "up f1 f2"
+        ],
+        [
+            "board f4 p6"
+        ],
+        [
+            "down f5 f3",
+            "down f4 f3",
+            "down f6 f3",
+            "up f2 f3",
+            "up f1 f3"
+        ],
+        [
+            "depart f4 p3"
         ],
         [
             "board f3 p5"
         ],
         [
-            "board f6 p3"
-        ],
-        [
-            "depart f5 p5"
-        ],
-        [
-            "depart f2 p6"
-        ],
-        [
-            "depart f6 p2"
-        ],
-        [
-            "down f2 f1",
             "down f3 f1",
-            "down f5 f1",
+            "down f4 f1",
             "down f6 f1",
-            "down f4 f1"
+            "down f2 f1",
+            "down f5 f1"
         ],
         [
-            "down f3 f2",
-            "up f1 f2",
-            "down f4 f2",
-            "down f5 f2",
-            "down f6 f2"
+            "board f2 p2"
         ],
         [
-            "up f1 f3",
-            "down f6 f3",
-            "up f2 f3",
-            "down f5 f3",
-            "down f4 f3"
+            "board f2 p3"
         ],
         [
-            "board f1 p2"
+            "depart f4 p2"
         ],
         [
-            "board f1 p4"
+            "depart f3 p1"
         ],
         [
-            "depart f5 p3"
-        ],
-        [
-            "board f3 p1"
-        ],
-        [
-            "up f4 f6",
-            "up f5 f6",
-            "up f3 f6",
-            "up f1 f6",
-            "up f2 f6"
-        ],
-        [
-            "up f4 f5",
-            "up f2 f5",
             "up f3 f5",
-            "up f1 f5",
-            "down f6 f5"
+            "up f2 f5",
+            "up f4 f5",
+            "down f6 f5",
+            "up f1 f5"
+        ],
+        [
+            "depart f5 p6"
+        ],
+        [
+            "board f5 p1"
+        ],
+        [
+            "board f4 p4"
         ]
     ],
     "raw_output": {
-        "planner_output": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/james/repos/nl2pddl3/.venv/bin/python /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/translate/translate.py /home/james/repos/nl2pddl3/data/domains/miconic/ground.pddl /home/james/repos/nl2pddl3/data/gen_problems/feedback/miconic/problem-4.pddl --sas-file output.sas\nParsing...\nParsing: [0.000s CPU, 0.003s wall-clock]\nNormalizing task... [0.000s CPU, 0.000s wall-clock]\nInstantiating...\nGenerating Datalog program... [0.000s CPU, 0.000s wall-clock]\nNormalizing Datalog program...\nNormalizing Datalog program: [0.000s CPU, 0.001s wall-clock]\nPreparing model... [0.000s CPU, 0.001s wall-clock]\nGenerated 18 rules.\nComputing model... [0.010s CPU, 0.001s wall-clock]\n136 relevant atoms\n72 auxiliary atoms\n208 final queue length\n233 total queue pushes\nCompleting instantiation... [0.000s CPU, 0.001s wall-clock]\nInstantiating: [0.010s CPU, 0.005s wall-clock]\nComputing fact groups...\nFinding invariants...\n6 initial candidates\nFinding invariants: [0.000s CPU, 0.001s wall-clock]\nChecking invariant weight... [0.000s CPU, 0.000s wall-clock]\nInstantiating groups... [0.000s CPU, 0.000s wall-clock]\nCollecting mutex groups... [0.000s CPU, 0.000s wall-clock]\nChoosing groups...\n12 uncovered facts\nChoosing groups: [0.000s CPU, 0.000s wall-clock]\nBuilding translation key... [0.000s CPU, 0.000s wall-clock]\nComputing fact groups: [0.000s CPU, 0.002s wall-clock]\nBuilding STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]\nBuilding dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]\nBuilding mutex information...\nBuilding mutex information: [0.000s CPU, 0.000s wall-clock]\nTranslating task...\nProcessing axioms...\nSimplifying axioms... [0.000s CPU, 0.000s wall-clock]\nTranslator axioms removed by simplifying: 0\nComputing negative axioms... [0.000s CPU, 0.000s wall-clock]\nProcessing axioms: [0.000s CPU, 0.000s wall-clock]\nTranslating task: [0.000s CPU, 0.001s wall-clock]\n6 effect conditions simplified\n0 implied preconditions added\nDetecting unreachable propositions...\n0 operators removed\n0 axioms removed\n1 propositions removed\nDetecting unreachable propositions: [0.000s CPU, 0.001s wall-clock]\nReordering and filtering variables...\n13 of 13 variables necessary.\n0 of 1 mutex groups necessary.\n42 of 42 operators necessary.\n0 of 0 axiom rules necessary.\nReordering and filtering variables: [0.000s CPU, 0.000s wall-clock]\nTranslator variables: 13\nTranslator derived variables: 0\nTranslator facts: 30\nTranslator goal facts: 6\nTranslator mutex groups: 0\nTranslator total mutex groups size: 0\nTranslator operators: 42\nTranslator axioms: 0\nTranslator task size: 187\nTranslator peak memory: 28752 KB\nWriting output... [0.000s CPU, 0.001s wall-clock]\nDone! [0.010s CPU, 0.014s wall-clock]\ntranslate exit code: 0\n\nINFO     Running search (/home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin).\nINFO     search stdin: output.sas\nINFO     search time limit: None\nINFO     search memory limit: None\nINFO     search command line string: /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/downward --evaluator 'h=lmcount(lm_factory=lm_exhaust(),dump_action_landmarks=true)' --always --search 'lazy_greedy([h,const(infinity())])' --internal-plan-file sas_plan < output.sas\n[t=7.044e-05s, 11192 KB] reading input...\n[t=0.00052301s, 11324 KB] done reading input!\n[t=0.00252146s, 11588 KB] Initializing landmark count heuristic...\n[t=0.00265858s, 11588 KB] Generating landmark graph...\n[t=0.0027163s, 11588 KB] Initializing Exploration...\n[t=0.00279037s, 11588 KB] Generating landmarks by testing all facts with RPG method\n[t=0.00306241s, 11724 KB] Removed 0 reasonable or obedient reasonable orders\n[t=0.00313091s, 11724 KB] Landmarks generation time: 0.000461179s\n[t=0.00318645s, 11724 KB] Discovered 30 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00322001s, 11724 KB] 0 edges\n[t=0.00326883s, 11724 KB] Landmark graph generation time: 0.000635823s\n[t=0.00329705s, 11724 KB] Landmark graph contains 30 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00334215s, 11724 KB] Landmark graph contains 0 orderings.\n[t=0.00337168s, 11724 KB] Dumping landmarks from landmark graph: \n[t=0.00360746s, 11724 KB] Action landmarks end.\n[t=0.0037937s, 11724 KB] Building successor generator...done!\n[t=0.00399738s, 11724 KB] peak memory difference for successor generator creation: 0 KB\n[t=0.00401694s, 11724 KB] time for successor generation creation: 8.1629e-05s\n[t=0.0040399s, 11724 KB] Variables: 13\n[t=0.0040607s, 11724 KB] FactPairs: 30\n[t=0.00407739s, 11724 KB] Bytes per state: 4\n[t=0.00425512s, 11724 KB] Conducting lazy best first search, (real) bound = 2147483647\n[t=0.00439992s, 11724 KB] 13 initial landmarks, 6 goal landmarks\n[t=0.00443926s, 11724 KB] Initial heuristic value for lmcount(lm_factory = lm_exhaust, dump_action_landmarks = true): 17\n[t=0.00446229s, 11724 KB] Completely explored state space -- no solution!\n[t=0.00450638s, 11724 KB] Actual search time: 0.000100863s\n[t=0.00453374s, 11724 KB] Expanded 0 state(s).\n[t=0.00453374s, 11724 KB] Reopened 0 state(s).\n[t=0.00453374s, 11724 KB] Evaluated 1 state(s).\n[t=0.00453374s, 11724 KB] Evaluations: 1\n[t=0.00453374s, 11724 KB] Generated 0 state(s).\n[t=0.00453374s, 11724 KB] Dead ends: 1 state(s).\n[t=0.00453374s, 11724 KB] Number of registered states: 1\n[t=0.00453374s, 11724 KB] Int hash set load factor: 1/1 = 1\n[t=0.00453374s, 11724 KB] Int hash set resizes: 0\n[t=0.00453374s, 11724 KB] Search time: 0.000279181s\n[t=0.00453374s, 11724 KB] Total time: 0.00453374s\nSearch stopped without finding a solution.\nPeak memory: 11724 KB\nRemove intermediate file output.sas\nsearch exit code: 12\n\nDriver aborting after search\nINFO     Planner time: 0.11s\n",
+        "planner_output": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/james/repos/nl2pddl3/.venv/bin/python /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/translate/translate.py /home/james/repos/nl2pddl3/data/domains/miconic/ground.pddl /home/james/repos/nl2pddl3/data/gen_problems/feedback/miconic/problem-4.pddl --sas-file output.sas\nParsing...\nParsing: [0.000s CPU, 0.001s wall-clock]\nNormalizing task... [0.000s CPU, 0.000s wall-clock]\nInstantiating...\nGenerating Datalog program... [0.000s CPU, 0.000s wall-clock]\nNormalizing Datalog program...\nNormalizing Datalog program: [0.000s CPU, 0.001s wall-clock]\nPreparing model... [0.000s CPU, 0.000s wall-clock]\nGenerated 18 rules.\nComputing model... [0.000s CPU, 0.001s wall-clock]\n136 relevant atoms\n72 auxiliary atoms\n208 final queue length\n233 total queue pushes\nCompleting instantiation... [0.000s CPU, 0.000s wall-clock]\nInstantiating: [0.000s CPU, 0.003s wall-clock]\nComputing fact groups...\nFinding invariants...\n6 initial candidates\nFinding invariants: [0.000s CPU, 0.000s wall-clock]\nChecking invariant weight... [0.000s CPU, 0.000s wall-clock]\nInstantiating groups... [0.000s CPU, 0.000s wall-clock]\nCollecting mutex groups... [0.000s CPU, 0.000s wall-clock]\nChoosing groups...\n12 uncovered facts\nChoosing groups: [0.000s CPU, 0.000s wall-clock]\nBuilding translation key... [0.000s CPU, 0.000s wall-clock]\nComputing fact groups: [0.000s CPU, 0.001s wall-clock]\nBuilding STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]\nBuilding dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]\nBuilding mutex information...\nBuilding mutex information: [0.000s CPU, 0.000s wall-clock]\nTranslating task...\nProcessing axioms...\nSimplifying axioms... [0.000s CPU, 0.000s wall-clock]\nTranslator axioms removed by simplifying: 0\nComputing negative axioms... [0.000s CPU, 0.000s wall-clock]\nProcessing axioms: [0.000s CPU, 0.000s wall-clock]\nTranslating task: [0.000s CPU, 0.001s wall-clock]\n6 effect conditions simplified\n0 implied preconditions added\nDetecting unreachable propositions...\n0 operators removed\n0 axioms removed\n1 propositions removed\nDetecting unreachable propositions: [0.000s CPU, 0.000s wall-clock]\nReordering and filtering variables...\n13 of 13 variables necessary.\n0 of 1 mutex groups necessary.\n42 of 42 operators necessary.\n0 of 0 axiom rules necessary.\nReordering and filtering variables: [0.000s CPU, 0.000s wall-clock]\nTranslator variables: 13\nTranslator derived variables: 0\nTranslator facts: 30\nTranslator goal facts: 6\nTranslator mutex groups: 0\nTranslator total mutex groups size: 0\nTranslator operators: 42\nTranslator axioms: 0\nTranslator task size: 187\nTranslator peak memory: 28752 KB\nWriting output... [0.000s CPU, 0.000s wall-clock]\nDone! [0.000s CPU, 0.007s wall-clock]\ntranslate exit code: 0\n\nINFO     Running search (/home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin).\nINFO     search stdin: output.sas\nINFO     search time limit: None\nINFO     search memory limit: None\nINFO     search command line string: /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/downward --evaluator 'h=lmcount(lm_factory=lm_exhaust(),dump_action_landmarks=true)' --always --search 'lazy_greedy([h,const(infinity())])' --internal-plan-file sas_plan < output.sas\n[t=3.1089e-05s, 11192 KB] reading input...\n[t=0.0002792s, 11324 KB] done reading input!\n[t=0.00137349s, 11588 KB] Initializing landmark count heuristic...\n[t=0.0014287s, 11588 KB] Generating landmark graph...\n[t=0.00145516s, 11588 KB] Initializing Exploration...\n[t=0.00147724s, 11588 KB] Generating landmarks by testing all facts with RPG method\n[t=0.00158947s, 11724 KB] Removed 0 reasonable or obedient reasonable orders\n[t=0.00161772s, 11724 KB] Landmarks generation time: 0.000185813s\n[t=0.00163253s, 11724 KB] Discovered 29 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00164189s, 11724 KB] 0 edges\n[t=0.00165027s, 11724 KB] Landmark graph generation time: 0.00022959s\n[t=0.00165866s, 11724 KB] Landmark graph contains 29 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00166655s, 11724 KB] Landmark graph contains 0 orderings.\n[t=0.00167582s, 11724 KB] Dumping landmarks from landmark graph: \n[t=0.00176268s, 11724 KB] Action landmarks end.\n[t=0.00184585s, 11724 KB] Building successor generator...done!\n[t=0.00190247s, 11724 KB] peak memory difference for successor generator creation: 0 KB\n[t=0.0019238s, 11724 KB] time for successor generation creation: 1.468e-05s\n[t=0.00194028s, 11724 KB] Variables: 13\n[t=0.0019512s, 11724 KB] FactPairs: 30\n[t=0.0019603s, 11724 KB] Bytes per state: 4\n[t=0.00205511s, 11724 KB] Conducting lazy best first search, (real) bound = 2147483647\n[t=0.00212589s, 11724 KB] 13 initial landmarks, 6 goal landmarks\n[t=0.00214415s, 11724 KB] Initial heuristic value for lmcount(lm_factory = lm_exhaust, dump_action_landmarks = true): 16\n[t=0.00215396s, 11724 KB] Completely explored state space -- no solution!\n[t=0.00216192s, 11724 KB] Actual search time: 3.0779e-05s\n[t=0.00217104s, 11724 KB] Expanded 0 state(s).\n[t=0.00217104s, 11724 KB] Reopened 0 state(s).\n[t=0.00217104s, 11724 KB] Evaluated 1 state(s).\n[t=0.00217104s, 11724 KB] Evaluations: 1\n[t=0.00217104s, 11724 KB] Generated 0 state(s).\n[t=0.00217104s, 11724 KB] Dead ends: 1 state(s).\n[t=0.00217104s, 11724 KB] Number of registered states: 1\n[t=0.00217104s, 11724 KB] Int hash set load factor: 1/1 = 1\n[t=0.00217104s, 11724 KB] Int hash set resizes: 0\n[t=0.00217104s, 11724 KB] Search time: 0.000116179s\n[t=0.00217104s, 11724 KB] Total time: 0.00217104s\nSearch stopped without finding a solution.\nPeak memory: 11724 KB\nRemove intermediate file output.sas\nsearch exit code: 12\n\nDriver aborting after search\nINFO     Planner time: 0.09s\n",
         "planner_error": "",
         "landmarks": [
             {
@@ -121,7 +113,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f2 p6"
+                    "depart f5 p6"
                 ]
             },
             {
@@ -130,7 +122,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f5 p5"
+                    "depart f1 p5"
                 ]
             },
             {
@@ -148,7 +140,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f5 p3"
+                    "depart f4 p3"
                 ]
             },
             {
@@ -157,7 +149,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f6 p2"
+                    "depart f4 p2"
                 ]
             },
             {
@@ -166,7 +158,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f2 p1"
+                    "depart f3 p1"
                 ]
             },
             {
@@ -236,24 +228,11 @@
             },
             {
                 "facts": [
-                    "Atom lift-at(f6)"
-                ],
-                "disjunctive": "False",
-                "first_achievers": [
-                    "up f1 f6",
-                    "up f2 f6",
-                    "up f3 f6",
-                    "up f4 f6",
-                    "up f5 f6"
-                ]
-            },
-            {
-                "facts": [
                     "Atom boarded(p6)"
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "board f6 p6"
+                    "board f4 p6"
                 ]
             },
             {
@@ -262,7 +241,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f2 p6"
+                    "depart f5 p6"
                 ]
             },
             {
@@ -287,7 +266,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f5 p5"
+                    "depart f1 p5"
                 ]
             },
             {
@@ -303,7 +282,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "board f1 p4"
+                    "board f4 p4"
                 ]
             },
             {
@@ -328,7 +307,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "board f6 p3"
+                    "board f2 p3"
                 ]
             },
             {
@@ -337,7 +316,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f5 p3"
+                    "depart f4 p3"
                 ]
             },
             {
@@ -353,7 +332,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "board f1 p2"
+                    "board f2 p2"
                 ]
             },
             {
@@ -362,7 +341,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f6 p2"
+                    "depart f4 p2"
                 ]
             },
             {
@@ -378,7 +357,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "board f3 p1"
+                    "board f5 p1"
                 ]
             },
             {
@@ -387,7 +366,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f2 p1"
+                    "depart f3 p1"
                 ]
             },
             {

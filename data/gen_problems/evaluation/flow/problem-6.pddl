@@ -1,8 +1,8 @@
 
 (define (problem flow_5_5) (:domain flow)
 (:objects 
-    c_1
-	c_3
+    c_3
+	c_1
 	c_2 - color
     p_0_0
 	p_0_1
@@ -138,12 +138,12 @@
 	(adjacent p_4_3 p_4_2)
 	(adjacent p_4_4 p_3_4)
 	(adjacent p_4_4 p_4_3)
-    (flow-end p_1_1 c_1)
-	(flow-end p_3_0 c_1)
-	(flow-end p_2_2 c_3)
-	(flow-end p_2_4 c_3)
-	(flow-end p_3_4 c_2)
-	(flow-end p_4_0 c_2)
+    (flow-end p_1_3 c_3)
+	(flow-end p_3_4 c_3)
+	(flow-end p_2_0 c_1)
+	(flow-end p_2_2 c_1)
+	(flow-end p_3_0 c_2)
+	(flow-end p_4_4 c_2)
 )
 
 (:goal (and
@@ -151,8 +151,8 @@
     ;make it so we can't use many good planner heuristics.
     ;(forall (?c - color) (flow-complete ?c))
     ;(forall (?l - location) (not-empty ?l))
-    (flow-complete c_1)
-	(flow-complete c_3)
+    (flow-complete c_3)
+	(flow-complete c_1)
 	(flow-complete c_2)
     (not-empty p_0_0)
 	(not-empty p_0_1)

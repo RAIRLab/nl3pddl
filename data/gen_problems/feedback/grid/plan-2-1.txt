@@ -1,0 +1,4 @@
+(pickup place1 key2)
+(unlock place1 place5 key2 shape2)
+(move place1 place5)
+(putdown place5 key2)

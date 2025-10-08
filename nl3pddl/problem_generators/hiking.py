@@ -6,7 +6,7 @@ import argparse
 import random
 
 def generate_hiking_problem(n, filename):
-    locations = n * 3 + 1
+    locations = n * 2 + 1
     hills = n
     waters = n
     seed = None

@@ -110,9 +110,9 @@ def domain_template(domain_name : str, outputs: list[Any]) -> str:
     Given the components of the domain, types & preds & action,
     return a string of the domain
     """
-    types = "\n".join(outputs[-1].types)
-    preds = "\n".join(outputs[-1].predicates)
-    actions = "\n".join(map(lambda x: x.pddl_action, outputs))
+    types = "\n".join(outputs[-1]["types"])
+    preds = "\n".join(outputs[-1]["predicates"])
+    actions = "\n".join(map(lambda x: x["pddl_action"], outputs))
     return f"""
         (define (domain {domain_name})
             (:requirements :strips :typing)

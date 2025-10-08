@@ -1,0 +1,3 @@
+(walk loc1 loc5)
+(walk loc5 loc1)
+(walk loc1 loc5)

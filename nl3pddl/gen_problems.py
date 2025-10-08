@@ -20,6 +20,8 @@ from nl3pddl.logger import logger
 from .problem_generators import PROBLEM_GENERATORS
 
 from nl3pddl.config import PLANS_PER_PROBLEM, NUM_EVAL_PROBLEMS, NUM_FEEDBACK_PROBLEMS
+import multiprocessing
+from concurrent.futures import ThreadPoolExecutor
 
 KSTAR_REL_PATH = "submodules/kstar/fast-downward.py"
 GENERATED_PROBLEMS_DIR = "data/gen_problems"
@@ -108,60 +110,65 @@ def gen_problem_till_success(
             continue
         return plans
 
+def gen_domain_problems(domain_name, generator): 
+    domain_file = f"data/domains/{domain_name}/ground.pddl"
+    assert os.path.exists(domain_file), \
+        f"Domain file {domain_file} does not exist. " \
+        "Please ensure the domain is generated first."
+    #Create problems director if it doesn't exist
+    feedback_problems_dir = os.path.join(FEEDBACK_PROBLEMS_DIR, domain_name)
+    os.makedirs(feedback_problems_dir)
+    # Generate NUM_PROBLEMS feedback problems for each domain
+    for i in range(1, NUM_FEEDBACK_PROBLEMS + 1):
+        problem_file = os.path.join(
+            feedback_problems_dir, 
+            f"problem-{i}.pddl"
+        )
+
+        # Try generating a problem and plans on it, fail if impossible
+        plans = gen_problem_till_success(generator, i, problem_file, domain_file)
+
+        plans = plans["plans"]
+        # assert len(plans) == PLANS_PER_PROBLEM, \
+        #     f"Expected {PLANS_PER_PROBLEM} plans, got {len(plans)} for {problem_file}"
+        for j, plan in enumerate(plans):
+            print(f"Generated plan for {problem_file}: {plan}")
+            plan_str = plan_to_string(plan)
+            plan_path = os.path.join(
+                feedback_problems_dir, 
+                f"plan-{i}-{j}.txt"
+            )
+            with open(plan_path, 'w', encoding='utf-8') as file:
+                file.write(plan_str)
+    # Create evaluation problems directory
+    evaluation_problems_dir = os.path.join(EVAL_PROBLEMS_DIR, domain_name)
+    os.makedirs(evaluation_problems_dir, exist_ok=True)
+    for i in range(1, NUM_EVAL_PROBLEMS + 1):
+        problem_file = os.path.join(evaluation_problems_dir, f"problem-{i}.pddl")
+        # Generate the top 2 plans for each problem
+        plans = gen_problem_till_success(
+            generator, i, problem_file, domain_file
+        )
+        plans = plans["plans"]
+        # assert len(plans) == PLANS_PER_PROBLEM, \
+        #     f"Expected {PLANS_PER_PROBLEM} plans, got {len(plans)} for {problem_file}"
+        for j, plan in enumerate(plans):
+            if len(plan["actions"]) == 0:
+                print(f"No actions in plan for {problem_file}, skipping")
+                continue
+            print(f"Generated plan for {problem_file}: {plan}")
+            plan_str = plan_to_string(plan)
+            plan_path = os.path.join(
+                evaluation_problems_dir, 
+                f"plan-{i}-{j}.txt"
+            )
+            with open(plan_path, 'w', encoding='utf-8') as file:
+                file.write(plan_str)
+
+
 def generate_problems() -> None:
     if os.path.exists(GENERATED_PROBLEMS_DIR):
         shutil.rmtree(GENERATED_PROBLEMS_DIR)
-    for domain_name, generator in PROBLEM_GENERATORS.items():
-        domain_file = f"data/domains/{domain_name}/ground.pddl"
-        assert os.path.exists(domain_file), \
-            f"Domain file {domain_file} does not exist. " \
-            "Please ensure the domain is generated first."
-        #Create problems director if it doesn't exist
-        feedback_problems_dir = os.path.join(FEEDBACK_PROBLEMS_DIR, domain_name)
-        os.makedirs(feedback_problems_dir)
-        # Generate NUM_PROBLEMS feedback problems for each domain
-        for i in range(1, NUM_FEEDBACK_PROBLEMS + 1):
-            problem_file = os.path.join(
-                feedback_problems_dir, 
-                f"problem-{i}.pddl"
-            )
-
-            # Try generating a problem and plans on it, fail if impossible
-            plans = gen_problem_till_success(generator, i, problem_file, domain_file)
-
-            plans = plans["plans"]
-            # assert len(plans) == PLANS_PER_PROBLEM, \
-            #     f"Expected {PLANS_PER_PROBLEM} plans, got {len(plans)} for {problem_file}"
-            for j, plan in enumerate(plans):
-                print(f"Generated plan for {problem_file}: {plan}")
-                plan_str = plan_to_string(plan)
-                plan_path = os.path.join(
-                    feedback_problems_dir, 
-                    f"plan-{i}-{j}.txt"
-                )
-                with open(plan_path, 'w', encoding='utf-8') as file:
-                    file.write(plan_str)
-        # Create evaluation problems directory
-        evaluation_problems_dir = os.path.join(EVAL_PROBLEMS_DIR, domain_name)
-        os.makedirs(evaluation_problems_dir, exist_ok=True)
-        for i in range(1, NUM_EVAL_PROBLEMS + 1):
-            problem_file = os.path.join(evaluation_problems_dir, f"problem-{i}.pddl")
-            # Generate the top 2 plans for each problem
-            plans = gen_problem_till_success(
-                generator, i, problem_file, domain_file
-            )
-            plans = plans["plans"]
-            # assert len(plans) == PLANS_PER_PROBLEM, \
-            #     f"Expected {PLANS_PER_PROBLEM} plans, got {len(plans)} for {problem_file}"
-            for j, plan in enumerate(plans):
-                if len(plan["actions"]) == 0:
-                    print(f"No actions in plan for {problem_file}, skipping")
-                    continue
-                print(f"Generated plan for {problem_file}: {plan}")
-                plan_str = plan_to_string(plan)
-                plan_path = os.path.join(
-                    evaluation_problems_dir, 
-                    f"plan-{i}-{j}.txt"
-                )
-                with open(plan_path, 'w', encoding='utf-8') as file:
-                    file.write(plan_str)
+    for domain, generator in PROBLEM_GENERATORS.items():
+        print(f"Generating problems for domain {domain}")
+        gen_domain_problems(domain, generator)

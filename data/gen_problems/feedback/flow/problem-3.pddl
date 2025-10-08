@@ -138,12 +138,12 @@
 	(adjacent p_4_3 p_4_2)
 	(adjacent p_4_4 p_3_4)
 	(adjacent p_4_4 p_4_3)
-    (flow-end p_0_4 c_1)
-	(flow-end p_1_0 c_1)
-	(flow-end p_2_0 c_2)
-	(flow-end p_2_2 c_2)
-	(flow-end p_3_2 c_3)
-	(flow-end p_4_4 c_3)
+    (flow-end p_0_1 c_1)
+	(flow-end p_2_2 c_1)
+	(flow-end p_0_2 c_2)
+	(flow-end p_0_4 c_2)
+	(flow-end p_1_4 c_3)
+	(flow-end p_3_3 c_3)
 )
 
 (:goal (and

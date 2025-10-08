@@ -1,0 +1,16 @@
+NON VAR INFO =========================================
+
+TRIAL: 1
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/flow
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: landmark-validate
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: OpenAIRefusalError, I’m sorry, but you haven’t specified which action to encode yet. Please provide the natural-language description of the action you’d like represented in PDDL.
