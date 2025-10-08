@@ -23,7 +23,6 @@ from .logger import logger
 
 #The location of VAL relative to where this is being run from
 VAL_PATH = "submodules/VAL/build/bin/Validate"
-KSTAR_PATH = "submodules/kstar/builds/release/bin/downward"
 
 VAL_PROMPT_TEMPLATE = PromptTemplate.from_file("data/prompts/9-val.txt")
 VALW_PROMPT_TEMPLATE = PromptTemplate.from_file("data/prompts/10-valw.txt")
@@ -119,7 +118,7 @@ def val_evaluate(
 def raw_kstar(
     new_domain_str : str,
     problem_path : str
-) -> str | None:
+) -> dict | None:
     tmpdir = tempfile.mkdtemp()
     new_domain_path = new_pipe(tmpdir, 'new_domain.pddl', new_domain_str)
     plans = planners.plan_topk(

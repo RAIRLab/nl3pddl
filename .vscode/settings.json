@@ -69,14 +69,6 @@
         "xticks",
         "ylabel"
     ],
-    "sqltools.connections": [
-        {
-            "previewLimit": 50,
-            "driver": "SQLite",
-            "database": "data/database.db",
-            "name": "db"
-        }
-    ],
     "editor.rulers": [
         {
             "column": 80,
