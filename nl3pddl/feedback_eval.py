@@ -3,7 +3,6 @@ This file contains the main functions for generating feedback prompts
 and evaluating the results of a model. 
 """
 
-import json
 import os
 import shutil
 import tempfile
@@ -15,11 +14,10 @@ from kstar_planner import planners
 from langchain.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage
 
-from nl3pddl.config import KSTAR_N_PLANS, KSTAR_TIMEOUT
 from nl3pddl.params import Params
-
-from .dataset import PipelineResult, Dataset
-from .logger import logger
+from nl3pddl.logger import logger
+from nl3pddl.dataset import Dataset
+from nl3pddl.config import KSTAR_N_PLANS, KSTAR_TIMEOUT
 
 #The location of VAL relative to where this is being run from
 VAL_PATH = "submodules/VAL/build/bin/Validate"

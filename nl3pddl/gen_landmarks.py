@@ -85,7 +85,6 @@ def generate_landmarks():
 
             success = generate_landmarks_for(domain_file, problem_file)
 
-
             # Filter landmarks into three classes 
             # trivial, where the landmark is in the initial state
             # non-trivial, where the landmark is not in the initial state

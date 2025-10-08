@@ -6,24 +6,14 @@ import os
 
 # External package imports
 from typing import Any
-from langchain_core.messages import (
-    HumanMessage,
-    SystemMessage,
-    AIMessage,
-    BaseMessage
-)
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, BaseMessage
 from langchain_core.prompts import PromptTemplate
 
 # Internal imports
+from nl3pddl.config import PROMPT_DIR
 from nl3pddl.params import Params
 from nl3pddl.dataset import Dataset
-from nl3pddl.utils import (
-    get_all_type_names_domain,
-    get_all_pred_signatures_domain,
-    pred_to_str
-)
-
-PROMPT_DIR = "data/prompts"
+from nl3pddl.utils import get_all_type_names_domain, get_all_pred_signatures_domain, pred_to_str
 
 def load_prompt(prompt_file: str) -> str:
     """
@@ -57,8 +47,8 @@ def init_msgs(d: Dataset, p : Params) -> list[BaseMessage]:
     Generates the initial messages list for the LLM to start with
     """
 
-     # Start off constructing a chat completion message history with
-     # the system prompt and context
+    # Start off constructing a chat completion message history with
+    # the system prompt and context
     messages = [SYSTEM_PROMPT, *CONTEXT_EXAMPLES]
 
     # Get types and predicates for the domain
@@ -68,7 +58,6 @@ def init_msgs(d: Dataset, p : Params) -> list[BaseMessage]:
     predicates_nl = None
     # Change the initial prompt based off of whether we
     # want to include pred descriptions or not
-    # TODO: Unsupported for now
     if p.give_pred_descriptions:
         description_pairs = []
         pred_sigs = [pred_to_str(pred) for pred in d.domains[p.domain_path].predicates]

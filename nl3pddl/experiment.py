@@ -6,7 +6,7 @@ This file contains the driver for the NL3PDDL project.
 import os
 import csv
 import json
-from typing import Any, Literal, Annotated
+from typing import Any, Literal
 import multiprocessing as mp
 from datetime import datetime
 
@@ -19,14 +19,13 @@ from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
-from langgraph.graph.message import add_messages
 
 from .config import THREADS
 from .check_output import check_action_output, check_domain_syntax_output
 from .gen_prompts import action_message, domain_template, init_msgs, raw_domain_msg
 from .dataset import Dataset
 from .params import Params, action_names, domain_name, feedback_pipeline_str, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
-from .feedback_eval import multi_landmark_feedback, single_landmark_feedback, val_evaluate, single_val_feedback, val_feedback_test
+from .feedback_eval import multi_landmark_feedback, multi_val_feedback, val_evaluate, single_val_feedback, val_feedback_test
 from .logger import logger
 
 # This is a pydantic model that we force the LLM to output in
@@ -464,7 +463,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             if "landmark" in p.feedback_pipeline:
                 landmark_feedback_msgs = multi_landmark_feedback(d, p, state["messages"].json_last()["pddl_domain"])
             if "validate" in p.feedback_pipeline:
-                val_feedback_msgs = single_val_feedback(d, p, state["messages"].json_last()["pddl_domain"])
+                val_feedback_msgs = multi_val_feedback(d, p, state["messages"].json_last()["pddl_domain"])
         except Exception as e:
             # TODO: Fix
             msg = f"Error during feedback generation: {str(e)}" 
@@ -486,7 +485,8 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     def action_timeout_node(state: State):
         logger.debug("Action timeout reached, exiting.")
         actions_names = action_names(d, p)
-        failed_action_name = actions_names[state["action_index"]]
+        action_index = state["action_index"] - 1
+        failed_action_name = actions_names[action_index]
         return {
             "action_timeout": True,
             "action_timeout_cause": failed_action_name,

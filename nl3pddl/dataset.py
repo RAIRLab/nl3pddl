@@ -121,8 +121,9 @@ class Dataset:
     landmarks: Dict[str, List[List[str]]] = {}
 
     def __init__(self):
-        """ Reads the dataset from the data/domains folder and parses it into
-            the internal data structures of the Dataset class.
+        """ 
+        Reads the dataset from the data/domains folder and parses it into
+        the internal data structures of the Dataset class.
         """
         self.domain_paths = get_new_domains()
         for domain_path in tqdm(self.domain_paths, "Parsing Domains"):

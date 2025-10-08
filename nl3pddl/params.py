@@ -9,11 +9,8 @@ and some utility functions for the params.
 from typing import Generator
 from dataclasses import dataclass, field
 
+from nl3pddl.dataset import Dataset
 from nl3pddl.config import ACTION_THRESHOLD, DESC_CLASSES, FEEDBACK_PIPELINES, GIVE_PRED_DESCRIPTIONS, HDE_THRESHOLD, MODELS, RUN_TRIALS
-
-
-from .dataset import Dataset
-
 
 @dataclass
 class Params:
@@ -26,7 +23,7 @@ class Params:
     """
     domain_path : str               = ""
     provider : str                  = "openai"
-    model : str                     = "gpt-4o"
+    model : str                     = "gpt-5-nano"
     give_pred_descriptions : bool   = True
     desc_class : str                = ""
     trial : int                     = 1
