@@ -1,0 +1,43 @@
+{
+    "creation": "2025-10-06",
+    "overall": {
+        "first": "The Pacman AI domain models a competitive environment where Pacman navigates a network of connected nodes, collects food, and avoids opponents such as ghosts and other Pacmen.",
+        "detailed-first": "This domain represents a strategic version of Pacman where multiple entities interact within a graph-based map. Pacman can move between connected nodes, collect food items from adjacent positions, and must avoid dangerous nodes containing opponent ghosts or rival Pacmen. The goal typically involves navigating safely, maximizing food collection, and potentially outmaneuvering opponents. The domain emphasizes intelligent movement, risk assessment, and efficient pathfinding in a dynamic and adversarial environment."
+    },
+    "predicates": {
+        "has_food": {
+            "first": "This location contains food.",
+            "detailed-first": "This predicate indicates that the specified node currently holds food that Pacman can collect. When Pacman performs the 'eat_food' action, this predicate becomes false for that node, signifying that the food has been eaten."
+        },
+        "is_opponent_ghost": {
+            "first": "A ghost is at this node.",
+            "detailed-first": "This predicate represents a hostile opponent ghost positioned at a specific node. Ghosts are dangerous to Pacman, who must avoid moving into nodes occupied by them to prevent being caught."
+        },
+        "is_opponent_pacman": {
+            "first": "An opponent Pacman is at this node.",
+            "detailed-first": "This predicate indicates that another Pacman opponent is at a given location. Depending on the game rules, this could represent competition for food or potential capture scenarios."
+        },
+        "is_visited": {
+            "first": "The node has been visited.",
+            "detailed-first": "This predicate marks nodes that Pacman has already traveled to. It can be useful for tracking exploration progress or preventing repeated visits to the same nodes."
+        },
+        "at": {
+            "first": "Pacman is currently at a node.",
+            "detailed-first": "This predicate shows Pacman’s current position in the environment. It changes whenever Pacman moves or eats food, ensuring only one location holds this predicate as true at a time."
+        },
+        "connected": {
+            "first": "Two nodes are connected.",
+            "detailed-first": "This predicate defines the map layout by indicating which nodes have direct paths between them. Movement and eating actions can only occur between connected nodes."
+        }
+    },
+    "actions": {
+        "move_pacman": {
+            "first": "Moves to another node.",
+            "detailed-first": "This action represents Pacman traveling between two connected nodes that do not contain food or ghosts. The preconditions ensure that Pacman starts at the correct location, the destination is connected and safe, and it does not contain any food or ghosts. The result is that Pacman changes his position to the new node, marking it as visited."
+        },
+        "eat_food": {
+            "first": "Moves to a node and eat the food.",
+            "detailed-first": "This action allows Pacman to move from one node to a connected node that contains food, consuming the food in the process. Pacman cannot eat food if the target node contains a ghost. After the action, Pacman ends up at the food node, the food is removed from that node, and the node is marked as visited."
+        }
+    }
+}
