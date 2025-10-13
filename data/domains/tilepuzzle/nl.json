@@ -1,0 +1,42 @@
+{
+  "domain": "sliding-puzzle",
+  "description": "A puzzle where tiles are moved into an empty space to reach a target configuration.",
+  "types": {
+    "tile": "a square tile with a number on it",
+    "position": "a cell in the grid where a tile or empty space can be"
+  },
+  "predicates": {
+    "at": {
+      "description": "Indicates that a tile is currently at a given position on the board.",
+      "example": "(at t1 p11) means tile 1 is at the top-left corner."
+    },
+    "empty": {
+      "description": "Marks a position as currently empty (no tile on it).",
+      "example": "(empty p33) means the bottom-right corner is empty."
+    },
+    "adjacent": {
+      "description": "Defines two positions as neighbors, allowing tiles to slide between them.",
+      "example": "(adjacent p12 p13) means positions p12 and p13 are next to each other."
+    }
+  },
+  "actions": {
+    "move": {
+      "description": "Slide a tile into the empty position next to it.",
+      "parameters": {
+        "?t": "the tile being moved",
+        "?from": "the position the tile is currently on",
+        "?to": "the empty position the tile will move into"
+      },
+      "preconditions": [
+        "The tile ?t is at position ?from.",
+        "The position ?to is empty.",
+        "The positions ?from and ?to are adjacent."
+      ],
+      "effects": [
+        "The tile ?t is now at position ?to.",
+        "The position ?from becomes empty.",
+        "The position ?to is no longer empty."
+      ]
+    }
+  }
+}
