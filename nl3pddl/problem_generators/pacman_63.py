@@ -1,5 +1,5 @@
 """
-    generate_pddl_problem.py
+    pacman_63.py
     Simple utility to programmatically build PDDL problem files for the 'grid' domain.
 """
 
