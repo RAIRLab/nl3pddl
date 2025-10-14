@@ -1,0 +1,81 @@
+NON VAR INFO =========================================
+
+TRIAL: 1
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/flow
+DESC CLASS: first
+FEEDBACK PIPELINE: landmark-validate
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: OpenAIRefusalError, Pddl Domain  
+(define (domain flow)  
+  (:requirements :strips :typing)  
+  (:types  
+    location  
+    color)  
+  (:predicates  
+    (adjacent ?l1 - location ?l2 - location)  
+    (offboard)  
+    (flow-end ?l - location ?c - color)  
+    (color-at ?l - location ?c - color)  
+    (flow-complete ?c - color)  
+    (empty ?l - location)  
+    (flow-at ?l - location ?c - color)  
+    (finger-at ?l - location)  
+  )  
+
+  (:action start  
+    :parameters (?l - location ?c - color)  
+    :precondition (and  
+      (offboard)  
+      (flow-end ?l ?c)  
+      (empty ?l)  
+    )  
+    :effect (and  
+      (not (offboard))  
+      (not (empty ?l))  
+      (finger-at ?l)  
+      (flow-at ?l ?c)  
+    )  
+  )  
+
+  (:action move  
+    :parameters (?from ?to - location ?c - color)  
+    :precondition (and  
+      (finger-at ?from)  
+      (flow-at ?from ?c)  
+      (adjacent ?from ?to)  
+      (empty ?to)  
+    )  
+    :effect (and  
+      (not (finger-at ?from))  
+      (finger-at ?to)  
+      (not (empty ?to))  
+      (flow-at ?to ?c)  
+    )  
+  )  
+
+  (:action finish  
+    :parameters (?from ?to - location ?c - color)  
+    :precondition (and  
+      (finger-at ?from)  
+      (flow-at ?from ?c)  
+      (adjacent ?from ?to)  
+      (flow-end ?to ?c)  
+      (empty ?to)  
+    )  
+    :effect (and  
+      (not (finger-at ?from))  
+      (offboard)  
+      (flow-at ?to ?c)  
+      (not (empty ?to))  
+      (flow-complete ?c)  
+    )  
+  )  
+)

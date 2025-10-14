@@ -10,7 +10,7 @@ from typing import Generator
 from dataclasses import dataclass, field
 
 from nl3pddl.dataset import Dataset
-from nl3pddl.config import DESC_CLASSES, FEEDBACK_PIPELINES, GIVE_PRED_DESCRIPTIONS, MODELS, RUN_TRIALS
+from nl3pddl.config import DESC_CLASSES, FEEDBACK_PIPELINES, GIVE_PRED_DESCRIPTIONS, MODELS, RUN_TRIALS, SEARCH_HEURISTICS
 
 @dataclass
 class Params:
@@ -28,6 +28,7 @@ class Params:
     desc_class : str                = ""
     trial : int                     = 1
     feedback_pipeline : list[str]   = field(default_factory=lambda: [])
+    search_heuristic : str          = "G + H" # One of SEARCH_HEURISTICS
 
 def param_grid(d : Dataset) -> Generator[Params, None, None]:
     """
@@ -40,14 +41,16 @@ def param_grid(d : Dataset) -> Generator[Params, None, None]:
                     for give_pred_desc in GIVE_PRED_DESCRIPTIONS:
                         for desc_class in DESC_CLASSES:
                             for feedback_pipeline in FEEDBACK_PIPELINES:
-                                yield Params(
-                                    domain_path,
-                                    provider, model,
-                                    give_pred_desc,
-                                    desc_class,
-                                    trial,
-                                    feedback_pipeline
-                                )
+                                for search_heuristic in SEARCH_HEURISTICS:
+                                    yield Params(
+                                        domain_path,
+                                        provider, model,
+                                        give_pred_desc,
+                                        desc_class,
+                                        trial,
+                                        feedback_pipeline,
+                                        search_heuristic
+                                    )
 
 
 def action_names(d : Dataset, h : Params) -> list[str]:

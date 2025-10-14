@@ -1,0 +1,43 @@
+NON VAR INFO =========================================
+
+TRIAL: 3
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/flow
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: landmark
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: OpenAIRefusalError, I’ve assumed you’d like the “start-flow” action, which begins drawing a flow at one of its endpoints. Let me know if you’d rather see a different step.  
+```lisp
+(:action start-flow
+ :parameters (?l - location ?c - color)
+ :precondition (and
+    (offboard)
+    (flow-end ?l ?c)
+    (empty ?l))
+ :effect (and
+    (not (offboard))
+    (flow-at ?l ?c)
+    (not (empty ?l))
+    (not (offboard))))
+```
+
+Predicates:
+- (not-empty ?l - location)
+- (flow-at ?l1 - location ?c - color)
+- (empty ?l - location)
+- (flow-complete ?c - color)
+- (flow-end ?l - location ?c - color)
+- (offboard)
+- (adjacent ?l1 - location ?l2 - location)
+- (color-at ?l - location ?c - color)
+
+Types:
+- location
+- color

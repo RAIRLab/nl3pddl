@@ -25,9 +25,10 @@ from .gen_prompts import action_message, domain_template, raw_domain_msg
 from .dataset import Dataset
 from .params import Params, action_names, domain_name, param_grid
 from .feedback_eval import multi_landmark_feedback, multi_val_feedback, val_evaluate, val_feedback_test
-from .logger import logger, gen_csv_results, RESULTS_HEADER, write_message_log
+from .logger import logger
 from .response_schema import ActionSchema, DomainSchema
 from .experiment_state import State, gen_initial_state        
+from .experiment_reporter import gen_csv_results, RESULTS_HEADER, write_message_log
 
 # Experiments Helpers ==========================================================
 
@@ -44,7 +45,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def call_action_model(state: State):
         logger.debug("Calling action model")
-        json_obj = action_model.invoke(state["messages"].history())
+        json_obj = action_model.invoke(state["messages"].message_history())
         raw = json.dumps(json_obj.model_dump())
         return {
             "messages": state["messages"].insert_on_current_branch_json(AIMessage(raw), json_obj),
@@ -52,7 +53,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
     
     def call_domain_model(state: State):
-        json_obj = domain_model.invoke(state["messages"].history())
+        json_obj = domain_model.invoke(state["messages"].message_history())
         raw = json.dumps(json_obj.model_dump())
         return {
             "messages": state["messages"].insert_on_current_branch_json(AIMessage(raw), json_obj),
@@ -115,15 +116,14 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         json_last = state["messages"].json_last()
         res = check_domain_syntax_output(d, p, json_last)
         new_messages = state["messages"].insert_on_current_branch(res) if res else state["messages"]
-        #If syntactically valid, immediatly update the score based on how well it does on the evals
+        #If syntactically valid, immediatly update the score based on how well it does on the evals, note that lower is better!
         if res is None:
             try:
                 scores = val_feedback_test(d, p, json_last["pddl_domain"])
-                new_messages.get().score = scores[0]
+                new_messages.update_score(scores[1] - scores[0])
             except Exception as e:
-                new_messages.get().score = 0
+                new_messages.update_score(scores[1])
         return {
-            # TODO: need to actually append the last message to proposed if the syntax check failed
             "messages": new_messages,
             # We pass the syntax check if any of the proposed messages passed it
             "domain_syntax_passed" : res is None,
@@ -137,9 +137,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         val_feedback_msgs : list[HumanMessage] = []
         current_node = state["messages"].get()
         
-        # Exit early if we have a perfect score
-        # TODO: Extract 10 as the constant for perfect score
-        if current_node.score == 10:
+        if current_node.h == 0:
             return {
                 "landmark_passed": True,
                 "val_passed": True,
@@ -241,8 +239,6 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     graph_builder.add_node("build_domain", build_domain)
     graph_builder.add_node("call_domain_model", call_domain_model)
     graph_builder.add_node("check_domain_syntax", check_domain_syntax)
-    # graph_builder.add_node("landmark", landmark)
-    # graph_builder.add_node("validate", validate)
     graph_builder.add_node("feedback", feedback)
     graph_builder.add_node("action_timeout_node", action_timeout_node)
     graph_builder.add_node("hde_timeout_node", hde_timeout_node)
@@ -258,8 +254,6 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         "check_domain_syntax", 
         route_check_domain_syntax
     )
-    # graph_builder.add_conditional_edges("landmark", route_landmark)
-    # graph_builder.add_conditional_edges("validate", route_hde)
     graph_builder.add_conditional_edges("feedback", route_feedback)
     graph_builder.add_edge("action_timeout_node", END)
     graph_builder.add_edge("hde_timeout_node", "final_evaluation")

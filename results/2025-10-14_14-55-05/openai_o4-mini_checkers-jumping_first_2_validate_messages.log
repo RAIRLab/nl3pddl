@@ -1,0 +1,32 @@
+NON VAR INFO =========================================
+
+TRIAL: 2
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/checkers-jumping
+DESC CLASS: first
+FEEDBACK PIPELINE: validate
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: OpenAIRefusalError, I have defined the generic “slide” action, which allows a checker to move into an adjacent empty space either to its left or right. All previously provided predicates and types are included.```json
+{
+  "pddl_action": "(:action slide\n    :parameters (?c - checker ?from - space ?to - space)\n    :precondition (and (at ?c ?from)\n                       (empty ?to)\n                       (or (left-of ?from ?to)\n                           (right-of ?from ?to)))\n    :effect (and (not (at ?c ?from))\n                 (at ?c ?to)\n                 (empty ?from)\n                 (not (empty ?to))))",
+  "predicates": [
+    "(is-red ?c - checker)",
+    "(is-blue ?c - checker)",
+    "(left-of ?s1 - space ?s2 - space)",
+    "(right-of ?s1 - space ?s2 - space)",
+    "(empty ?s - space)",
+    "(at ?c - checker ?s - space)"
+  ],
+  "types": [
+    "checker",
+    "space"
+  ]
+}
+```

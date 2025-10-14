@@ -190,7 +190,7 @@ list[HumanMessage]:
         for plan_path in d.feedback_plan_paths[problem_path]:
             result = raw_validate(new_domain_str, problem_path, plan_path)
             if result is not None and (result == "" or result.strip()) == "":
-                result = "The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL."
+                result = "The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL, with correct typing, IE. no negated preconditions, no equality, forall, or, exists, etc."
             if result is not None:
                 problem_raw = d.feedback_problem_raws[problem_path]
                 plan_raw = d.feedback_plan_raws[plan_path]
