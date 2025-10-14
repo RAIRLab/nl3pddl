@@ -7,15 +7,15 @@
     "predicates": {
         "empty": {
             "first": "The cell is empty.",
-            "detailed-first": "This predicate indicates that the specified cell currently has no number assigned. It is a prerequisite for assigning a number to that cell."
+            "detailed-first": "This predicate indicates that the specified cell currently has no number assigned. It is a prerequisite for assigning a number to that cell. It is mutually exclusive with 'filled'."
         },
         "filled": {
             "first": "The cell is filled.",
-            "detailed-first": "This predicate shows that a particular cell already has a number assigned, meaning it can no longer be changed."
+            "detailed-first": "This predicate shows that a particular cell already has a number assigned, meaning it can no longer be changed. It is mutually exclusive with 'empty'."
         },
         "has-value": {
             "first": "The cell contains a specific number.",
-            "detailed-first": "This predicate indicates that the cell is assigned a particular number between 1 and 4. It is used to track the Sudoku grid’s current state."
+            "detailed-first": "This predicate indicates that the cell is assigned a particular number between 1 and 4. It is used to track the Sudoku grid’s current state. It is mutually exclusive with 'not-has-value' for the same number."
         },
         "not-has-value": {
             "first": "The cell does not contain a specific number.",
@@ -29,7 +29,7 @@
     "actions": {
         "assign": {
             "first": "Assigns a number to an empty cell without creating conflicts.",
-            "detailed-first": "This action allows the planner to place a number into a cell that is currently empty. Preconditions ensure the cell is empty, that it doesn’t already have the number, and that placing it would not cause any Sudoku rule violations. The effect marks the cell as filled with the chosen number and updates its value predicates accordingly."
+            "detailed-first": "This action allows the planner to place a number into a cell that is currently empty. Preconditions ensure the cell is empty, that it doesn’t already have the number, and that placing it would not cause any Sudoku rule violations. The effect marks the cell as filled with the chosen number and updates its value predicates accordingly, including deleting the 'empty' predicate and the corresponding 'not-has-value' for that number to maintain mutual exclusivity."
         }
     }
 }

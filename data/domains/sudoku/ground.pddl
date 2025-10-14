@@ -23,7 +23,8 @@
     :effect (and
       (filled ?c)
       (has-value ?c ?n)
-      (not-has-value ?c ?n)
+      (not (empty ?c))          ; DELETE: cell is no longer empty
+      (not (not-has-value ?c ?n)) ; DELETE: now it has the value
     )
   )
 )
