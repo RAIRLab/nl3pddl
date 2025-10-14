@@ -14,6 +14,7 @@ from nl3pddl.config import PROMPT_DIR
 from nl3pddl.params import Params
 from nl3pddl.dataset import Dataset
 from nl3pddl.utils import get_all_type_names_domain, get_all_pred_signatures_domain, pred_to_str
+from nl3pddl.search_tree import IndexedMessageTree
 
 def load_prompt(prompt_file: str) -> str:
     """
@@ -119,3 +120,13 @@ def raw_domain_msg(raw_domain : str) -> HumanMessage:
     return HumanMessage(FULL_DOMAIN_PROMPT_TEMPLATE.format(
         full_domain=raw_domain
     ))
+
+def init_msgs_tree(d: Dataset, p: Params) -> IndexedMessageTree:
+    """
+    Initializes the message history as an IndexedMessageTree.
+    """
+    msgs = init_msgs(d, p)
+    tree = IndexedMessageTree()
+    for msg in msgs:
+        tree.insert_on_current_branch(msg)
+    return tree

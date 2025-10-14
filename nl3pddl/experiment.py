@@ -6,7 +6,7 @@ This file contains the driver for the NL3PDDL project.
 import os
 import csv
 import json
-from typing import Any, Literal
+from typing import Literal
 import multiprocessing as mp
 from datetime import datetime
 
@@ -19,16 +19,15 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 
-from .config import THREADS
+from .config import THREADS, ACTION_THRESHOLD, HDE_THRESHOLD
 from .check_output import check_action_output, check_domain_syntax_output
-from .gen_prompts import action_message, domain_template, init_msgs, raw_domain_msg
+from .gen_prompts import action_message, domain_template, raw_domain_msg
 from .dataset import Dataset
-from .params import Params, action_names, domain_name, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
+from .params import Params, action_names, domain_name, param_grid
 from .feedback_eval import multi_landmark_feedback, multi_val_feedback, val_evaluate, val_feedback_test
 from .logger import logger, gen_csv_results, RESULTS_HEADER, write_message_log
 from .response_schema import ActionSchema, DomainSchema
-from .search_tree import IndexedMessageTree
-from .experiment_state import State        
+from .experiment_state import State, gen_initial_state        
 
 # Experiments Helpers ==========================================================
 
@@ -159,7 +158,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             val_feedback_msgs = [HumanMessage(msg)]
 
         state["messages"].insert_batch_on_current_branch(landmark_feedback_msgs + val_feedback_msgs)
-        state["messages"].select_best_branch()
+        state["messages"] = state["messages"].select_best_branch()
         
         return {
             "messages": state["messages"],
@@ -204,7 +203,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def route_check_action(state: State) ->\
     Literal['action_timeout_node', 'next_action', 'call_action_model']:
-        if state["action_iterations"] >= get_action_iteration_threshold():
+        if state["action_iterations"] >= ACTION_THRESHOLD:
             return "action_timeout_node"
         elif state["action_valid"]:
             return "next_action"
@@ -220,10 +219,9 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def route_check_domain_syntax(state: State) ->\
     Literal['hde_timeout_node', "feedback", 'call_domain_model']:
-        if state["hde_iterations"] >= get_hde_iteration_threshold():
+        if state["hde_iterations"] >= HDE_THRESHOLD:
             return "hde_timeout_node"
         elif state["domain_syntax_passed"]:
-            #return p.feedback_pipeline[state["feedback_index"] % len(p.feedback_pipeline)]
             return "feedback"
         else:
             return "call_domain_model"
@@ -277,16 +275,6 @@ def graph_pipeline_image() -> None:
     graph = create_langgraph(None, Params()) # Dummy dataset and params
     graph.get_graph().draw_png("results/pipeline.png")
 
-def init_messages_as_message_tree(d: Dataset, p: Params) -> IndexedMessageTree:
-    """
-    Initializes the message history as an IndexedMessageTree.
-    """
-    msgs = init_msgs(d, p)
-    tree = IndexedMessageTree()
-    for msg in msgs:
-        tree.insert_on_current_branch(msg)
-    return tree
-
 def run_experiment_instance(
     d: Dataset,     # Dataset
     p: Params,      # Experiment Parameters
@@ -301,43 +289,17 @@ def run_experiment_instance(
     """
     graph = create_langgraph(d, p)
 
-    initial_state : State = {
-        "run_id": batch_id,
-        "PARAMS": p,
-        "messages": init_messages_as_message_tree(d, p),
-        "action_index": 0,
-        "action_valid": False,
-        "actions_done": False,
-        "actions" : [],
-        "domain_syntax_passed": False,
-        "val_passed": False,
-        "feedback_index": 0,
-        "feedback_cycles": 0,
-        "landmark_passed": False,
-        "landmark_runs": 0,
-        "val_runs": 0,
-        "domain_check_runs": 0,
-        "action_iterations" : 0,
-        "hde_iterations" : 0,
-        "action_timeout" : False,
-        "action_timeout_cause" : "",
-        "hde_timeout" : False,
-        "evals_passed": 0,
-        "total_evals": 0,
-        "langgraph_path": []
-    }
+    initial_state : State = gen_initial_state(batch_id, d, p)
 
     # Langgraph experiment state
     state : State = initial_state
 
-    # Set the recursion limit for the graph execution to be high enough to 
-    # accommodate the worst case scenario
-    #TODO: occasionally seems to fail, investigate
+    # TODO: this is no longer meaningful in light of search
     config = {
         "recursion_limit": 
             len(d.domains[p.domain_path].actions) * 
-            get_action_iteration_threshold() + 
-            get_hde_iteration_threshold() * 3 + 25,
+            ACTION_THRESHOLD + 
+            HDE_THRESHOLD * 3 + 25,
     }
 
     # Run the graph

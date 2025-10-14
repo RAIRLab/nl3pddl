@@ -5,6 +5,9 @@
 
 from typing_extensions import TypedDict
 
+from nl3pddl.dataset import Dataset
+from nl3pddl.gen_prompts import init_msgs_tree
+
 from .params import Params
 from .response_schema import ActionSchema
 from .search_tree import IndexedMessageTree
@@ -75,3 +78,33 @@ class State(TypedDict):
 
     # Path of nodes taken through the langgraph, for debugging
     langgraph_path : list[str] = [] 
+
+def gen_initial_state(batch_id: str, d: Dataset, p: Params) -> State:
+    """ 
+    Creates the initial state for the experiment.
+    """
+    return {
+        "run_id": batch_id,
+        "PARAMS": p,
+        "messages": init_msgs_tree(d, p),
+        "action_index": 0,
+        "action_valid": False,
+        "actions_done": False,
+        "actions" : [],
+        "domain_syntax_passed": False,
+        "val_passed": False,
+        "feedback_index": 0,
+        "feedback_cycles": 0,
+        "landmark_passed": False,
+        "landmark_runs": 0,
+        "val_runs": 0,
+        "domain_check_runs": 0,
+        "action_iterations" : 0,
+        "hde_iterations" : 0,
+        "action_timeout" : False,
+        "action_timeout_cause" : "",
+        "hde_timeout" : False,
+        "evals_passed": 0,
+        "total_evals": 0,
+        "langgraph_path": []
+    }

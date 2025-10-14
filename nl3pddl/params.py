@@ -10,7 +10,7 @@ from typing import Generator
 from dataclasses import dataclass, field
 
 from nl3pddl.dataset import Dataset
-from nl3pddl.config import ACTION_THRESHOLD, DESC_CLASSES, FEEDBACK_PIPELINES, GIVE_PRED_DESCRIPTIONS, HDE_THRESHOLD, MODELS, RUN_TRIALS
+from nl3pddl.config import DESC_CLASSES, FEEDBACK_PIPELINES, GIVE_PRED_DESCRIPTIONS, MODELS, RUN_TRIALS
 
 @dataclass
 class Params:
@@ -61,18 +61,6 @@ def domain_name(d : Dataset, h : Params) -> str:
     Returns the name of the domain
     """
     return d.domains[h.domain_path].name
-
-def get_hde_iteration_threshold() -> int:
-    """
-    Returns the HDE iteration threshold for the experiment.
-    """
-    return HDE_THRESHOLD
-
-def get_action_iteration_threshold() -> int:
-    """
-    Returns the action iteration threshold for the experiment.
-    """
-    return ACTION_THRESHOLD
 
 def feedback_pipeline_str(p : Params) -> str:
     """
