@@ -25,7 +25,7 @@ from .gen_prompts import action_message, domain_template, init_msgs, raw_domain_
 from .dataset import Dataset
 from .params import Params, action_names, domain_name, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
 from .feedback_eval import multi_landmark_feedback, multi_val_feedback, val_evaluate, val_feedback_test
-from .logger import logger, gen_csv_results, RESULTS_HEADER
+from .logger import logger, gen_csv_results, RESULTS_HEADER, write_message_log
 from .response_schema import ActionSchema, DomainSchema
 from .search_tree import IndexedMessageTree
 from .experiment_state import State        
