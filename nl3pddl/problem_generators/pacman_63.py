@@ -1,6 +1,5 @@
 """
-    generate_pddl_problem.py
-    Simple utility to programmatically build PDDL problem files for the 'grid' domain.
+    Simple utility to build PDDL problem files for the 'pacman-63' domain.
 """
 
 import random

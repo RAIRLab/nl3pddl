@@ -1,11 +1,16 @@
 """
-    generate_pddl_problem.py
     Simple utility to build PDDL problem files for the 'sudoku' domain.
 """
 
 import random
 
-def generate_sudoku_problem(grid_size=4):
+def generate_sudoku_problem(output_file, seed=None):
+
+    grid_size = 4
+
+    if (seed is not None):
+        random.seed(seed)
+
     digits = [1, 2, 3, 4]
     positions = [f"r{r}c{c}" for r in range(1, grid_size + 1) for c in range(1, grid_size + 1)]
     
@@ -48,3 +53,6 @@ def generate_sudoku_problem(grid_size=4):
     problem += ")"
     
     return problem
+
+    with open(output_file, "w") as f:
+        f.write(problem)
