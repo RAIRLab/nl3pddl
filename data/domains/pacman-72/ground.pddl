@@ -1,4 +1,4 @@
-(define (domain pacman)
+(define (domain pacman-72)
   (:requirements :strips :typing)
   (:types position)
 
@@ -7,7 +7,6 @@
     (not_at ?pos - position)          ; complement of at
     (visited ?pos - position)
     (connected ?from ?to - position)
-    (eat ?pos - position)
     (hasFood ?pos - position)
     (noFood ?pos - position)          ; complement of hasFood
     (carryingFood)
@@ -22,8 +21,10 @@
     )
     :effect (and
       (at ?to)
+      (not (at ?from))        ; DELETE: Pacman is no longer at ?from
       (not_at ?from)
       (visited ?to)
+      (not (not_at ?to))      ; DELETE: ?to is no longer marked as not_at
     )
   )
 
@@ -36,6 +37,7 @@
     :effect (and
       (carryingFood)
       (noFood ?pos)
+      (not (hasFood ?pos))   ; DELETE: the food is gone
     )
   )
 )

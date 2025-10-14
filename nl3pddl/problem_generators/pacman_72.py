@@ -30,28 +30,38 @@ def generate_pacman_problem(n, output_file, seed=None):
                 neighbors.append((current, f"p{x}{y+1}"))
                 neighbors.append((f"p{x}{y+1}", current))
 
-    # PDDL domain
-    problem = f"(define (problem pacman-problem)\n"
-    problem += "    (:domain pacman)\n"
+    # PDDL problem
+    problem = f"(define (problem pacman-72)\n"
+    problem += "    (:domain pacman-72)\n"
     problem += "    (:objects\n"
     problem += "        " + " ".join(positions) + " - position\n"
     problem += "    )\n\n"
 
     # Initial states
     problem += "    (:init\n"
+
+    # Initialize at/not_at predicates
     for pos in positions:
         if pos == start_pos:
             problem += f"        (at {pos})\n"
-            problem += f"        (not_at {" ".join([p for p in positions if p != pos])})\n"
+            problem += f"        (not (not_at {pos}))\n"
         else:
             problem += f"        (not_at {pos})\n"
-    for f in food_positions:
-        problem += f"        (hasFood {f})\n"
+            problem += f"        (not (at {pos}))\n"
+
+    # Initialize hasFood/noFood predicates
     for pos in positions:
-        if pos not in food_positions:
+        if pos in food_positions:
+            problem += f"        (hasFood {pos})\n"
+            problem += f"        (not (noFood {pos}))\n"
+        else:
             problem += f"        (noFood {pos})\n"
+            problem += f"        (not (hasFood {pos}))\n"
+
+    # Connections
     for (a, b) in neighbors:
         problem += f"        (connected {a} {b})\n"
+
     problem += "    )\n\n"
 
     # The goal: all food picked up
