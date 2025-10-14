@@ -24,6 +24,7 @@ assert 1 <= len(GIVE_PRED_DESCRIPTIONS) <= 2, \
     "give-pred-description can only be a list of length 1 or 2"
 DESC_CLASSES : list[str] = config["description-classes"]
 FEEDBACK_PIPELINES : list[list[str]] = config["feedback-pipelines"]
+SEARCH_HEURISTICS : list[str] = config["search-heuristic"]
 
 # Hardcoded paths
 PROMPT_DIR = "data/prompts"

@@ -23,8 +23,8 @@ log-level: 10
 
 # The maximum number of threads to use for parallel processing.
 # If set to 0 or less, it will default to the number of available CPU cores.
-#threads: 1
-threads: 50
+threads: 1
+#threads: 50
 
 # Maximum number of reprompts to allow for each action generation step.
 action-threshold: 5
@@ -34,7 +34,7 @@ hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 3
+trials: 1
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5
@@ -53,8 +53,8 @@ kstar-n-plans: 100
 models:
     openai:
     #    - o4-mini
-        - gpt-4o-mini
-    #    - gpt-5-nano    
+    #    - gpt-4o-mini
+        - gpt-5-nano    
     # deepseek:
     #     - deepseek-chat
 
@@ -65,14 +65,18 @@ description-classes:
     - detailed-first
 
 # list of feedback pipelines to evaluate. Pipeline stage names correspond to 
-# langgraph node names in the experiment.py file.
-# TODO: currently the order of the stages is hardcoded, changing the order here
-# will not change the order of the stages in the pipeline.
+# Pipelines effect the creation of the domain after initial generation.
 feedback-pipelines:
-    - ["landmark"]
-    - ["validate"]
+#    - ["landmark"]
+#    - ["validate"]
     - ["landmark", "validate"]
 
+# Specifies the search heuristic to use when generating plans.
+# Should be a string with valid python expression that evaluates to a number
+# involving G distance from the start node and H (heuristic value).
+search-heuristic:
+    - "H"
+    - "G + H"
 
 # Should the model be presented with a description of predicates from the
 # problem set when initially generating the domain?
