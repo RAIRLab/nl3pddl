@@ -1,6 +1,5 @@
 """
-    pacman_63.py
-    Simple utility to programmatically build PDDL problem files for the 'grid' domain.
+Utility to build  PDDL problem files for the "pacman-63" domain.
 """
 
 import random
@@ -11,7 +10,7 @@ def generate_pacman_ai_problem(n, output_file, seed=None):
     num_food = n + 1
     num_ghosts = n
     
-    if (seed is not None):
+    if seed is not None:
         random.seed(seed)
 
     # Create nodes
@@ -40,21 +39,45 @@ def generate_pacman_ai_problem(n, output_file, seed=None):
 
     # Initial state
     problem += "    (:init\n"
-    problem += f"        (at {start_node})\n"
-    for fn in food_nodes:
-        problem += f"        (has_food {fn})\n"
-    for gn in ghost_nodes:
-        problem += f"        (is_opponent_ghost {gn})\n"
+    
+    for node in nodes:
+        # At start_node
+        if node == start_node:
+            problem += f"        (at {node})\n"
+            problem += f"        (not_at {node})\n"  # start node's complement can be handled by assign action
+        else:
+            problem += f"        (not_at {node})\n"
+
+        # Food / no_food
+        if node in food_nodes:
+            problem += f"        (has_food {node})\n"
+            problem += f"        (no_food {node})\n"  # complement
+        else:
+            problem += f"        (no_food {node})\n"
+
+        # Ghost / safe_from_ghost
+        if node in ghost_nodes:
+            problem += f"        (is_opponent_ghost {node})\n"
+            problem += f"        (safe_from_ghost {node})\n"
+        else:
+            problem += f"        (safe_from_ghost {node})\n"
+
+        # visited
+        problem += f"        (is_visited {node})\n"
+
+    # Connections
     for (a, b) in connections:
         problem += f"        (connected {a} {b})\n"
+
     problem += "    )\n\n"
 
-    # Goal: all food eaten (no has_food anywhere)
+    # Goal: all food eaten (all no_food)
     problem += "    (:goal (and\n"
     for fn in food_nodes:
-        problem += f"        (not (has_food {fn}))\n"
+        problem += f"        (no_food {fn})\n"
     problem += "    ))\n"
     problem += ")\n"
 
+    # Write to file
     with open(output_file, "w") as f:
         f.write(problem)

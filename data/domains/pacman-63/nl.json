@@ -1,43 +1,51 @@
 {
-    "creation": "2025-10-06",
+    "creation": "2025-10-13",
     "overall": {
-        "first": "The Pacman AI domain models a competitive environment where Pacman navigates a network of connected nodes, collects food, and avoids opponents such as ghosts and other Pacmen.",
-        "detailed-first": "This domain represents a strategic version of Pacman where multiple entities interact within a graph-based map. Pacman can move between connected nodes, collect food items from adjacent positions, and must avoid dangerous nodes containing opponent ghosts or rival Pacmen. The goal typically involves navigating safely, maximizing food collection, and potentially outmaneuvering opponents. The domain emphasizes intelligent movement, risk assessment, and efficient pathfinding in a dynamic and adversarial environment."
+        "first": "The Pacman AI STRIPS domain models a competitive environment where Pacman navigates a network of connected nodes, collects food, and avoids opponents such as ghosts.",
+        "detailed-first": "This STRIPS domain represents a strategic version of Pacman where multiple entities interact within a graph-based map. Pacman can move between connected nodes, collect food items from adjacent positions, and must avoid nodes containing opponent ghosts. Complementary predicates such as 'no_food', 'safe_from_ghost', and 'not_at' are used to eliminate negations in preconditions and effects. The goal typically involves navigating safely, maximizing food collection, and marking visited nodes."
     },
     "predicates": {
         "has_food": {
             "first": "This location contains food.",
-            "detailed-first": "This predicate indicates that the specified node currently holds food that Pacman can collect. When Pacman performs the 'eat_food' action, this predicate becomes false for that node, signifying that the food has been eaten."
+            "detailed-first": "Indicates that the specified node currently holds food that Pacman can collect. After the 'eat_food' action, the 'no_food' predicate is set for that node, and 'has_food' is no longer true."
+        },
+        "no_food": {
+            "first": "This location does not contain food.",
+            "detailed-first": "Complement of 'has_food'. Ensures STRIPS preconditions avoid negation: if a node has no food, Pacman can move there safely."
         },
         "is_opponent_ghost": {
             "first": "A ghost is at this node.",
-            "detailed-first": "This predicate represents a hostile opponent ghost positioned at a specific node. Ghosts are dangerous to Pacman, who must avoid moving into nodes occupied by them to prevent being caught."
+            "detailed-first": "Represents a hostile ghost positioned at a specific node. Pacman must avoid moving into nodes with ghosts."
         },
-        "is_opponent_pacman": {
-            "first": "An opponent Pacman is at this node.",
-            "detailed-first": "This predicate indicates that another Pacman opponent is at a given location. Depending on the game rules, this could represent competition for food or potential capture scenarios."
-        },
-        "is_visited": {
-            "first": "The node has been visited.",
-            "detailed-first": "This predicate marks nodes that Pacman has already traveled to. It can be useful for tracking exploration progress or preventing repeated visits to the same nodes."
+        "safe_from_ghost": {
+            "first": "The node is safe from ghosts.",
+            "detailed-first": "Complement of 'is_opponent_ghost'. Enables STRIPS actions to use only positive preconditions to ensure safety."
         },
         "at": {
             "first": "Pacman is currently at a node.",
-            "detailed-first": "This predicate shows Pacman’s current position in the environment. It changes whenever Pacman moves or eats food, ensuring only one location holds this predicate as true at a time."
+            "detailed-first": "Shows Pacman’s current position in the environment. Complemented by 'not_at' for STRIPS compatibility."
+        },
+        "not_at": {
+            "first": "Pacman is not at this node.",
+            "detailed-first": "Complement of 'at'. Used to avoid negation in STRIPS preconditions and effects."
+        },
+        "is_visited": {
+            "first": "The node has been visited.",
+            "detailed-first": "Marks nodes that Pacman has already traveled to. Updated whenever Pacman moves or eats food."
         },
         "connected": {
             "first": "Two nodes are connected.",
-            "detailed-first": "This predicate defines the map layout by indicating which nodes have direct paths between them. Movement and eating actions can only occur between connected nodes."
+            "detailed-first": "Defines the map layout by indicating which nodes have direct paths between them. Movement and eating actions require connectivity."
         }
     },
     "actions": {
         "move_pacman": {
-            "first": "Moves to another node.",
-            "detailed-first": "This action represents Pacman traveling between two connected nodes that do not contain food or ghosts. The preconditions ensure that Pacman starts at the correct location, the destination is connected and safe, and it does not contain any food or ghosts. The result is that Pacman changes his position to the new node, marking it as visited."
+            "first": "Moves Pacman to an adjacent, empty, and safe node.",
+            "detailed-first": "Pacman can move from one node to a connected node that contains no food and is free of ghosts. Preconditions ensure Pacman starts at the correct location, the destination is connected, empty, and safe. Effects update Pacman's position, mark the new node as visited, and adjust complementary predicates."
         },
         "eat_food": {
-            "first": "Moves to a node and eat the food.",
-            "detailed-first": "This action allows Pacman to move from one node to a connected node that contains food, consuming the food in the process. Pacman cannot eat food if the target node contains a ghost. After the action, Pacman ends up at the food node, the food is removed from that node, and the node is marked as visited."
+            "first": "Moves Pacman to a node containing food and consumes it.",
+            "detailed-first": "Pacman moves from a starting node to a connected node containing food, provided it is safe from ghosts. After the action, Pacman ends up at the food node, the food is removed (reflected by 'no_food'), and the node is marked as visited."
         }
     }
 }
