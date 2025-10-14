@@ -1,39 +1,43 @@
 {
-    "creation": "2025-10-06",
+    "creation": "2025-10-13",
     "overall": {
         "first": "The Pacman domain involves navigating a maze-like environment to collect food by moving between connected positions and eating food items when available.",
-        "detailed-first": "This domain models Pacman’s movement through a grid of connected positions where he can explore and collect food. Pacman starts at a given location and can move to adjacent positions if they are connected. Some positions contain food, which Pacman can eat when he reaches them. The planning problem focuses on finding an efficient sequence of moves and eat actions that allow Pacman to visit necessary locations and collect all food items. This setup captures spatial navigation, reachability, and resource collection behavior."
+        "detailed-first": "This domain models Pacman’s movement through a grid of connected positions where he can explore and collect food. Pacman starts at a given location and can move to adjacent positions if they are connected and safe. Positions may contain food or be free of food. The domain uses complement predicates to indicate absence of Pacman or food at positions. The planning problem focuses on finding an efficient sequence of moves and eat actions that allow Pacman to visit necessary locations and collect all food items. This setup captures spatial navigation, reachability, and resource collection behavior."
     },
     "predicates": {
         "at": {
             "first": "Pacman is at a certain position.",
-            "detailed-first": "This predicate indicates Pacman’s current location in the environment. Only one 'at' predicate can be true at a time, representing Pacman’s exact position in the maze."
+            "detailed-first": "This predicate indicates Pacman’s current location in the environment. Only one 'at' predicate can be true at a time, representing Pacman’s exact position in the maze. All other positions will have 'not_at' to indicate Pacman is absent there."
         },
-        "visited": {
-            "first": "A position has been visited by Pacman.",
-            "detailed-first": "This predicate indicates that Pacman has previously reached a specific position. It can be used to track exploration progress or ensure that certain areas of the maze have been covered."
-        },
-        "connected": {
-            "first": "Two positions are connected to each other.",
-            "detailed-first": "This predicate represents adjacency or valid movement paths between two positions. Pacman can only move between positions that are connected, ensuring that movement respects the structure of the maze."
+        "not_at": {
+            "first": "Pacman is not at this position.",
+            "detailed-first": "This complement predicate is used to represent that Pacman is absent from a particular position. It ensures STRIPS compliance by replacing negated preconditions."
         },
         "hasFood": {
             "first": "A position contains food.",
-            "detailed-first": "This predicate indicates that there is food available at a given position. Pacman can only perform the 'eat' action when he is at a position that has food."
+            "detailed-first": "This predicate indicates that there is food available at a given position. Pacman can only perform the 'eat' action at positions where 'hasFood' is true."
         },
-        "carryingFood": {
-            "first": "Pacman is carrying food.",
-            "detailed-first": "This predicate indicates that Pacman has successfully eaten food and is now carrying it. It represents Pacman’s possession of a collected item and can serve as a goal condition for successful completion."
+        "noFood": {
+            "first": "A position does not contain food.",
+            "detailed-first": "This complement predicate indicates that a position has no food. It replaces negated 'hasFood' in action preconditions and goal conditions for STRIPS compliance."
+        },
+        "is_visited": {
+            "first": "A position has been visited by Pacman.",
+            "detailed-first": "This predicate indicates that Pacman has reached a specific position. It can be used to track exploration progress or ensure that certain areas have been visited."
+        },
+        "connected": {
+            "first": "Two positions are connected to each other.",
+            "detailed-first": "This predicate represents adjacency or valid movement paths between two positions. Pacman can only move between positions that are connected, ensuring movement respects the structure of the maze."
         }
     },
     "actions": {
         "move": {
-            "first": "Moves from this to another.",
-            "detailed-first": "This action allows Pacman to travel between two connected positions. Pacman must currently be at the starting position, and there must be a connection between the two locations. After moving, Pacman will be at the new position, the old position will no longer hold him, and the new position will be marked as visited."
+            "first": "Moves from one position to another.",
+            "detailed-first": "This action allows Pacman to travel between two connected positions. Preconditions require Pacman to be at the starting position, the destination to be connected and free of food, and the destination to be safe. After moving, Pacman is at the destination, the start position is marked with 'not_at', and the destination is marked as visited."
         },
         "eat": {
-            "first": "Eats food at this position.",
-            "detailed-first": "This action allows Pacman to collect food located at his current position. It can only be executed if food is present at that location. After performing this action, Pacman will be carrying food, and the food will be removed from the position to indicate that it has been eaten."
+            "first": "Eats food at a position.",
+            "detailed-first": "This action allows Pacman to collect food at a position. Preconditions require that Pacman is at the position, the position contains food, and it is safe. After performing this action, the position is marked with 'noFood', Pacman remains at the position, and it is marked as visited."
         }
     }
 }
