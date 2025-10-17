@@ -1,42 +1,26 @@
 {
-  "domain": "sliding-puzzle",
-  "description": "A puzzle where tiles are moved into an empty space to reach a target configuration.",
-  "types": {
-    "tile": "a square tile with a number on it",
-    "position": "a cell in the grid where a tile or empty space can be"
+  "overall": {
+    "first": "The Sliding Puzzle domain involves moving numbered tiles within a grid to reach a target configuration by sliding them into the empty space.",
+    "detailed-first": "This domain models a classic sliding puzzle where tiles numbered from 1 to N are arranged on a grid with one empty space. Players can move a tile into the adjacent empty space, gradually rearranging the tiles to reach a predefined goal configuration. The problem focuses on determining a sequence of valid tile moves that leads from the initial scrambled state to the solved configuration."
   },
   "predicates": {
     "at": {
-      "description": "Indicates that a tile is currently at a given position on the board.",
-      "example": "(at t1 p11) means tile 1 is at the top-left corner."
+      "first": "A tile is at a specific position on the board.",
+      "detailed-first": "Indicates that a given tile occupies a specific position within the puzzle grid. For example, '(at t1 p11)' means tile 1 is currently located in the top-left corner of the board."
     },
     "empty": {
-      "description": "Marks a position as currently empty (no tile on it).",
-      "example": "(empty p33) means the bottom-right corner is empty."
+      "first": "A position on the board is empty.",
+      "detailed-first": "Marks a specific grid position as empty, meaning no tile currently occupies it. For instance, '(empty p33)' indicates that the bottom-right corner of the board has no tile."
     },
     "adjacent": {
-      "description": "Defines two positions as neighbors, allowing tiles to slide between them.",
-      "example": "(adjacent p12 p13) means positions p12 and p13 are next to each other."
+      "first": "Two positions on the board are adjacent.",
+      "detailed-first": "Defines that two grid positions are neighbors, meaning a tile can slide between them if one is empty. For example, '(adjacent p12 p13)' means positions p12 and p13 are next to each other."
     }
   },
   "actions": {
     "move": {
-      "description": "Slide a tile into the empty position next to it.",
-      "parameters": {
-        "?t": "the tile being moved",
-        "?from": "the position the tile is currently on",
-        "?to": "the empty position the tile will move into"
-      },
-      "preconditions": [
-        "The tile ?t is at position ?from.",
-        "The position ?to is empty.",
-        "The positions ?from and ?to are adjacent."
-      ],
-      "effects": [
-        "The tile ?t is now at position ?to.",
-        "The position ?from becomes empty.",
-        "The position ?to is no longer empty."
-      ]
+      "first": "Slide a tile into the empty position next to it.",
+      "detailed-first": "This action involves moving a tile from its current position into an adjacent empty space. Preconditions require that the tile is at a specific position, the target position is empty, and the two positions are adjacent. The result of the action is that the tile now occupies the new position, and the previous one becomes empty."
     }
   }
 }
