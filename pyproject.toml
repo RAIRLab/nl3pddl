@@ -27,6 +27,9 @@ dependencies = [
     "kstar-planner (>=1.4.6,<2.0.0)"
 ]
 
+[tool.uv.sources]
+forbiditerative = { git = "https://github.com/IBM/forbiditerative.git" }
+kstar-planner = { git = "https://github.com/IBM/kstar.git" }
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

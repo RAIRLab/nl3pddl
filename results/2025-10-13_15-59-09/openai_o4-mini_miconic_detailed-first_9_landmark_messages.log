@@ -1,0 +1,33 @@
+NON VAR INFO =========================================
+
+TRIAL: 9
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/miconic
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: landmark
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: OpenAIRefusalError, I have recorded the current types and predicates for the elevator domain. Let me know which action you’d like to define next.
+
+{"pddl_action":"",  
+ "predicates":[  
+   "(lift-at ?f - floor)",  
+   "(boarded ?p - passenger)",  
+   "(destin ?p - passenger ?f - floor)",  
+   "(origin ?p - passenger ?f - floor)",  
+   "(above ?f1 - floor ?f2 - floor)",  
+   "(not-boarded ?p - passenger)",  
+   "(served ?p - passenger)",  
+   "(not-served ?p - passenger)"  
+ ],  
+ "types":[  
+   "passenger",  
+   "floor"  
+ ]  
+}

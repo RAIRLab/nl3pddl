@@ -11,6 +11,7 @@ import multiprocessing as mp
 from datetime import datetime
 
 # External package imports
+from concurrent.futures import ThreadPoolExecutor
 from pddl.parser.domain import DomainParser
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
@@ -635,8 +636,6 @@ def run_experiment() -> None:
     """
     experiment_init()
 
-    # Number of experiments we run in parallel, None means core count
-    num_processes = THREADS if THREADS > 0 else None
 
     # Load the PDDL dataset
     dataset = Dataset()
@@ -651,10 +650,26 @@ def run_experiment() -> None:
         writer.writerow(RESULTS_HEADER)
 
     # Run the experiments in parallel and write the results
+    # j
     args = [(dataset, params, date_time) for params in param_grid(dataset)]
-    if DEBUG:
-        print(args)
+    #if DEBUG:
+    #    print(args)
+    # Number of experiments we run in parallel, None means core count
+    #num_processes = THREADS if THREADS > 0 else None
+    num_processes = len(args)
 
+    with ThreadPoolExecutor(max_workers=num_processes) as pool:
+        with open(results_path, 'a', encoding="utf-8") as res_file:
+            csv_writer = csv.writer(res_file)
+            for res in pool.map(run_experiment_instance_star, args):
+                (success, err_msg, state) = res
+                write_message_log(state, err_msg, results_dir)
+                if success:
+                    csv_results_row = gen_csv_results(state)
+                    csv_writer.writerow(csv_results_row)
+
+
+    """
     with mp.Pool(processes=num_processes) as pool:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
@@ -664,5 +679,7 @@ def run_experiment() -> None:
                 if success:
                     csv_results_row = gen_csv_results(state)
                     csv_writer.writerow(csv_results_row)
+
+    """
                     
     print("Successfully joined all processes.")

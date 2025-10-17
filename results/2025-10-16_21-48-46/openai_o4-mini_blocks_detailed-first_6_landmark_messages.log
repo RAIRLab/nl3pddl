@@ -1,0 +1,80 @@
+NON VAR INFO =========================================
+
+TRIAL: 6
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/blocks
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: landmark
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: RuntimeError, Failed to call domain model: Error during feedback generation: The domain as modeled already permits the planner to solve the problem without ever touching b1 (since b3 is already on b1 in the initial state).  In fact, there is no way—using only standard STRIPS :typing and :strips—to force the planner to “landmark” b1 in every solution.  Any attempt to forbid stacking on b8 or b2 (so as to force a stack on b1) will also forbid achieving the goal stacks (b6 on b8, b5 on b2).  The domain itself is correct; the absence of one of the eight b1‐actions in the found plan simply reflects the fact that those actions are not needed to reach the goal.  
+
+If you do want to *encourage* (but cannot *enforce*) an action on b1, you would have to move beyond STRIPS—e.g. add ADL disjunctive preconditions or a meta‐constraint outside of PDDL.  Since the requirement was to remain a pure typed‐STRIPS domain, no further revision can accomplish the desired disjunctive‐landmark constraint.  
+
+Below is the (unchanged) minimal typed‐STRIPS blocks‐world.
+
+```lisp
+(define (domain blocks)
+  (:requirements :strips :typing)
+  (:types block)
+  (:predicates
+     (clear ?x - block)
+     (holding ?x - block)
+     (ontable ?x - block)
+     (on ?x - block ?y - block)
+     (handempty)
+  )
+
+  (:action pick-up
+     :parameters (?x - block)
+     :precondition (and (ontable ?x) (clear ?x) (handempty))
+     :effect (and
+        (not (ontable ?x))
+        (not (clear ?x))
+        (not (handempty))
+        (holding ?x)
+     )
+  )
+
+  (:action put-down
+     :parameters (?x - block)
+     :precondition (holding ?x)
+     :effect (and
+        (ontable ?x)
+        (clear ?x)
+        (handempty)
+        (not (holding ?x))
+     )
+  )
+
+  (:action stack
+     :parameters (?x - block ?y - block)
+     :precondition (and (holding ?x) (clear ?y))
+     :effect (and
+        (not (holding ?x))
+        (handempty)
+        (not (clear ?y))
+        (on ?x ?y)
+        (clear ?x)
+     )
+  )
+
+  (:action unstack
+     :parameters (?x - block ?y - block)
+     :precondition (and (on ?x ?y) (clear ?x) (handempty))
+     :effect (and
+        (not (on ?x ?y))
+        (not (clear ?x))
+        (not (handempty))
+        (holding ?x)
+        (clear ?y)
+     )
+  )
+)
+```

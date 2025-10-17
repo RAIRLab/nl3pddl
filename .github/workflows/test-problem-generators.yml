@@ -1,0 +1,62 @@
+name: Test Problem Generators
+
+on:
+  push:
+    branches: [ main, daniel-benchmark ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-generators:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+        allow-prereleases: true
+
+    - name: Enable free-threaded Python (no GIL)
+      run: |
+        echo "PYTHON_GIL=0" >> $GITHUB_ENV
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "latest"
+
+    - name: Install Python dependencies
+      run: |
+        uv sync
+
+    - name: Verify domain files exist
+      run: |
+        echo "Checking for domain files..."
+        ls -la data/domains/ || echo "Domain directory structure:"
+        find data/domains -name "*.pddl" || echo "No PDDL files found - may need to generate domains first"
+
+    - name: Run problem generator tests
+      run: |
+        uv run python test_gen_problems.py
+      timeout-minutes: 15
+
+    - name: Upload test artifacts on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-artifacts
+        path: |
+          /tmp/tmp*/*.pddl
+        retention-days: 5

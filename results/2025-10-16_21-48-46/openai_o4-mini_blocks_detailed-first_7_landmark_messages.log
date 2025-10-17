@@ -1,0 +1,85 @@
+NON VAR INFO =========================================
+
+TRIAL: 7
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/blocks
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: landmark
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: RuntimeError, Failed to call domain model: Error during feedback generation: I have reviewed the landmark analysis and the fact that—because we allow “on b3 b1” to hold in the initial state—there is no *need* to ever touch b₁ or b₃ to achieve the goal.  In classical STRIPS/block-world, an atom that is already true in the initial state and is required in the goal is *not* a landmark.  Thus the dispatcher correctly finds a plan which never moves b₁ or b₃.
+
+If your landmark analysis insists that *one* of 
+   (stack b7 b1), (stack b3 b1), (pick-up b1), … 
+must occur, you must *remove* “(on b3 b1)” from the INITIAL state so that the planner is forced to re-establish that relation with a proper stack/unstack/pick-up.  That change belongs in the *problem*, not in the *domain*.
+
+Below is the EXACT SAME domain, which is already correct.  To force the landmark you described you should simply **delete** the line 
+       (on b3 b1)
+from the problem’s `:init` section.  No change to the domain is necessary.
+
+```lisp
+(define (domain blocks)
+  (:requirements :strips :typing)
+  (:types block)
+  (:predicates
+     (clear ?x - block)
+     (holding ?x - block)
+     (ontable ?x - block)
+     (on ?x - block ?y - block)
+     (handempty)
+  )
+
+  (:action pick-up
+    :parameters (?x - block)
+    :precondition (and (ontable ?x)
+                       (clear ?x)
+                       (handempty))
+    :effect (and (holding ?x)
+                 (not (ontable ?x))
+                 (not (clear ?x))
+                 (not (handempty)))
+  )
+
+  (:action put-down
+    :parameters (?x - block)
+    :precondition (holding ?x)
+    :effect (and (ontable ?x)
+                 (handempty)
+                 (clear ?x)
+                 (not (holding ?x)))
+  )
+
+  (:action stack
+    :parameters (?x - block ?y - block)
+    :precondition (and (holding ?x)
+                       (clear ?y))
+    :effect (and (on ?x ?y)
+                 (clear ?x)
+                 (handempty)
+                 (not (holding ?x))
+                 (not (clear ?y)))
+  )
+
+  (:action unstack
+    :parameters (?x - block ?y - block)
+    :precondition (and (on ?x ?y)
+                       (clear ?x)
+                       (handempty))
+    :effect (and (holding ?x)
+                 (clear ?y)
+                 (not (on ?x ?y))
+                 (not (handempty))
+                 (not (clear ?x)))
+  )
+)
+```
+
+**Key Point:**  
+– *Domain* stays exactly as above.  
+– To *force* a stack/pick-up on b₁ you must remove `(on b3 b1)` from the problem’s `:init`.

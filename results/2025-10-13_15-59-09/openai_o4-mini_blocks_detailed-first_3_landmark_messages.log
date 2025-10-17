@@ -1,0 +1,21 @@
+NON VAR INFO =========================================
+
+TRIAL: 3
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/blocks
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: landmark
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: RuntimeError, Failed to call domain model: Error during feedback generation: I have reviewed the domain and confirmed that it already correctly models the standard STRIPS blocks world—there are no missing or incorrect preconditions or effects that would prevent the expected plan from being generated. Disjunctive landmarks (i.e. “one of these actions must occur”) are a search‐guidance concept and cannot be encoded purely within a STRIPS‐only domain without adding richer constructs (which would require new PDDL requirements). The domain below is the minimal, correct typed‐STRIPS specification:
+
+{
+  "pddl_domain": 
+"(define (domain blocks)\n  (:requirements :strips :typing)\n  (:types block)\n\n  (:predicates\n    (handempty)\n    (holding ?x - block)\n    (on ?x - block ?y - block)\n    (ontable ?x - block)\n    (clear ?x - block)\n  )\n\n  (:action pick-up\n    :parameters (?x - block)\n    :precondition (and (ontable ?x) (clear ?x) (handempty))\n    :effect (and\n      (holding ?x)\n      (not (ontable ?x))\n      (not (clear ?x))\n      (not (handempty))\n    )\n  )\n\n  (:action put-down\n    :parameters (?x - block)\n    :precondition (holding ?x)\n    :effect (and\n      (ontable ?x)\n      (clear ?x)\n      (handempty)\n      (not (holding ?x))\n    )\n  )\n\n  (:action stack\n    :parameters (?x - block ?y - block)\n    :precondition (and (holding ?x) (clear ?y))\n    :effect (and\n      (on ?x ?y)\n      (clear ?x)\n      (handempty)\n      (not (holding ?x))\n      (not (clear ?y))\n      (not (ontable ?x))\n    )\n  )\n\n  (:action unstack\n    :parameters (?x - block ?y - block)\n    :precondition (and (on ?x ?y) (clear ?x) (handempty))\n    :effect (and\n      (holding ?x)\n      (clear ?y)\n      (not (on ?x ?y))\n      (not (clear ?x))\n      (not (handempty))\n    )\n  )\n)\n"
+}

@@ -1,0 +1,17 @@
+trial,domain_path,provider,model,give_pred_descriptions,desc_class,feedback_pipeline,landmark_runs,val_runs,hde_runs,hde_timeout,action_timeout,action_timeout_cause,evals_passed,total_evals
+1,data/domains/checkers-jumping,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,jump-blue,0,0
+2,data/domains/checkers-jumping,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,slide-red,0,0
+3,data/domains/checkers-jumping,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,slide-red,0,0
+3,data/domains/blocks,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,unstack,0,0
+4,data/domains/checkers-jumping,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,slide-red,0,0
+5,data/domains/checkers-jumping,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,slide-red,0,0
+6,data/domains/bookseller,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,unloadBottom,0,0
+6,data/domains/checkers-jumping,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,jump-blue,0,0
+6,data/domains/blocks,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,unstack,0,0
+7,data/domains/checkers-jumping,openai,o4-mini,True,detailed-first,landmark,0,0,0,False,True,slide-red,0,0
+7,data/domains/miconic,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,board,0,0
+8,data/domains/checkers-jumping,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,slide-red,0,0
+9,data/domains/checkers-jumping,openai,o4-mini,True,detailed-first,landmark,0,0,0,False,True,slide-red,0,0
+9,data/domains/checkers-jumping,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,slide-red,0,0
+10,data/domains/checkers-jumping,openai,o4-mini,True,detailed-first,landmark,0,0,0,False,True,jump-red,0,0
+10,data/domains/checkers-jumping,openai,gpt-5-nano,True,detailed-first,landmark,0,0,0,False,True,slide-red,0,0
