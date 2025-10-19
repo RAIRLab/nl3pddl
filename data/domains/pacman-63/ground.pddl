@@ -4,11 +4,11 @@
    
    (:predicates
       (has_food ?location - node)
-      (no_food ?location - node)          ; complement of has_food
-      (is_opponent_ghost ?location - node)
+      (no_food ?location - node)
+      (is_safe ?location - node)               ; complement of is_opponent_ghost
       (is_visited ?location)
       (at ?location - node)
-      (not_at ?location - node)           ; complement of at
+      (not_at ?location - node)
       (connected ?n1 ?n2 - node)
    )
 
@@ -19,13 +19,11 @@
          (not_at ?end)
          (no_food ?end)
          (connected ?start ?end)
-         (not (is_opponent_ghost ?end))
+         (is_safe ?end)
       )
       :effect (and
-         (not (at ?start))
          (at ?end)
          (not_at ?start)
-         (not (not_at ?end))
          (is_visited ?end)
       )
    )
@@ -36,15 +34,12 @@
          (at ?start)
          (has_food ?end)
          (connected ?start ?end)
-         (not (is_opponent_ghost ?end))
+         (is_safe ?end)
       )
       :effect (and
          (at ?end)
-         (not (at ?start))
          (not_at ?start)
-         (not (no_food ?end))
          (no_food ?end)
-         (not (has_food ?end))
          (is_visited ?end)
       )
    )
