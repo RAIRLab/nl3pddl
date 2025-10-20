@@ -17,4 +17,5 @@ and then
 '''uv sync --python 3.13t'''
 
 run '''python test_gil_enabled.py''', and if you see False, you're gtg!
-Enjoy the sub 3 minute runs when calling driver -r
+Enjoy the sub 3 minute runs when calling '''python driver -r'''
+

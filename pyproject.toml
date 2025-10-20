@@ -32,6 +32,6 @@ dependencies = [
 forbiditerative = { git = "https://github.com/IBM/forbiditerative.git" }
 kstar-planner = { git = "https://github.com/IBM/kstar.git" }
 
-#[build-system]
-#requires = ["poetry-core>=2.0.0,<3.0.0"]
-#build-backend = "poetry.core.masonry.api"
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
