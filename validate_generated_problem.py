@@ -10,51 +10,20 @@ import traceback
 import subprocess
 from pathlib import Path
 
-sys.path.insert(0, 'nl3pddl/problem_generators')
-import blocks
-import bookseller
-import checkers
-import elevators
-import flow
-import hiking
-import keygrid
+from nl3pddl.problem_generators import PROBLEM_GENERATORS
 
 VAL_PARSER = "submodules/VAL/build/bin/Parser"
 VAL_VALIDATE = "submodules/VAL/build/bin/Validate"
 DOMAINS_DIR = "data/domains"
 
-GENERATORS = {
-    'blocks': {
-        'generator': blocks.generate_problem,
-        'domain': 'blocks',
-        'domain_file': 'data/domains/blocks/ground.pddl'
-    },
-    'bookseller': {
-        'generator': bookseller.generate_problem,
-        'domain': 'bookseller',
-        'domain_file': 'data/domains/bookseller/ground.pddl'
-    },
-    'checkers': {
-        'generator': checkers.generate_problem,
-        'domain': 'checkers-jumping',
-        'domain_file': 'data/domains/checkers-jumping/ground.pddl'
-    },
-    'elevators': {
-        'generator': elevators.generate_problem,
-        'domain': 'miconic',
-        'domain_file': 'data/domains/miconic/ground.pddl'
-    },
-    'hiking': {
-        'generator': hiking.generate_hiking_problem,
-        'domain': 'hiking',
-        'domain_file': 'data/domains/hiking/ground.pddl'
-    },
-    'keygrid': {
-        'generator': keygrid.generate_keygrid_problem,
-        'domain': 'grid',
-        'domain_file': 'data/domains/grid/ground.pddl'
-    },
-}
+# Build GENERATORS dict from PROBLEM_GENERATORS
+GENERATORS = {}
+for domain_name, generator_func in PROBLEM_GENERATORS.items():
+    GENERATORS[domain_name] = {
+        'generator': generator_func,
+        'domain': domain_name,
+        'domain_file': f'{DOMAINS_DIR}/{domain_name}/ground.pddl'
+    }
 
 
 def run_parser(domain_path, problem_path):
