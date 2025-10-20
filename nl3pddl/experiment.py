@@ -7,7 +7,6 @@ import os
 import csv
 import json
 from typing import Literal
-#import multiprocessing as mp
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 import time
@@ -39,7 +38,20 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     Creates a langgraph for a single experiment with the given
     experimental parameters.
     """
-    model = init_chat_model(p.model, model_provider=p.provider, timeout=60, max_retries=3)
+    # Handle Hugging Face models through OpenAI-compatible API
+    # https://huggingface.co/NousResearch/Hermes-4-405B?inference_api=true&inference_provider=nebius&language=python&client=openai
+    if p.provider == "huggingface":
+        model = init_chat_model(
+            p.model,
+            model_provider="openai",
+            timeout=60,
+            max_retries=3,
+            base_url="https://router.huggingface.co/v1",
+            api_key=hf_token,
+        )
+    else:
+        model = init_chat_model(p.model, model_provider=p.provider, timeout=60, max_retries=3)
+
     action_model = model.with_structured_output(ActionSchema)
     domain_model = model.with_structured_output(DomainSchema)
 
@@ -124,6 +136,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
                 scores = val_feedback_test(d, p, json_last["pddl_domain"])
                 new_messages.update_score(scores[1] - scores[0])
             except Exception as e:
+                # TODO update err message with actual model name
                 """
                 NON VAR INFO =========================================
 
@@ -347,12 +360,18 @@ def experiment_init() -> None:
         raise RuntimeError("DEEPSEEK_API_KEY environment variable not set.\
                             Please set it in your .env file.")
 
+    if not os.environ.get("HF_API_KEY"):
+        raise RuntimeError("HF_API_KEY environment variable is not set.\
+                            Please set it in your .env file.")
+    else:
+        global hf_token 
+        hf_token = os.environ.get("HF_API_KEY")
+
 def run_experiment() -> None:
     """
     Driver, runs the experiments in parallel using the parameter grid
     """
     experiment_init()
-
 
     # Load the PDDL dataset
     dataset = Dataset()
@@ -369,8 +388,8 @@ def run_experiment() -> None:
     # Run the experiments in parallel and write the results
     args = [(dataset, params, date_time) for params in param_grid(dataset)]
     num_processes = len(args)
-    print("HERE ", num_processes)
-    time.sleep(3)
+    print("number of processes", num_processes)
+    time.sleep(1)
 
     with ThreadPoolExecutor(max_workers=num_processes) as pool:
         with open(results_path, 'a', encoding="utf-8") as res_file:

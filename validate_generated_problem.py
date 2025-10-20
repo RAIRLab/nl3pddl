@@ -16,7 +16,6 @@ VAL_PARSER = "submodules/VAL/build/bin/Parser"
 VAL_VALIDATE = "submodules/VAL/build/bin/Validate"
 DOMAINS_DIR = "data/domains"
 
-# Build GENERATORS dict from PROBLEM_GENERATORS
 GENERATORS = {}
 for domain_name, generator_func in PROBLEM_GENERATORS.items():
     GENERATORS[domain_name] = {

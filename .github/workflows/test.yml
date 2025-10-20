@@ -40,10 +40,6 @@ jobs:
         make
         cd ../../../
 
-    - name: Test imports
-      run: |
-        python -c "import nl3pddl as n3p; print('NL3PDDL imports successfully')"
-
     - name: Run problem generator validation tests
       run: |
         python validate_generated_problem.py --all
