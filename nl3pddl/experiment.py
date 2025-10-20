@@ -124,7 +124,28 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
                 scores = val_feedback_test(d, p, json_last["pddl_domain"])
                 new_messages.update_score(scores[1] - scores[0])
             except Exception as e:
-                new_messages.update_score(scores[1])
+                """
+                NON VAR INFO =========================================
+
+                TRIAL: 1
+
+                Experiment Params ====================================
+
+                PROVIDER: openai
+                MODEL: o4-mini
+                DOMAIN PATH: data/domains/blocks
+                DESC CLASS: detailed-first
+                FEEDBACK PIPELINE: landmark-validate
+                GIVE PRED DESCRIPTIONS: True
+
+                ERROR MESSAGE ======================================
+
+                Error: UnboundLocalError, cannot access local variable 'scores' where it is not associated with a value
+
+                """
+                # If validation fails, use a penalty score (no passing tests)
+                logger.error(f"Error during validation test: {e}")
+                new_messages.update_score(0)
         return {
             "messages": new_messages,
             # We pass the syntax check if any of the proposed messages passed it
@@ -360,16 +381,5 @@ def run_experiment() -> None:
                 if success:
                     csv_results_row = gen_csv_results(state)
                     csv_writer.writerow(csv_results_row)
-
-
-    """
-    with mp.Pool(processes=num_processes) as pool:
-        with open(results_path, 'a', encoding="utf-8") as res_file:
-            csv_writer = csv.writer(res_file)
-	@@ -579,5 +679,7 @@ def run_experiment() -> None:
-                if success:
-                    csv_results_row = gen_csv_results(state)
-                    csv_writer.writerow(csv_results_row)
-    """
 
     print("Successfully joined all processes.")
