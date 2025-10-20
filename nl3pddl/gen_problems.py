@@ -15,7 +15,10 @@ from nl3pddl.logger import logger
 import nl3pddl.config as config
 
 
-def plan_file(domain_path : str, problem_path : str) -> dict | None:
+def plan_file(
+    domain_path : str,
+    problem_path : str,
+) -> dict | None:
     """
     Given a domain path and a problem invoke K* and produce k optimal plans as
     a json plans object.
@@ -23,7 +26,7 @@ def plan_file(domain_path : str, problem_path : str) -> dict | None:
     plan_obj = planners.plan_topk(
         domain_file = domain_path,
         problem_file = problem_path,
-        number_of_plans_bound = config.KSTAR_N_PLANS,
+        number_of_plans_bound = config.PLANS_PER_PROBLEM,
         timeout = config.KSTAR_TIMEOUT
     )
     if plan_obj.get("unsolvable", False):

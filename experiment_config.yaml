@@ -34,7 +34,7 @@ hde-threshold: 5
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 3
+trials: 1
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5
@@ -52,9 +52,9 @@ kstar-n-plans: 100
 # the ENV file and passed in.
 models:
     openai:
-        - o4-mini
+    #    - o4-mini
     #    - gpt-4o-mini
-    #    - gpt-5-nano    
+        - gpt-5-nano    
     # deepseek:
     #     - deepseek-chat
 
@@ -62,7 +62,7 @@ models:
 # present in the dataset/*/nl.json files.
 description-classes:
     - first
-    - detailed-first
+    #- detailed-first
 
 # list of feedback pipelines to evaluate. Pipeline stage names correspond to 
 # Pipelines effect the creation of the domain after initial generation.
@@ -76,8 +76,8 @@ feedback-pipelines:
 # involving G distance from the start node and H (heuristic value).
 search-heuristic:
     #- "H"
-    #- "G + H"
-    - "0.1 * G + H"
+    - "G + H"
+    #- "0.1 * G + H"
 
 # Should the model be presented with a description of predicates from the
 # problem set when initially generating the domain?
