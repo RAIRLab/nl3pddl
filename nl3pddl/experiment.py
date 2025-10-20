@@ -7,8 +7,10 @@ import os
 import csv
 import json
 from typing import Literal
-import multiprocessing as mp
+#import multiprocessing as mp
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+import time
 
 # External package imports
 
@@ -321,7 +323,7 @@ def experiment_init() -> None:
         raise RuntimeError("OPENAI_API_KEY environment variable not set.\
                             Please set it in your .env file.")
     if not os.environ.get("DEEPSEEK_API_KEY"):
-        raise RuntimeError("DEEPEEK_API_KEY environment variable not set.\
+        raise RuntimeError("DEEPSEEK_API_KEY environment variable not set.\
                             Please set it in your .env file.")
 
 def run_experiment() -> None:
@@ -330,8 +332,6 @@ def run_experiment() -> None:
     """
     experiment_init()
 
-    # Number of experiments we run in parallel, None means core count
-    num_processes = THREADS if THREADS > 0 else None
 
     # Load the PDDL dataset
     dataset = Dataset()
@@ -347,14 +347,29 @@ def run_experiment() -> None:
 
     # Run the experiments in parallel and write the results
     args = [(dataset, params, date_time) for params in param_grid(dataset)]
-    with mp.Pool(processes=num_processes) as pool:
+    num_processes = len(args)
+    print("HERE ", num_processes)
+    time.sleep(3)
+
+    with ThreadPoolExecutor(max_workers=num_processes) as pool:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
-            for res in pool.imap_unordered(run_experiment_instance_star, args):
+            for res in pool.map(run_experiment_instance_star, args):
                 (success, err_msg, state) = res
                 write_message_log(state, err_msg, results_dir)
                 if success:
                     csv_results_row = gen_csv_results(state)
                     csv_writer.writerow(csv_results_row)
-                    
+
+
+    """
+    with mp.Pool(processes=num_processes) as pool:
+        with open(results_path, 'a', encoding="utf-8") as res_file:
+            csv_writer = csv.writer(res_file)
+	@@ -579,5 +679,7 @@ def run_experiment() -> None:
+                if success:
+                    csv_results_row = gen_csv_results(state)
+                    csv_writer.writerow(csv_results_row)
+    """
+
     print("Successfully joined all processes.")

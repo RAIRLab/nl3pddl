@@ -1,0 +1,16 @@
+NON VAR INFO =========================================
+
+TRIAL: 2
+
+Experiment Params ====================================
+
+PROVIDER: openai
+MODEL: o4-mini
+DOMAIN PATH: data/domains/blocks
+DESC CLASS: detailed-first
+FEEDBACK PIPELINE: validate
+GIVE PRED DESCRIPTIONS: True
+
+ERROR MESSAGE ======================================
+
+Error: UnboundLocalError, cannot access local variable 'scores' where it is not associated with a value

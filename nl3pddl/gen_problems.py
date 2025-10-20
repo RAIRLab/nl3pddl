@@ -13,6 +13,7 @@ from kstar_planner import planners
 from nl3pddl.problem_generators import PROBLEM_GENERATORS
 from nl3pddl.logger import logger
 import nl3pddl.config as config
+from pathlib import Path
 
 
 def plan_file(domain_path : str, problem_path : str) -> dict | None:
@@ -20,9 +21,11 @@ def plan_file(domain_path : str, problem_path : str) -> dict | None:
     Given a domain path and a problem invoke K* and produce k optimal plans as
     a json plans object.
     """
+    
+    # passing in domain_path as str gives error as kstar expects Path type
     plan_obj = planners.plan_topk(
-        domain_file = domain_path,
-        problem_file = problem_path,
+        domain_file = Path(domain_path),
+        problem_file = Path(problem_path),
         number_of_plans_bound = config.KSTAR_N_PLANS,
         timeout = config.KSTAR_TIMEOUT
     )
