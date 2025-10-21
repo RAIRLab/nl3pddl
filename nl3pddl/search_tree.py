@@ -53,10 +53,25 @@ class MessageTree:
         return self.parent.node_history() + [self]
 
     def message_history(self) -> list[HumanMessage | AIMessage]:
-        """ Returns the message history from the root to this node. """
+        """ Returns the true message history from the root to this node. """
         if self.parent is None:
             return []
         return self.parent.message_history() + [self.message]
+    
+    def squashed_message_history(self) -> list[HumanMessage | AIMessage]:
+        """ Returns the message history from the root to this node, merging consecutive human messages into a single message. """
+        if self.parent is None:
+            return []
+        history = self.parent.squashed_message_history()
+        if isinstance(self.message, HumanMessage) and history and isinstance(history[-1], HumanMessage):
+            # Merge consecutive human messages
+            history[-1] = HumanMessage(
+                content=history[-1].content + "\n" + self.message.content
+            )
+        else:
+            history.append(self.message)
+        return history
+
 
     def get_min_score_leaf(self) -> 'MessageTree':
         """ Returns the leaf with the lowest score. """
@@ -139,11 +154,12 @@ class IndexedMessageTree:
         self,
         message : HumanMessage | AIMessage,
         json: dict,
-        h_score: float
+        h_score: float, 
+        langraph_node : str = ""
     ) -> 'IndexedMessageTree':
         """ Inserts a message on the current branch. """
         node = self.root.atIndex(self.index)
-        new_node = MessageTree(parent=node, message=message)
+        new_node = MessageTree(parent=node, message=message, langraph_node=langraph_node)
         node.children.append(new_node)
         self.index.append(len(node.children) - 1)
         new_node.params = node.params
@@ -154,7 +170,8 @@ class IndexedMessageTree:
 
     def insert_on_current_branch(
         self, 
-        message : HumanMessage | AIMessage
+        message : HumanMessage | AIMessage,
+        langraph_node : str = ""
     ) -> 'IndexedMessageTree':
         """ 
         Inserts a message on the current branch. 
@@ -162,30 +179,32 @@ class IndexedMessageTree:
         and json from the current node.
         """
         n = self.get()
-        return self.insert_on_current_branch_json_score(message, n.json, n.h)
+        return self.insert_on_current_branch_json_score(message, n.json, n.h, langraph_node)
 
     def insert_on_current_branch_score(
         self, 
         message : HumanMessage | AIMessage,
-        h_score: float
+        h_score: float,
+        langraph_node : str = ""
     ) -> 'IndexedMessageTree':
         """ 
         Inserts a message on the current branch.
         Defaults to inheriting json from the current node.
         """
         n = self.get()
-        return self.insert_on_current_branch_json_score(message, n.json, h_score)
+        return self.insert_on_current_branch_json_score(message, n.json, h_score, langraph_node)
 
     def insert_on_current_branch_json(
         self, 
         message : HumanMessage | AIMessage,
-        json: dict
+        json: dict,
+        langraph_node : str = ""
     ) -> 'IndexedMessageTree':
         """ 
         Inserts a message on the current branch. Defaults to inheriting score 
         """
         n = self.get()
-        return self.insert_on_current_branch_json_score(message, json, n.h)
+        return self.insert_on_current_branch_json_score(message, json, n.h, langraph_node)
 
     def select_best_branch(self) -> 'IndexedMessageTree':
         """ Selects the best branch and moves the index to it. """
@@ -197,7 +216,8 @@ class IndexedMessageTree:
 
     def insert_batch_on_current_branch(
         self,
-        messages: list[HumanMessage | AIMessage]
+        messages: list[HumanMessage | AIMessage],
+        langraph_node: str = ""
     ) -> None:
         """ 
         Inserts multiple messages on the current branch. 
@@ -211,6 +231,7 @@ class IndexedMessageTree:
             new_node = MessageTree(parent=node, message=message)
             new_node.params = node.params
             new_node.json = node.json
+            new_node.langraph_node = langraph_node
             new_node.update_score(node.h, node.g + 1)
             node.children.append(new_node)
 

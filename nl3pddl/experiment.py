@@ -58,23 +58,40 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     # Lang-graph nodes =========================================================
 
     def call_action_model(state: State):
+        """ 
+        Calls the model using the ActionSchema structured output to generate the next action. 
+        """
         logger.debug("Calling action model")
         json_obj = action_model.invoke(state["messages"].message_history())
         raw = json.dumps(json_obj.model_dump())
         return {
-            "messages": state["messages"].insert_on_current_branch_json(AIMessage(raw), json_obj),
+            "messages": state["messages"].insert_on_current_branch_json(
+                AIMessage(raw),
+                json_obj, 
+                "call_action_model"
+            ),
             "langgraph_path": state["langgraph_path"] + ["call_action_model"]
         }
     
     def call_domain_model(state: State):
+        """
+        Calls the model using the DomainSchema structured output to generate the domain.
+        """
         json_obj = domain_model.invoke(state["messages"].message_history())
         raw = json.dumps(json_obj.model_dump())
         return {
-            "messages": state["messages"].insert_on_current_branch_json(AIMessage(raw), json_obj),
+            "messages": state["messages"].insert_on_current_branch_json(
+                AIMessage(raw),
+                json_obj, 
+                "call_domain_model"
+            ),
             "langgraph_path": state["langgraph_path"] + ["call_domain_model"]
         }
 
     def next_action(state: State):
+        """
+        Stores the current action and prepares for the next action generation.
+        """
         action_index = state["action_index"]
         actions_names = action_names(d, p)
         actions = state["actions"]
@@ -91,7 +108,10 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
                 "Starting Action %d/%d: %s",
                 action_index + 1, len(actions_names), action_name
             )
-            updated_messages = state["messages"].insert_on_current_branch(action_message(d, p, action_name))
+            updated_messages = state["messages"].insert_on_current_branch(
+                action_message(d, p, action_name),
+                "next_action"
+            )
             return {
                 "messages": updated_messages,
                 "action_index" : action_index + 1,
@@ -108,8 +128,12 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             "Checking action... %s",
             "valid" if res is None else "invalid"
         )
+        updated_messages = state["messages"].insert_on_current_branch(
+            res, 
+            "check_action"
+        ) if res else state["messages"]
         return {
-            "messages": state["messages"].insert_on_current_branch(res) if res else state["messages"],
+            "messages": updated_messages,
             "action_valid" : res is None,
             "action_iterations" : state["action_iterations"] + 1,
             "langgraph_path": state["langgraph_path"] + ["check_action"]
@@ -121,8 +145,13 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             domain_name(d, p),
             state["actions"]
         )
+        updated_messages = state["messages"].insert_on_current_branch_json(
+            raw_domain_msg(full_domain_raw), 
+            {"pddl_domain":full_domain_raw}, 
+            "build_domain"
+        )
         return {
-            "messages" : state["messages"].insert_on_current_branch_json(raw_domain_msg(full_domain_raw), {"pddl_domain":full_domain_raw}),
+            "messages" : updated_messages,
             "langgraph_path": state["langgraph_path"] + ["build_domain"]
         }
     
@@ -136,7 +165,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
                 scores = val_feedback_test(d, p, json_last["pddl_domain"])
                 new_messages.update_score(scores[1] - scores[0])
             except Exception as e:
-                # TODO update err message with actual model name
+                # TODO update err message with actual model name -Daniel?
                 """
                 NON VAR INFO =========================================
 
@@ -191,7 +220,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             logger.error(msg)
             val_feedback_msgs = [HumanMessage(msg)]
 
-        state["messages"].insert_batch_on_current_branch(landmark_feedback_msgs + val_feedback_msgs)
+        state["messages"].insert_batch_on_current_branch(landmark_feedback_msgs + val_feedback_msgs, langraph_node="feedback")
         state["messages"] = state["messages"].select_best_branch()
         
         return {
@@ -401,4 +430,4 @@ def run_experiment() -> None:
                     csv_results_row = gen_csv_results(state)
                     csv_writer.writerow(csv_results_row)
 
-    print("Successfully joined all processes.")
+    print("Successfully joined all threads. Experiment complete.")
