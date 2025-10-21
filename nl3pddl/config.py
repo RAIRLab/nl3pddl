@@ -1,15 +1,18 @@
 
 import os
-import argparse
+import sys
 from pathlib import Path
 
 import yaml
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-c", "--config", default="experiment_config.yaml", help="Config file path")
-args = parser.parse_args()
+# Check if config file is specified in command line args
+config_file = "experiment_config.yaml"
+for i, arg in enumerate(sys.argv):
+    if arg in ["-c", "--config"] and i + 1 < len(sys.argv):
+        config_file = sys.argv[i + 1]
+        break
 
-with open(args.config, "r") as f:
+with open(config_file, "r") as f:
     config = yaml.safe_load(f)
 
 NUM_FEEDBACK_PROBLEMS = config["feedback-problems"]

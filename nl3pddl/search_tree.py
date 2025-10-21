@@ -143,10 +143,9 @@ class IndexedMessageTree:
     ) -> 'IndexedMessageTree':
         """ Inserts a message on the current branch. """
         node = self.root.atIndex(self.index)
-        new_node = MessageTree(parent=node, message=message)
+        new_node = MessageTree(params=node.params, parent=node, message=message)
         node.children.append(new_node)
         self.index.append(len(node.children) - 1)
-        new_node.params = node.params
         new_node.json = json
         new_node.update_score(h_score, node.g + 1)
         # Evaluate the combined score using the search heuristic
@@ -199,8 +198,8 @@ class IndexedMessageTree:
         self,
         messages: list[HumanMessage | AIMessage]
     ) -> None:
-        """ 
-        Inserts multiple messages on the current branch. 
+        """
+        Inserts multiple messages on the current branch.
         Defaults to inheriting score and json from the current node.
         WARNING: This does NOT move the index to any of the new nodes, and
         simply adds them as children of the current node.
@@ -208,8 +207,7 @@ class IndexedMessageTree:
         """
         node = self.get()
         for message in messages:
-            new_node = MessageTree(parent=node, message=message)
-            new_node.params = node.params
+            new_node = MessageTree(params=node.params, parent=node, message=message)
             new_node.json = node.json
             new_node.update_score(node.h, node.g + 1)
             node.children.append(new_node)
