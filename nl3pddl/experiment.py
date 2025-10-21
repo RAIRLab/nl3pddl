@@ -7,8 +7,9 @@ import os
 import csv
 import json
 from typing import Literal
-import multiprocessing as mp
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+import time
 
 # External package imports
 
@@ -37,7 +38,20 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     Creates a langgraph for a single experiment with the given
     experimental parameters.
     """
-    model = init_chat_model(p.model, model_provider=p.provider, timeout=60, max_retries=3)
+    # Handle Hugging Face models through OpenAI-compatible API
+    # https://huggingface.co/NousResearch/Hermes-4-405B?inference_api=true&inference_provider=nebius&language=python&client=openai
+    if p.provider == "huggingface":
+        model = init_chat_model(
+            p.model,
+            model_provider="openai",
+            timeout=60,
+            max_retries=3,
+            base_url="https://router.huggingface.co/v1",
+            api_key=hf_token,
+        )
+    else:
+        model = init_chat_model(p.model, model_provider=p.provider, timeout=60, max_retries=3)
+
     action_model = model.with_structured_output(ActionSchema)
     domain_model = model.with_structured_output(DomainSchema)
 
@@ -122,7 +136,29 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
                 scores = val_feedback_test(d, p, json_last["pddl_domain"])
                 new_messages.update_score(scores[1] - scores[0])
             except Exception as e:
-                new_messages.update_score(scores[1])
+                # TODO update err message with actual model name
+                """
+                NON VAR INFO =========================================
+
+                TRIAL: 1
+
+                Experiment Params ====================================
+
+                PROVIDER: openai
+                MODEL: o4-mini
+                DOMAIN PATH: data/domains/blocks
+                DESC CLASS: detailed-first
+                FEEDBACK PIPELINE: landmark-validate
+                GIVE PRED DESCRIPTIONS: True
+
+                ERROR MESSAGE ======================================
+
+                Error: UnboundLocalError, cannot access local variable 'scores' where it is not associated with a value
+
+                """
+                # If validation fails, use a penalty score (no passing tests)
+                logger.error(f"Error during validation test: {e}")
+                new_messages.update_score(0)
         return {
             "messages": new_messages,
             # We pass the syntax check if any of the proposed messages passed it
@@ -321,17 +357,21 @@ def experiment_init() -> None:
         raise RuntimeError("OPENAI_API_KEY environment variable not set.\
                             Please set it in your .env file.")
     if not os.environ.get("DEEPSEEK_API_KEY"):
-        raise RuntimeError("DEEPEEK_API_KEY environment variable not set.\
+        raise RuntimeError("DEEPSEEK_API_KEY environment variable not set.\
                             Please set it in your .env file.")
+
+    if not os.environ.get("HF_API_KEY"):
+        raise RuntimeError("HF_API_KEY environment variable is not set.\
+                            Please set it in your .env file.")
+    else:
+        global hf_token 
+        hf_token = os.environ.get("HF_API_KEY")
 
 def run_experiment() -> None:
     """
     Driver, runs the experiments in parallel using the parameter grid
     """
     experiment_init()
-
-    # Number of experiments we run in parallel, None means core count
-    num_processes = THREADS if THREADS > 0 else None
 
     # Load the PDDL dataset
     dataset = Dataset()
@@ -347,14 +387,18 @@ def run_experiment() -> None:
 
     # Run the experiments in parallel and write the results
     args = [(dataset, params, date_time) for params in param_grid(dataset)]
-    with mp.Pool(processes=num_processes) as pool:
+    num_processes = THREADS if THREADS > 0 else len(args)
+    print("number of processes", num_processes)
+    time.sleep(1)
+
+    with ThreadPoolExecutor(max_workers=num_processes) as pool:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
-            for res in pool.imap_unordered(run_experiment_instance_star, args):
+            for res in pool.map(run_experiment_instance_star, args):
                 (success, err_msg, state) = res
                 write_message_log(state, err_msg, results_dir)
                 if success:
                     csv_results_row = gen_csv_results(state)
                     csv_writer.writerow(csv_results_row)
-                    
+
     print("Successfully joined all processes.")
