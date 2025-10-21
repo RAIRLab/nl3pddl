@@ -153,7 +153,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             {"pddl_domain":full_domain_raw}, 
             "build_domain"
         )
-        updated_messages.get().update_score(float("inf"), 0) # Search starts here!
+        #updated_messages.get().update_score(float("inf"), 0) # Search starts here!
         return {
             "messages" : updated_messages,
             "langgraph_path": state["langgraph_path"] + ["build_domain"]

@@ -65,8 +65,8 @@ def raw_validate(
             return "VAL Failed to execute the plan: " + stderrstr
         return "VAL Failed with the following outputs STDOUT:\n" + stdoutstr + "\nSTDERR:\n" + stderrstr
     shutil.rmtree(tmpdir)
-    if os.path.exists("found_plans"):
-        shutil.rmtree("found_plans")
+    # if os.path.exists("found_plans"):
+    #     shutil.rmtree("found_plans")
     return None
 
 #TODO: consider removing.
