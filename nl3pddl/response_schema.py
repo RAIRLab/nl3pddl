@@ -1,10 +1,12 @@
 
-# This file defines the response schema for the LLM to output
+"""
+This file defines the response schema for the LLM to output,
+LLMs will be forced to output in these json formats.
+WARNING: Comments are used by the LLM! Change them with care.
+"""
 
 from pydantic import BaseModel, Field
 
-# This is a pydantic model that we force the LLM to output in
-# the form of during the action generation phase.
 class ActionSchema(BaseModel):
     """Always use this tool to structure your response to the user."""
     pddl_action: str = Field(description=\

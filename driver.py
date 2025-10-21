@@ -6,13 +6,6 @@ import argparse
 
 import nl3pddl as n3p
 
-# Based on args, if -g is passed, generate problems
-# if -l is passed, generate landmarks
-# if -r is passed, run the experiment, note that all three can be run in tandem
-# but not -l and -r together
-# if no arguments are passed treat it as -r and run the experiment
-# if -i is passed, generate the graph image of the experiment
-# if -p is passed, plot all figures
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NL3PDDL Driver")
     parser.add_argument(

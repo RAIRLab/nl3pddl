@@ -82,8 +82,8 @@ feedback-pipelines:
 # involving G distance from the start node and H (heuristic value).
 search-heuristic:
     #- "H"
-    #- "G + H"
-    - "0.1 * G + H"
+    - "G + H"
+    #- "0.1 * G + H"
 
 # Should the model be presented with a description of predicates from the
 # problem set when initially generating the domain?
