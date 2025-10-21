@@ -23,7 +23,7 @@ log-level: 10
 
 # The maximum number of threads to use for parallel processing.
 # If set to 0 or less, it will default to the number of available CPU cores.
-threads: 100
+threads: -1
 #threads: 50
 
 # Maximum number of reprompts to allow for each action generation step.
@@ -34,7 +34,7 @@ hde-threshold: 5
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 3
+trials: 1
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5
@@ -68,14 +68,14 @@ models:
 # present in the dataset/*/nl.json files.
 description-classes:
     - first
-    - detailed-first
+#    - detailed-first
 
 # list of feedback pipelines to evaluate. Pipeline stage names correspond to 
 # Pipelines effect the creation of the domain after initial generation.
 feedback-pipelines:
     - ["landmark"]
-    - ["validate"]
-    - ["landmark", "validate"]
+#    - ["validate"]
+#    - ["landmark", "validate"]
 
 # Specifies the search heuristic to use when generating plans.
 # Should be a string with valid python expression that evaluates to a number

@@ -387,7 +387,7 @@ def run_experiment() -> None:
 
     # Run the experiments in parallel and write the results
     args = [(dataset, params, date_time) for params in param_grid(dataset)]
-    num_processes = len(args)
+    num_processes = THREADS if THREADS > 0 else len(args)
     print("number of processes", num_processes)
     time.sleep(1)
 
