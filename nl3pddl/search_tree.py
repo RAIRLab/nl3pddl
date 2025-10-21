@@ -146,6 +146,10 @@ class IndexedMessageTree:
         """ Returns the message history from the root to the current node. """
         return self.get().message_history()
 
+    def squashed_message_history(self) -> list[HumanMessage | AIMessage]:
+        """ Returns the squashed message history (compressed human messages) from the root to the current node. """
+        return self.get().squashed_message_history()
+
     def json_last(self) -> Any:
         """ Returns the json object of the current node. """
         return dict(self.get().json)

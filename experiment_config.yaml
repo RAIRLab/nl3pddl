@@ -70,16 +70,23 @@ description-classes:
     - first
 #    - detailed-first
 
-# list of feedback pipelines to evaluate. Pipeline stage names correspond to 
-# Pipelines effect the creation of the domain after initial generation.
+# list of feedback pipelines to evaluate over.
+# - The empty pipeline signifies no feedback, just generate the domain once.
+# - "landmark generates landmark feedback messages"
+# - "validate generates validation feedback messages"
+# - "random-single" will randomly select a single message from the set of 
+#    proceeding feedback messages
 feedback-pipelines:
+    - []
     - ["landmark"]
-#    - ["validate"]
-#    - ["landmark", "validate"]
+    - ["validate"]
+    - ["landmark", "validate"]
+    - ["landmark", "validate", "random-single"]
 
 # Specifies the search heuristic to use when generating plans.
 # Should be a string with valid python expression that evaluates to a number
 # involving G distance from the start node and H (heuristic value).
+# Only used if feedback-style is set to 'heuristic-search'.
 search-heuristic:
     #- "H"
     - "G + H"

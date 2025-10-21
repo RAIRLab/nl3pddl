@@ -6,6 +6,7 @@ This file contains the driver for the NL3PDDL project.
 import os
 import csv
 import json
+from random import random
 from typing import Literal
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -198,35 +199,47 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
 
     def feedback(state: State):
-        landmark_feedback_msgs : list[HumanMessage] = []
-        val_feedback_msgs : list[HumanMessage] = []
+        landmark_feedback_msgs : list[HumanMessage] | None = []
+        val_feedback_msgs : list[HumanMessage] | None = []
+        feedback_messages : list[HumanMessage] | None = []
         current_node = state["messages"].get()
         
-        if current_node.h == 0:
+        # Stop giving feedback if H score is 0 (perfect) or no feedback pipeline
+        if current_node.h == 0 or p.feedback_pipeline == []:
             return {
                 "landmark_passed": True,
                 "val_passed": True,
                 "langgraph_path": state["langgraph_path"] + ["feedback"]
             }
-
+        
         try:
             if "landmark" in p.feedback_pipeline:
                 landmark_feedback_msgs = multi_landmark_feedback(d, p, state["messages"].json_last()["pddl_domain"])
             if "validate" in p.feedback_pipeline:
                 val_feedback_msgs = multi_val_feedback(d, p, state["messages"].json_last()["pddl_domain"])
+
+            if landmark_feedback_msgs is not None and val_feedback_msgs is not None:
+                feedback_messages = landmark_feedback_msgs + val_feedback_msgs
+
+            # If "random-single" is in the pipeline, select a single random feedback message from the combined feedback and just use that
+            if "random-single" in p.feedback_pipeline and feedback_messages is not None and len(feedback_messages) > 0:
+                feedback_messages = [random.choice(feedback_messages)]
+
         except Exception as e:
-            # TODO: Fix
             msg = f"Error during feedback generation: {str(e)}" 
             logger.error(msg)
             val_feedback_msgs = [HumanMessage(msg)]
 
-        state["messages"].insert_batch_on_current_branch(landmark_feedback_msgs + val_feedback_msgs, langraph_node="feedback")
+        state["messages"].insert_batch_on_current_branch(
+            feedback_messages, langraph_node="feedback"
+        )
         state["messages"] = state["messages"].select_best_branch()
         
         return {
             "messages": state["messages"],
             "landmark_passed": landmark_feedback_msgs is None,
             "val_passed": val_feedback_msgs is None,
+            # TODO: not used anymore
             "landmark_runs": state["landmark_runs"] + (1 if landmark_feedback_msgs is not None else 0),
             "val_runs": state["val_runs"] + (1 if val_feedback_msgs is not None else 0),
             "langgraph_path": state["langgraph_path"] + ["feedback"]
