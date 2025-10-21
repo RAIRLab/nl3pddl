@@ -53,15 +53,17 @@ def raw_validate(
     try:
         #Forward direction, try plan from the new domain in the original domain
         args = [VAL_PATH, "-v", "-e", new_domain_path, problem_path, plan_path]
-        _ = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+        _ = subprocess.check_output(args)
     except CalledProcessError as err:
         shutil.rmtree(tmpdir)
+        stdoutstr = err.output.decode() if err.output else "No STDOUT"
+        stderrstr = err.stderr.decode() if err.stderr else "No STDERR"
         if err.returncode == -11:
             return "The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct."
         if err.returncode == 1:
             # It is imperative we return the stderr here, as VAL outputs nothing on stdout on plan check failure.
-            return "VAL Failed to execute the plan: " + err.stderr.decode()
-        return "VAL Failed with the following outputs STDOUT:\n" + err.output.decode() + "\nSTDERR:\n" + err.stderr.decode()
+            return "VAL Failed to execute the plan: " + stderrstr
+        return "VAL Failed with the following outputs STDOUT:\n" + stdoutstr + "\nSTDERR:\n" + stderrstr
     shutil.rmtree(tmpdir)
     if os.path.exists("found_plans"):
         shutil.rmtree("found_plans")

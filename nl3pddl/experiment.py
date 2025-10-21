@@ -6,7 +6,7 @@ This file contains the driver for the NL3PDDL project.
 import os
 import csv
 import json
-from random import random
+import random
 from typing import Literal
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -63,7 +63,8 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         Calls the model using the ActionSchema structured output to generate the next action. 
         """
         logger.debug("Calling action model")
-        json_obj = action_model.invoke(state["messages"].message_history())
+        history = state["messages"].squashed_message_history()
+        json_obj = action_model.invoke(history)
         raw = json.dumps(json_obj.model_dump())
         return {
             "messages": state["messages"].insert_on_current_branch_json(
@@ -78,7 +79,8 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         """
         Calls the model using the DomainSchema structured output to generate the domain.
         """
-        json_obj = domain_model.invoke(state["messages"].message_history())
+        history = state["messages"].squashed_message_history()
+        json_obj = domain_model.invoke(history)
         raw = json.dumps(json_obj.model_dump())
         return {
             "messages": state["messages"].insert_on_current_branch_json(
@@ -151,6 +153,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             {"pddl_domain":full_domain_raw}, 
             "build_domain"
         )
+        updated_messages.get().update_score(float("inf"), 0) # Search starts here!
         return {
             "messages" : updated_messages,
             "langgraph_path": state["langgraph_path"] + ["build_domain"]
@@ -159,36 +162,19 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     def check_domain_syntax(state: State):
         json_last = state["messages"].json_last()
         res = check_domain_syntax_output(d, p, json_last)
-        new_messages = state["messages"].insert_on_current_branch(res) if res else state["messages"]
+        new_messages = state["messages"].insert_on_current_branch(
+            res, "check_domain_syntax"
+        ) if res else state["messages"]
         #If syntactically valid, immediatly update the score based on how well it does on the evals, note that lower is better!
         if res is None:
             try:
                 scores = val_feedback_test(d, p, json_last["pddl_domain"])
                 new_messages.update_score(scores[1] - scores[0])
             except Exception as e:
-                # TODO update err message with actual model name -Daniel?
-                """
-                NON VAR INFO =========================================
-
-                TRIAL: 1
-
-                Experiment Params ====================================
-
-                PROVIDER: openai
-                MODEL: o4-mini
-                DOMAIN PATH: data/domains/blocks
-                DESC CLASS: detailed-first
-                FEEDBACK PIPELINE: landmark-validate
-                GIVE PRED DESCRIPTIONS: True
-
-                ERROR MESSAGE ======================================
-
-                Error: UnboundLocalError, cannot access local variable 'scores' where it is not associated with a value
-
-                """
                 # If validation fails, use a penalty score (no passing tests)
                 logger.error(f"Error during validation test: {e}")
-                new_messages.update_score(0)
+                # TODO: shouldn't hardcode the error penalty like this
+                new_messages.update_score(float("inf"))
         return {
             "messages": new_messages,
             # We pass the syntax check if any of the proposed messages passed it
@@ -341,7 +327,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
 def graph_pipeline_image() -> None:
     """
-    Saves the graph as a PNG image to the given filename.
+    Saves the graph as a PNG image.
     """
     experiment_init()
     graph = create_langgraph(None, Params()) # Dummy dataset and params

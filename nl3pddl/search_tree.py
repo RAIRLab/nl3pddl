@@ -22,7 +22,7 @@ class MessageTree:
         params: Params,
         parent=None, 
         message: HumanMessage | AIMessage | None = None,
-        langraph_node: str = "",
+        langraph_node: str = "no-node",
     ):
         self.id = MessageTree._next_id
         MessageTree._next_id += 1
@@ -96,7 +96,7 @@ class MessageTree:
         """
         Returns a string representation of the tree for debugging purposes.
         """
-        s = " " * depth + f"-{depth} id:{self.id} {self.langraph_node}"
+        s = " " * depth + f"-{depth} id:{self.id} {self.langraph_node} "
         if self.message is None:
             s += f"Root\n"
         elif isinstance(self.message, str):
@@ -163,7 +163,7 @@ class IndexedMessageTree:
     ) -> 'IndexedMessageTree':
         """ Inserts a message on the current branch. """
         node = self.root.atIndex(self.index)
-        new_node = MessageTree(parent=node, message=message, langraph_node=langraph_node)
+        new_node = MessageTree(node.params, node, message, langraph_node)
         node.children.append(new_node)
         self.index.append(len(node.children) - 1)
         new_node.params = node.params
@@ -232,16 +232,22 @@ class IndexedMessageTree:
         """
         node = self.get()
         for message in messages:
-            new_node = MessageTree(parent=node, message=message)
-            new_node.params = node.params
-            new_node.json = node.json
-            new_node.langraph_node = langraph_node
+            new_node = MessageTree(node.params, node, message, langraph_node)
             new_node.update_score(node.h, node.g + 1)
             node.children.append(new_node)
 
     def to_str(self) -> None:
         """ Prints the tree for debugging purposes. """
         return self.root.to_str(0)
+    
+    def update_score(
+        self, 
+        h_score: float,
+        g_score : float | None = None
+    ) -> 'IndexedMessageTree':
+        """ Updates the score of the current node, given a new heuristic score. """
+        self.get().update_score(h_score, g_score)
+        return self
 
 #Testing...
 # tree = IndexedMessageTree(Params())

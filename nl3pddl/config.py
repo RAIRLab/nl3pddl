@@ -1,15 +1,10 @@
 
 import os
-import argparse
 from pathlib import Path
 
 import yaml
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-c", "--config", default="experiment_config.yaml", help="Config file path")
-args = parser.parse_args()
-
-with open(args.config, "r") as f:
+with open("experiment_config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 NUM_FEEDBACK_PROBLEMS = config["feedback-problems"]

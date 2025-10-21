@@ -5,5 +5,5 @@ __pycache__/
 figs/
 results/
 #data/gen_problems/*
-old-figs
+old_figs
 found_plans

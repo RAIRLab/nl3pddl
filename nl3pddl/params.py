@@ -82,4 +82,6 @@ def feedback_pipeline_str(p : Params) -> str:
     """
     Returns a string representation of the feedback pipeline.
     """
+    if len(p.feedback_pipeline) == 0:
+        return "none"
     return "-".join(p.feedback_pipeline)
