@@ -207,7 +207,7 @@ def multi_landmark_feedback(
     d : Dataset, 
     p : Params, 
     new_domain_str : str
-) -> HumanMessage | None:
+) -> list[HumanMessage] | None:
     """
     Version of single_landmark_feedback that returns ALL unsatisfied landmarks, not just the first one found.
     """
