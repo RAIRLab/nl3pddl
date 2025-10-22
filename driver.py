@@ -28,12 +28,16 @@ if __name__ == "__main__":
         "-p", "--plot", action="store_true",
         help="Plot all figures"
     )
+    parser.add_argument(
+        "-t", "--test", nargs="*", metavar=("GENERATOR", "SIZE"),
+        help="Test problem generators. Use -t to test all, -t <generator> to test one, or -t <generator> <size> to test with specific size"
+    )
 
     args = parser.parse_args()
 
     if args.generate:
         n3p.generate_problems()
-    
+
     if args.landmarks:
         n3p.generate_landmarks()
 
@@ -46,7 +50,18 @@ if __name__ == "__main__":
     if args.plot:
         n3p.plot_all_figures()
 
-    if not (args.generate or args.landmarks or args.run or args.image or args.plot):
+    if args.test is not None:
+        if len(args.test) == 0:
+            # No arguments: test all generators
+            n3p.test_generators()
+        elif len(args.test) == 1:
+            # One argument: test specific generator with default size
+            n3p.test_generators(generator_name=args.test[0])
+        else:
+            # Two arguments: test specific generator with specific size
+            n3p.test_generators(generator_name=args.test[0], problem_size=int(args.test[1]))
+
+    if not (args.generate or args.landmarks or args.run or args.image or args.plot or args.test is not None):
         print("No arguments passed, running the experiment by default.")
         #n3p.generate_landmarks()
         n3p.run_experiment()

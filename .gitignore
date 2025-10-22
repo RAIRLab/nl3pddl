@@ -4,6 +4,7 @@ __pycache__/
 .env
 figs/
 results/
+.vscode/
 #data/gen_problems/*
 old_figs
 found_plans

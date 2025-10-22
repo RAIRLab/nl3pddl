@@ -1,4 +1,14 @@
-#!/usr/bin/env python3
+"""
+Test suite for validating PDDL problem generators.
+
+This module provides functionality to test problem generators by:
+1. Generating PDDL problem files
+2. Validating syntax with VAL Parser
+3. Finding plans using k* planner
+4. Validating plans with VAL Validate
+
+Can be called with specific generators/sizes or run a full test suite.
+"""
 
 import os
 import sys
@@ -26,6 +36,7 @@ for domain_name, generator_func in PROBLEM_GENERATORS.items():
 
 
 def run_parser(domain_path, problem_path):
+    """Run VAL Parser to check PDDL syntax."""
     print(f"\n{'='*60}")
     print("STEP 1: Syntax Check")
     print(f"{'='*60}")
@@ -53,12 +64,12 @@ def run_parser(domain_path, problem_path):
 
 
 def run_planner(domain_path, problem_path):
+    """Run k* planner to find a plan."""
     print(f"\n{'='*60}")
     print("STEP 2: Finding a Plan")
     print(f"{'='*60}")
 
     try:
-
         plan_result = planners.plan_topk(
             domain_file=Path(domain_path),
             problem_file=Path(problem_path),
@@ -95,6 +106,7 @@ def run_planner(domain_path, problem_path):
 
 
 def run_validator(domain_path, problem_path, plan_actions):
+    """Run VAL Validate to verify a plan."""
     print(f"\n{'='*60}")
     print("STEP 3: Validating Plan")
     print(f"{'='*60}")
@@ -130,6 +142,17 @@ def run_validator(domain_path, problem_path, plan_actions):
 
 
 def test_single_generator(generator_name, problem_size, verbose=False):
+    """
+    Test a single generator with a specific problem size.
+
+    Args:
+        generator_name: Name of the generator to test
+        problem_size: Size parameter for problem generation
+        verbose: If True, print detailed output
+
+    Returns:
+        Dict with test results (syntax, plan_found, plan_valid, plan_length)
+    """
     gen_info = GENERATORS[generator_name]
 
     with tempfile.NamedTemporaryFile(mode='w', suffix='.pddl', delete=False) as f:
@@ -149,7 +172,6 @@ def test_single_generator(generator_name, problem_size, verbose=False):
     if not Path(domain_file).exists():
         os.unlink(problem_file)
         return {'syntax': False, 'plan_found': False, 'plan_valid': False, 'error': 'Domain not found'}
-
 
     if not verbose:
         f = io.StringIO()
@@ -173,6 +195,7 @@ def test_single_generator(generator_name, problem_size, verbose=False):
 
 
 def run_test_suite():
+    """Run the full test suite for all problem generators."""
     print(f"\n{'='*60}")
     print("RUNNING TEST SUITE FOR ALL PROBLEM GENERATORS")
     print(f"{'='*60}\n")
@@ -222,18 +245,21 @@ def run_test_suite():
     print(f"{'='*60}\n")
 
 
-def main():
-    if len(sys.argv) == 1 or sys.argv[1] == '--all' or sys.argv[1] == 'all':
+def test_generators(generator_name=None, problem_size=5):
+    """
+    Main entry point for testing generators.
+
+    Args:
+        generator_name: Name of generator to test, or None for all generators
+        problem_size: Size parameter for single generator test (default: 5)
+    """
+    if generator_name is None:
         run_test_suite()
         return
-
-    generator_name = sys.argv[1]
-    problem_size = int(sys.argv[2]) if len(sys.argv) > 2 else 5
 
     if generator_name not in GENERATORS:
         print(f"ERROR: Unknown generator: {generator_name}")
         print(f"Available: {', '.join(GENERATORS.keys())}")
-        print(f"\nOr run: python validate_generated_problem.py --all")
         return
 
     gen_info = GENERATORS[generator_name]
@@ -288,7 +314,3 @@ def main():
     print(f"  Plan Found:    {'PASS' if plan is not None else 'FAIL'}")
     print(f"  Plan Valid:    {'PASS' if plan_valid else 'FAIL'}")
     print(f"{'='*60}\n")
-
-
-if __name__ == "__main__":
-    main()

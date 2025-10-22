@@ -166,7 +166,6 @@ class IndexedMessageTree:
         new_node = MessageTree(node.params, node, message, langraph_node)
         node.children.append(new_node)
         self.index.append(len(node.children) - 1)
-        new_node.params = node.params
         new_node.json = json
         new_node.update_score(h_score, node.g + 1)
         # Evaluate the combined score using the search heuristic
@@ -223,8 +222,8 @@ class IndexedMessageTree:
         messages: list[HumanMessage | AIMessage],
         langraph_node: str = ""
     ) -> None:
-        """ 
-        Inserts multiple messages on the current branch. 
+        """
+        Inserts multiple messages on the current branch.
         Defaults to inheriting score and json from the current node.
         WARNING: This does NOT move the index to any of the new nodes, and
         simply adds them as children of the current node.
