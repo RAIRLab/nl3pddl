@@ -1,0 +1,90 @@
+{
+    "overall": {
+        "first": "The Lights-Out domain models a network of interconnected light bubbles that can be toggled by pressing other bubbles.",
+        "detailed-first": "In this domain, each light bubble can be either on or off, and bubbles are connected through static links. Pressing a bubble does not change its own state but toggles the states of its neighboring bubbles—if a neighbor is on, it turns off, and if it is off, it turns on. The goal is to reach a configuration where all bubbles are either on or off."
+    },
+    "predicates": {
+        "on": {
+            "first": "A bubble is currently lit.",
+            "detailed-first": "Indicates that the given light bubble is in the on state, meaning it is illuminated."
+        },
+        "off": {
+            "first": "A bubble is currently unlit.",
+            "detailed-first": "Indicates that the given light bubble is in the off state, meaning it is dark."
+        },
+        "connected": {
+            "first": "Two bubbles are directly connected.",
+            "detailed-first": "Defines a static relationship between bubbles. When one bubble is pressed, all connected bubbles have their states toggled."
+        },
+        "one-neighbor": {
+            "first": "A bubble has exactly one neighbor.",
+            "detailed-first": "Indicates that the bubble is connected to exactly one other bubble in the network."
+        },
+        "two-neighbors": {
+            "first": "A bubble has exactly two neighbors.",
+            "detailed-first": "Indicates that the bubble is connected to exactly two other bubbles in the network."
+        },
+        "three-neighbors": {
+            "first": "A bubble has exactly three neighbors.",
+            "detailed-first": "Indicates that the bubble is connected to exactly three other bubbles in the network."
+        }
+    },
+    "actions": {
+        "press-1-1": {
+            "first": "Press a bubble whose single neighbor is on.",
+            "detailed-first": "If a bubble has exactly one neighbor and that neighbor is on, pressing this bubble will turn the neighbor off."
+        },
+        "press-1-0": {
+            "first": "Press a bubble whose single neighbor is off.",
+            "detailed-first": "If a bubble has exactly one neighbor and that neighbor is off, pressing this bubble will turn the neighbor on."
+        },
+        "press-2-11": {
+            "first": "Press a bubble whose two neighbors are both on.",
+            "detailed-first": "If a bubble has two neighbors and both are currently on, pressing it will turn both of them off."
+        },
+        "press-2-00": {
+            "first": "Press a bubble whose two neighbors are both off.",
+            "detailed-first": "If a bubble has two neighbors and both are off, pressing it will turn both of them on."
+        },
+        "press-2-10": {
+            "first": "Press a bubble whose first neighbor is on and the second is off.",
+            "detailed-first": "If a bubble has two neighbors and one is on while the other is off, pressing it will toggle both—turning the on neighbor off and the off neighbor on."
+        },
+        "press-2-01": {
+            "first": "Press a bubble whose first neighbor is off and the second is on.",
+            "detailed-first": "If a bubble has two neighbors and one is off while the other is on, pressing it will toggle both—turning the off neighbor on and the on neighbor off."
+        },
+        "press-3-111": {
+            "first": "Press a bubble whose three neighbors are all on.",
+            "detailed-first": "If a bubble has three neighbors and all are on, pressing it will turn all three off."
+        },
+        "press-3-110": {
+            "first": "Press a bubble whose first two neighbors are on and the third is off.",
+            "detailed-first": "Pressing this bubble will turn the first two neighbors off and the third one on."
+        },
+        "press-3-101": {
+            "first": "Press a bubble whose first and third neighbors are on and the second is off.",
+            "detailed-first": "Pressing this bubble will toggle all three—turning the first and third off and the second on."
+        },
+        "press-3-100": {
+            "first": "Press a bubble whose first neighbor is on and the others are off.",
+            "detailed-first": "Pressing this bubble will turn the first neighbor off and the other two on."
+        },
+        "press-3-011": {
+            "first": "Press a bubble whose first neighbor is off and the other two are on.",
+            "detailed-first": "Pressing this bubble will turn the first neighbor on and the other two off."
+        },
+        "press-3-010": {
+            "first": "Press a bubble whose first and third neighbors are off and the second is on.",
+            "detailed-first": "Pressing this bubble will toggle all three—turning the first and third on and the second off."
+        },
+        "press-3-001": {
+            "first": "Press a bubble whose first two neighbors are off and the third is on.",
+            "detailed-first": "Pressing this bubble will turn the first two neighbors on and the third one off."
+        },
+        "press-3-000": {
+            "first": "Press a bubble whose three neighbors are all off.",
+            "detailed-first": "Pressing this bubble will turn all three neighbors on."
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+  "overall": {
+    "first": "The Sliding Puzzle domain involves moving numbered tiles within a grid to reach a target configuration by sliding them into the empty space.",
+    "detailed-first": "This domain models a classic sliding puzzle where tiles numbered from 1 to N are arranged on a grid with one empty space. Players can move a tile into the adjacent empty space, gradually rearranging the tiles to reach a predefined goal configuration. The problem focuses on determining a sequence of valid tile moves that leads from the initial scrambled state to the solved configuration."
+  },
+  "predicates": {
+    "at": {
+      "first": "A tile is at a specific position on the board.",
+      "detailed-first": "Indicates that a given tile occupies a specific position within the puzzle grid. For example, '(at t1 p11)' means tile 1 is currently located in the top-left corner of the board."
+    },
+    "empty": {
+      "first": "A position on the board is empty.",
+      "detailed-first": "Marks a specific grid position as empty, meaning no tile currently occupies it. For instance, '(empty p33)' indicates that the bottom-right corner of the board has no tile."
+    },
+    "adjacent": {
+      "first": "Two positions on the board are adjacent.",
+      "detailed-first": "Defines that two grid positions are neighbors, meaning a tile can slide between them if one is empty. For example, '(adjacent p12 p13)' means positions p12 and p13 are next to each other."
+    }
+  },
+  "actions": {
+    "move": {
+      "first": "Slide a tile into the empty position next to it.",
+      "detailed-first": "This action involves moving a tile from its current position into an adjacent empty space. Preconditions require that the tile is at a specific position, the target position is empty, and the two positions are adjacent. The result of the action is that the tile now occupies the new position, and the previous one becomes empty."
+    }
+  }
+}
