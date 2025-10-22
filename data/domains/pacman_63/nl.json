@@ -1,0 +1,47 @@
+{
+    "creation": "2025-10-13",
+    "overall": {
+        "first": "The Pacman AI domain models a competitive environment where Pacman navigates a network of connected nodes, collects food, and avoids opponents such as ghosts.",
+        "detailed-first": "This domain represents a strategic version of Pacman where multiple entities interact within a graph-based map. Pacman can move between connected nodes, collect food items from adjacent positions, and must avoid nodes containing opponent ghosts. The goal typically involves navigating safely, maximizing food collection, and marking visited nodes."
+    },
+    "predicates": {
+        "has_food": {
+            "first": "This location contains food.",
+            "detailed-first": "Indicates that the specified node currently holds food that Pacman can collect. After the 'eat_food' action, the food is removed from that node."
+        },
+        "no_food": {
+            "first": "This location does not contain food.",
+            "detailed-first": "Indicates that the node currently has no food. It is updated when Pacman eats food at this node."
+        },
+        "is_safe": {
+            "first": "This location is safe from ghosts.",
+            "detailed-first": "Indicates that the node does not currently contain an opponent ghost and is therefore safe for Pacman to enter."
+        },
+        "is_visited": {
+            "first": "The node has been visited.",
+            "detailed-first": "Marks nodes that Pacman has already traveled to. Updated whenever Pacman moves or eats food."
+        },
+        "at": {
+            "first": "Pacman is currently at a node.",
+            "detailed-first": "Shows Pacman’s current position in the environment."
+        },
+        "not_at": {
+            "first": "Pacman is not at this node.",
+            "detailed-first": "Indicates that Pacman is not currently at the node."
+        },
+        "connected": {
+            "first": "Two nodes are connected.",
+            "detailed-first": "Defines the map layout by indicating which nodes have direct paths between them. Movement and eating actions require connectivity."
+        }
+    },
+    "actions": {
+        "move_pacman": {
+            "first": "Moves Pacman to an adjacent, empty, and safe node.",
+            "detailed-first": "Pacman can move from one node to a connected node that contains no food and is free of ghosts. The effects update Pacman's position, mark the starting node as not occupied, and mark the new node as visited."
+        },
+        "eat_food": {
+            "first": "Moves Pacman to a node containing food and consumes it.",
+            "detailed-first": "Pacman moves from a starting node to a connected node containing food, provided it's safe from ghosts. After the action, Pacman ends up at the food node, the food is removed, and the node is marked as visited."
+        }
+    }
+}
