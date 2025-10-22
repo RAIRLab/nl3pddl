@@ -8,7 +8,8 @@ from .bookseller import generate_problem as generate_bookseller_problem
 from .hiking import generate_hiking_problem
 from .keygrid import generate_keygrid_problem
 from .pacman_72 import generate_pacman_problem
-
+from .tilepuzzle import generate_sliding_puzzle_problem as generate_tilepuzzle_problem
+from .lightBubble import generate_problem as generate_bubble_problem
 
 # GENS is a dictionary mapping problem names to their respective generation functions.
 PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {

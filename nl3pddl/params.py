@@ -10,7 +10,7 @@ from typing import Generator
 from dataclasses import dataclass, field
 
 from nl3pddl.dataset import Dataset
-from nl3pddl.config import ACTION_THRESHOLD, DESC_CLASSES, FEEDBACK_PIPELINES, GIVE_PRED_DESCRIPTIONS, HDE_THRESHOLD, MODELS, RUN_TRIALS
+from nl3pddl.config import DESC_CLASSES, FEEDBACK_PIPELINES, GIVE_PRED_DESCRIPTIONS, MODELS, RUN_TRIALS, SEARCH_HEURISTICS
 
 @dataclass
 class Params:
@@ -28,7 +28,9 @@ class Params:
     desc_class : str                = ""
     trial : int                     = 1
     feedback_pipeline : list[str]   = field(default_factory=lambda: [])
+    search_heuristic : str          = "G + H" # One of SEARCH_HEURISTICS
 
+#TODO: please god put this in an itertools thing somehow.
 def param_grid(d : Dataset) -> Generator[Params, None, None]:
     """
     Generates a grid of parameters for the experiments.
@@ -40,14 +42,28 @@ def param_grid(d : Dataset) -> Generator[Params, None, None]:
                     for give_pred_desc in GIVE_PRED_DESCRIPTIONS:
                         for desc_class in DESC_CLASSES:
                             for feedback_pipeline in FEEDBACK_PIPELINES:
-                                yield Params(
-                                    domain_path,
-                                    provider, model,
-                                    give_pred_desc,
-                                    desc_class,
-                                    trial,
-                                    feedback_pipeline
-                                )
+                                # Skip heuristics for none and random-single pipelines
+                                if feedback_pipeline == [] or "random-single" in feedback_pipeline:
+                                    yield Params(
+                                        domain_path,
+                                        provider, model,
+                                        give_pred_desc,
+                                        desc_class,
+                                        trial,
+                                        feedback_pipeline,
+                                        "G"
+                                    )
+                                else:
+                                    for search_heuristic in SEARCH_HEURISTICS:
+                                        yield Params(
+                                            domain_path,
+                                            provider, model,
+                                            give_pred_desc,
+                                            desc_class,
+                                            trial,
+                                            feedback_pipeline,
+                                            search_heuristic
+                                        )
 
 
 def action_names(d : Dataset, h : Params) -> list[str]:
@@ -62,20 +78,10 @@ def domain_name(d : Dataset, h : Params) -> str:
     """
     return d.domains[h.domain_path].name
 
-def get_hde_iteration_threshold() -> int:
-    """
-    Returns the HDE iteration threshold for the experiment.
-    """
-    return HDE_THRESHOLD
-
-def get_action_iteration_threshold() -> int:
-    """
-    Returns the action iteration threshold for the experiment.
-    """
-    return ACTION_THRESHOLD
-
 def feedback_pipeline_str(p : Params) -> str:
     """
     Returns a string representation of the feedback pipeline.
     """
+    if len(p.feedback_pipeline) == 0:
+        return "none"
     return "-".join(p.feedback_pipeline)

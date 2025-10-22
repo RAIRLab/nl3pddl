@@ -144,7 +144,9 @@ class Dataset:
                  os.listdir(feedback_dir) if f.endswith(".pddl")]
             self.feedback_problem_paths[domain_path] = feedback_problem_paths
 
-            for i, problem_path in enumerate(feedback_problem_paths):
+            for problem_path in feedback_problem_paths:
+                # extract i from the name of the problem file, e.g. problem-1.pddl -> 1
+                i = int(os.path.basename(problem_path).split("-")[1].split(".")[0])
                 with open(problem_path, "r", encoding="utf-8") as f:
                     self.feedback_problem_raws[problem_path] = f.read()
                 try:
@@ -156,7 +158,7 @@ class Dataset:
                 
                 self.feedback_problems[problem_path] = problem
                 self.feedback_plan_paths[problem_path] = \
-                    [os.path.join(feedback_dir, f"plan-{i+1}-{j}.txt") for j in
+                    [os.path.join(feedback_dir, f"plan-{i}-{j}.txt") for j in
                      range(1, PLANS_PER_PROBLEM + 1)]
                 for plan_path in self.feedback_plan_paths[problem_path]:
                     if os.path.exists(plan_path):
@@ -175,13 +177,13 @@ class Dataset:
             self.evaluation_problem_paths[domain_path] = \
                 [os.path.join(problem_dir, f) for f in os.listdir(problem_dir) \
                  if f.endswith(".pddl")]
-            for i, problem_file in enumerate(self.evaluation_problem_paths[domain_path]):
+            for problem_file in self.evaluation_problem_paths[domain_path]:
+                i = int(os.path.basename(problem_file).split("-")[1].split(".")[0])
                 with open(problem_file, "r", encoding="utf-8") as f:
                     self.evaluation_problem_raws[problem_file] = f.read()
-                self.evaluation_plan_paths[problem_file] = [os.path.join    (problem_dir, f"plan-{i+1}-{j}.txt") for j in range(1, PLANS_PER_PROBLEM + 1)]
+                self.evaluation_plan_paths[problem_file] = [os.path.join(problem_dir, f"plan-{i}-{j}.txt") for j in range(1, PLANS_PER_PROBLEM + 1)]
                 for plan_path in self.evaluation_plan_paths[problem_file]:
                     if os.path.exists(plan_path):
-                        #self.evaluation_plans[plan_path] = parse_plan(plan_path)
                         with open(plan_path, "r", encoding="utf-8") as f:
                             self.evaluation_plan_raws[plan_path] = f.read()
 
