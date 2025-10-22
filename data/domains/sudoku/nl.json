@@ -1,35 +1,39 @@
 {
-    "creation": "2025-10-13",
+    "creation": "2025-10-22",
     "overall": {
-        "first": "The Sudoku 4x4 domain models a puzzle environment where numbers 1 through 4 must be placed in a 4x4 grid according to Sudoku rules.",
-        "detailed-first": "This domain represents a simplified Sudoku puzzle where each row, column, and 2x2 box must contain all numbers from 1 to 4 without repetition. The planner must assign numbers to empty cells while ensuring that no conflicts arise. The goal is to fill all cells correctly, respecting Sudoku constraints."
+        "first": "The Sudoku 4x4 domain models a logical environment where numbers 1 through 4 must be placed in a 4x4 grid according to Sudoku rules.",
+        "detailed-first": "This domain represents a simplified Sudoku puzzle in which each row, column, and 2x2 box must contain all numbers from 1 to 4 without repetition. The planner must assign numbers to empty cells while ensuring that no two identical numbers appear in the same row, column, or box. The goal is to fill all cells correctly, respecting Sudoku constraints."
     },
     "predicates": {
         "empty": {
-            "first": "The cell is empty.",
-            "detailed-first": "This predicate indicates that the specified cell currently has no number assigned. It is a prerequisite for assigning a number to that cell. It is mutually exclusive with 'filled'."
+            "first": "The position is empty.",
+            "detailed-first": "This predicate indicates that a given grid position currently holds no number. It is a prerequisite for assigning a new number and is mutually exclusive with 'filled'."
         },
         "filled": {
-            "first": "The cell is filled.",
-            "detailed-first": "This predicate shows that a particular cell already has a number assigned, meaning it can no longer be changed. It is mutually exclusive with 'empty'."
+            "first": "The position is filled.",
+            "detailed-first": "This predicate indicates that a particular position already has a number assigned. It prevents further assignments and is mutually exclusive with 'empty'."
         },
-        "has-value": {
-            "first": "The cell contains a specific number.",
-            "detailed-first": "This predicate indicates that the cell is assigned a particular number between 1 and 4. It is used to track the Sudoku grid’s current state. It is mutually exclusive with 'not-has-value' for the same number."
+        "posdata": {
+            "first": "Defines the position’s row, column, and box relations.",
+            "detailed-first": "This predicate encodes structural information for each position, linking it to its corresponding row, column, and box. It allows the planner to reason about Sudoku constraints by associating each cell with its placement in the grid."
         },
-        "not-has-value": {
-            "first": "The cell does not contain a specific number.",
-            "detailed-first": "This predicate represents the negation of 'has-value', ensuring that a cell does not have a given number. It is mutually exclusive with 'has-value' for consistency."
+        "not-in-row": {
+            "first": "The number does not appear in the specified row.",
+            "detailed-first": "This predicate ensures that a particular number has not yet been placed in a given row. It is required before assigning that number to a cell in the same row and is removed once the number is placed there."
         },
-        "no-conflict": {
-            "first": "Placing this number in the cell causes no conflicts.",
-            "detailed-first": "This predicate ensures that assigning the given number to the cell does not violate Sudoku constraints — meaning the same number does not already appear in the same row, column, or 2x2 box."
+        "not-in-col": {
+            "first": "The number does not appear in the specified column.",
+            "detailed-first": "This predicate ensures that a particular number has not yet been placed in a given column. It prevents violating the Sudoku rule that forbids duplicate numbers in the same column."
+        },
+        "not-in-box": {
+            "first": "The number does not appear in the specified 2x2 box.",
+            "detailed-first": "This predicate ensures that a given number has not yet been placed within a specific 2x2 box, enforcing the Sudoku rule of box uniqueness."
         }
     },
     "actions": {
         "assign": {
-            "first": "Assigns a number to an empty cell without creating conflicts.",
-            "detailed-first": "This action allows the planner to place a number into a cell that is currently empty. Preconditions ensure the cell is empty, that it doesn’t already have the number, and that placing it would not cause any Sudoku rule violations. The effect marks the cell as filled with the chosen number and updates its value predicates accordingly, including deleting the 'empty' predicate and the corresponding 'not-has-value' for that number to maintain mutual exclusivity."
+            "first": "Assigns a number to an empty position while maintaining Sudoku constraints.",
+            "detailed-first": "This action allows the planner to place a number into a cell that is currently empty. Its preconditions require that the cell is empty, that it belongs to a specific row, column, and box (via 'posdata'), and that the number does not already exist in that row, column, or box. The effects mark the cell as filled, remove the 'empty' predicate, and remove the corresponding 'not-in-row', 'not-in-col', and 'not-in-box' predicates to indicate the number’s placement."
         }
     }
 }
