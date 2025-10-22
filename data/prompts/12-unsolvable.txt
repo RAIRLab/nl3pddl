@@ -2,6 +2,6 @@ Given the above domain you just generated, attempting to use it with the followi
 ```
 {problem}
 ```
-It was found to be unsolvable, but it was expected that the domain should be solvable on this problem. This is an indication that a precondition or effect of an action in the domain are missing.
+It was found to be unsolvable, but it was expected that the domain should be solvable with this problem. This is an indication that a precondition or effect of an action in the domain are missing.
 
-Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements to the domain, your output should exclusively be a typed STRIPS domain.
+Please revise the previous domain to fix the issue. You may create new predicates and types if needed, but make sure to update the predicate and type lists accordingly. You may not add new requirements or actions to the domain, your output should exclusively be a typed STRIPS domain.
