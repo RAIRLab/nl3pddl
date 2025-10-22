@@ -12,7 +12,7 @@
       (connected ?n1 ?n2 - node)
    )
 
-   (:action move_pacman 
+   (:action move_pacman
       :parameters (?start ?end - node)
       :precondition (and
          (at ?start)

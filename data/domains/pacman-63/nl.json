@@ -41,7 +41,7 @@
         },
         "eat_food": {
             "first": "Moves Pacman to a node containing food and consumes it.",
-            "detailed-first": "Pacman moves from a starting node to a connected node containing food, provided it is safe from ghosts. After the action, Pacman ends up at the food node, the food is removed, and the node is marked as visited."
+            "detailed-first": "Pacman moves from a starting node to a connected node containing food, provided it's safe from ghosts. After the action, Pacman ends up at the food node, the food is removed, and the node is marked as visited."
         }
     }
 }

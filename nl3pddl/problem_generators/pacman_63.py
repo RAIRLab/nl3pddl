@@ -66,7 +66,7 @@ def generate_pacman_ai_problem(n, output_file, seed=None):
         else:
             problem += f"        (no_food {node})\n"
 
-    # Safety assignment
+    # Safety assignment 
     for node in safe_nodes:
         problem += f"        (is_safe {node})\n"
 
