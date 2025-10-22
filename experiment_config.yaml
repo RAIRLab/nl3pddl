@@ -23,18 +23,18 @@ log-level: 10
 
 # The maximum number of threads to use for parallel processing.
 # If set to 0 or less, it will default to the number of available CPU cores.
-#threads: 1
-threads: 50
+threads: -1
+#threads: 50
 
 # Maximum number of reprompts to allow for each action generation step.
 action-threshold: 5
 
 # Maximum number of reprompts to refine the domain.
-hde-threshold: 10
+hde-threshold: 5
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 3
+trials: 5
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5
@@ -51,12 +51,18 @@ kstar-n-plans: 100
 # This can be any valid provider and model pair, assuming the API key is set in
 # the ENV file and passed in.
 models:
-    openai:
-    #    - o4-mini
-        - gpt-4o-mini
-    #    - gpt-5-nano    
-    # deepseek:
-    #     - deepseek-chat
+  openai:
+    - o4-mini
+    #    - gpt-4o-mini
+    # - gpt-5-nano
+  #deepseek:
+  #        - deepseek-chat
+  #huggingface:
+  #       - "Qwen/Qwen2.5-7B-Instruct"
+  #- NousResearch/Hermes-4-405B
+
+#Supported model providers are: together, azure_openai, groq, ibm, azure_ai, deepseek, bedrock, google_anthropic_vertex, google_genai, o
+#│llama, cohere, xai, huggingface, perplexity, anthropic, openai, fireworks, mistralai, google_vertexai, bedrock_converse
 
 # Description classes to evaluate over, should correspond to the classes
 # present in the dataset/*/nl.json files.
@@ -64,15 +70,26 @@ description-classes:
     - first
     - detailed-first
 
-# list of feedback pipelines to evaluate. Pipeline stage names correspond to 
-# langgraph node names in the experiment.py file.
-# TODO: currently the order of the stages is hardcoded, changing the order here
-# will not change the order of the stages in the pipeline.
+# list of feedback pipelines to evaluate over.
+# - [] The empty pipeline signifies no feedback, just generate the domain once.
+# - "landmark generates landmark feedback messages"
+# - "validate generates validation feedback messages"
+# - "random-single" will randomly select a single message from the set of 
+#    proceeding feedback messages
 feedback-pipelines:
+    - []
     - ["landmark"]
     - ["validate"]
     - ["landmark", "validate"]
+    - ["landmark", "validate", "random-single"]
 
+# Specifies the search heuristic to use when generating plans.
+# Should be a string with valid python expression that evaluates to a number
+# involving G distance from the start node and H (heuristic value).
+# Only used if feedback-style is set to 'heuristic-search'.
+search-heuristic:
+#    - "H"
+    - "G + H"
 
 # Should the model be presented with a description of predicates from the
 # problem set when initially generating the domain?

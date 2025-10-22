@@ -164,6 +164,7 @@ def save_previous_figs_and_clear():
 def plot_all_figures(results_file = None):
     if results_file is None:
         results_file = get_latest_results_file()
+        print(f"plotting results for {results_file}")
 
     save_previous_figs_and_clear()
 
