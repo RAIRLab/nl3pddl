@@ -8,7 +8,7 @@ from .bookseller import generate_problem as generate_bookseller_problem
 from .hiking import generate_hiking_problem
 from .keygrid import generate_keygrid_problem
 from .tilepuzzle import generate_sliding_puzzle_problem as generate_tilepuzzle_problem
-
+from .lightBubble import generate_problem as generate_bubble_problem
 
 # GENS is a dictionary mapping problem names to their respective generation functions.
 PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
@@ -19,5 +19,6 @@ PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
     "bookseller": generate_bookseller_problem,
     "hiking": generate_hiking_problem,
     "keygrid": generate_keygrid_problem,
-    "tilepuzzle" : generate_tilepuzzle_problem
+    "tilepuzzle" : generate_tilepuzzle_problem,
+    "light-bubble" : generate_bubble_problem
 }
