@@ -30,6 +30,7 @@ class Params:
     feedback_pipeline : list[str]   = field(default_factory=lambda: [])
     search_heuristic : str          = "G + H" # One of SEARCH_HEURISTICS
 
+#TODO: please god put this in an itertools thing somehow.
 def param_grid(d : Dataset) -> Generator[Params, None, None]:
     """
     Generates a grid of parameters for the experiments.
@@ -41,7 +42,8 @@ def param_grid(d : Dataset) -> Generator[Params, None, None]:
                     for give_pred_desc in GIVE_PRED_DESCRIPTIONS:
                         for desc_class in DESC_CLASSES:
                             for feedback_pipeline in FEEDBACK_PIPELINES:
-                                for search_heuristic in SEARCH_HEURISTICS:
+                                # Skip heuristics for none and random-single pipelines
+                                if feedback_pipeline == [] or "random-single" in feedback_pipeline:
                                     yield Params(
                                         domain_path,
                                         provider, model,
@@ -49,8 +51,19 @@ def param_grid(d : Dataset) -> Generator[Params, None, None]:
                                         desc_class,
                                         trial,
                                         feedback_pipeline,
-                                        search_heuristic
+                                        "G"
                                     )
+                                else:
+                                    for search_heuristic in SEARCH_HEURISTICS:
+                                        yield Params(
+                                            domain_path,
+                                            provider, model,
+                                            give_pred_desc,
+                                            desc_class,
+                                            trial,
+                                            feedback_pipeline,
+                                            search_heuristic
+                                        )
 
 
 def action_names(d : Dataset, h : Params) -> list[str]:
@@ -69,4 +82,6 @@ def feedback_pipeline_str(p : Params) -> str:
     """
     Returns a string representation of the feedback pipeline.
     """
+    if len(p.feedback_pipeline) == 0:
+        return "none"
     return "-".join(p.feedback_pipeline)

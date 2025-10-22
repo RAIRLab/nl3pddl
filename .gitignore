@@ -1,9 +1,10 @@
 .venv
 __pycache__/
+*/__pycache__/
 .env
 figs/
 results/
 .vscode/
 #data/gen_problems/*
-old-figs
+old_figs
 found_plans

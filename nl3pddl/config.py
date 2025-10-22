@@ -1,18 +1,10 @@
 
 import os
-import sys
 from pathlib import Path
 
 import yaml
 
-# Check if config file is specified in command line args
-config_file = "experiment_config.yaml"
-for i, arg in enumerate(sys.argv):
-    if arg in ["-c", "--config"] and i + 1 < len(sys.argv):
-        config_file = sys.argv[i + 1]
-        break
-
-with open(config_file, "r") as f:
+with open("experiment_config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 NUM_FEEDBACK_PROBLEMS = config["feedback-problems"]

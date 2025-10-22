@@ -6,6 +6,7 @@ This file contains the driver for the NL3PDDL project.
 import os
 import csv
 import json
+import random
 from typing import Literal
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -58,23 +59,42 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     # Lang-graph nodes =========================================================
 
     def call_action_model(state: State):
+        """ 
+        Calls the model using the ActionSchema structured output to generate the next action. 
+        """
         logger.debug("Calling action model")
-        json_obj = action_model.invoke(state["messages"].message_history())
+        history = state["messages"].squashed_message_history()
+        json_obj = action_model.invoke(history)
         raw = json.dumps(json_obj.model_dump())
         return {
-            "messages": state["messages"].insert_on_current_branch_json(AIMessage(raw), json_obj),
+            "messages": state["messages"].insert_on_current_branch_json(
+                AIMessage(raw),
+                json_obj, 
+                "call_action_model"
+            ),
             "langgraph_path": state["langgraph_path"] + ["call_action_model"]
         }
     
     def call_domain_model(state: State):
-        json_obj = domain_model.invoke(state["messages"].message_history())
+        """
+        Calls the model using the DomainSchema structured output to generate the domain.
+        """
+        history = state["messages"].squashed_message_history()
+        json_obj = domain_model.invoke(history)
         raw = json.dumps(json_obj.model_dump())
         return {
-            "messages": state["messages"].insert_on_current_branch_json(AIMessage(raw), json_obj),
+            "messages": state["messages"].insert_on_current_branch_json(
+                AIMessage(raw),
+                json_obj, 
+                "call_domain_model"
+            ),
             "langgraph_path": state["langgraph_path"] + ["call_domain_model"]
         }
 
     def next_action(state: State):
+        """
+        Stores the current action and prepares for the next action generation.
+        """
         action_index = state["action_index"]
         actions_names = action_names(d, p)
         actions = state["actions"]
@@ -91,7 +111,10 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
                 "Starting Action %d/%d: %s",
                 action_index + 1, len(actions_names), action_name
             )
-            updated_messages = state["messages"].insert_on_current_branch(action_message(d, p, action_name))
+            updated_messages = state["messages"].insert_on_current_branch(
+                action_message(d, p, action_name),
+                "next_action"
+            )
             return {
                 "messages": updated_messages,
                 "action_index" : action_index + 1,
@@ -108,8 +131,12 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             "Checking action... %s",
             "valid" if res is None else "invalid"
         )
+        updated_messages = state["messages"].insert_on_current_branch(
+            res, 
+            "check_action"
+        ) if res else state["messages"]
         return {
-            "messages": state["messages"].insert_on_current_branch(res) if res else state["messages"],
+            "messages": updated_messages,
             "action_valid" : res is None,
             "action_iterations" : state["action_iterations"] + 1,
             "langgraph_path": state["langgraph_path"] + ["check_action"]
@@ -121,44 +148,33 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             domain_name(d, p),
             state["actions"]
         )
+        updated_messages = state["messages"].insert_on_current_branch_json(
+            raw_domain_msg(full_domain_raw), 
+            {"pddl_domain":full_domain_raw}, 
+            "build_domain"
+        )
+        #updated_messages.get().update_score(float("inf"), 0) # Search starts here!
         return {
-            "messages" : state["messages"].insert_on_current_branch_json(raw_domain_msg(full_domain_raw), {"pddl_domain":full_domain_raw}),
+            "messages" : updated_messages,
             "langgraph_path": state["langgraph_path"] + ["build_domain"]
         }
     
     def check_domain_syntax(state: State):
         json_last = state["messages"].json_last()
         res = check_domain_syntax_output(d, p, json_last)
-        new_messages = state["messages"].insert_on_current_branch(res) if res else state["messages"]
+        new_messages = state["messages"].insert_on_current_branch(
+            res, "check_domain_syntax"
+        ) if res else state["messages"]
         #If syntactically valid, immediatly update the score based on how well it does on the evals, note that lower is better!
         if res is None:
             try:
                 scores = val_feedback_test(d, p, json_last["pddl_domain"])
                 new_messages.update_score(scores[1] - scores[0])
             except Exception as e:
-                # TODO update err message with actual model name
-                """
-                NON VAR INFO =========================================
-
-                TRIAL: 1
-
-                Experiment Params ====================================
-
-                PROVIDER: openai
-                MODEL: o4-mini
-                DOMAIN PATH: data/domains/blocks
-                DESC CLASS: detailed-first
-                FEEDBACK PIPELINE: landmark-validate
-                GIVE PRED DESCRIPTIONS: True
-
-                ERROR MESSAGE ======================================
-
-                Error: UnboundLocalError, cannot access local variable 'scores' where it is not associated with a value
-
-                """
                 # If validation fails, use a penalty score (no passing tests)
                 logger.error(f"Error during validation test: {e}")
-                new_messages.update_score(0)
+                # TODO: shouldn't hardcode the error penalty like this
+                new_messages.update_score(float("inf"))
         return {
             "messages": new_messages,
             # We pass the syntax check if any of the proposed messages passed it
@@ -169,35 +185,47 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
 
     def feedback(state: State):
-        landmark_feedback_msgs : list[HumanMessage] = []
-        val_feedback_msgs : list[HumanMessage] = []
+        landmark_feedback_msgs : list[HumanMessage] | None = []
+        val_feedback_msgs : list[HumanMessage] | None = []
+        feedback_messages : list[HumanMessage] | None = []
         current_node = state["messages"].get()
         
-        if current_node.h == 0:
+        # Stop giving feedback if H score is 0 (perfect) or no feedback pipeline
+        if current_node.h == 0 or p.feedback_pipeline == []:
             return {
                 "landmark_passed": True,
                 "val_passed": True,
                 "langgraph_path": state["langgraph_path"] + ["feedback"]
             }
-
+        
         try:
             if "landmark" in p.feedback_pipeline:
                 landmark_feedback_msgs = multi_landmark_feedback(d, p, state["messages"].json_last()["pddl_domain"])
             if "validate" in p.feedback_pipeline:
                 val_feedback_msgs = multi_val_feedback(d, p, state["messages"].json_last()["pddl_domain"])
+
+            if landmark_feedback_msgs is not None and val_feedback_msgs is not None:
+                feedback_messages = landmark_feedback_msgs + val_feedback_msgs
+
+            # If "random-single" is in the pipeline, select a single random feedback message from the combined feedback and just use that
+            if "random-single" in p.feedback_pipeline and feedback_messages is not None and len(feedback_messages) > 0:
+                feedback_messages = [random.choice(feedback_messages)]
+
         except Exception as e:
-            # TODO: Fix
             msg = f"Error during feedback generation: {str(e)}" 
             logger.error(msg)
             val_feedback_msgs = [HumanMessage(msg)]
 
-        state["messages"].insert_batch_on_current_branch(landmark_feedback_msgs + val_feedback_msgs)
+        state["messages"].insert_batch_on_current_branch(
+            feedback_messages, langraph_node="feedback"
+        )
         state["messages"] = state["messages"].select_best_branch()
         
         return {
             "messages": state["messages"],
             "landmark_passed": landmark_feedback_msgs is None,
             "val_passed": val_feedback_msgs is None,
+            # TODO: not used anymore
             "landmark_runs": state["landmark_runs"] + (1 if landmark_feedback_msgs is not None else 0),
             "val_runs": state["val_runs"] + (1 if val_feedback_msgs is not None else 0),
             "langgraph_path": state["langgraph_path"] + ["feedback"]
@@ -299,7 +327,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
 def graph_pipeline_image() -> None:
     """
-    Saves the graph as a PNG image to the given filename.
+    Saves the graph as a PNG image.
     """
     experiment_init()
     graph = create_langgraph(None, Params()) # Dummy dataset and params
@@ -401,4 +429,4 @@ def run_experiment() -> None:
                     csv_results_row = gen_csv_results(state)
                     csv_writer.writerow(csv_results_row)
 
-    print("Successfully joined all processes.")
+    print("Successfully joined all threads. Experiment complete.")

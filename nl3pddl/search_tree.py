@@ -22,7 +22,7 @@ class MessageTree:
         params: Params,
         parent=None, 
         message: HumanMessage | AIMessage | None = None,
-        langraph_node: str = "",
+        langraph_node: str = "no-node",
     ):
         self.id = MessageTree._next_id
         MessageTree._next_id += 1
@@ -53,10 +53,25 @@ class MessageTree:
         return self.parent.node_history() + [self]
 
     def message_history(self) -> list[HumanMessage | AIMessage]:
-        """ Returns the message history from the root to this node. """
+        """ Returns the true message history from the root to this node. """
         if self.parent is None:
             return []
         return self.parent.message_history() + [self.message]
+    
+    def squashed_message_history(self) -> list[HumanMessage | AIMessage]:
+        """ Returns the message history from the root to this node, merging consecutive human messages into a single message. """
+        if self.parent is None:
+            return []
+        history = self.parent.squashed_message_history()
+        if isinstance(self.message, HumanMessage) and history and isinstance(history[-1], HumanMessage):
+            # Merge consecutive human messages
+            history[-1] = HumanMessage(
+                content=history[-1].content + "\n" + self.message.content
+            )
+        else:
+            history.append(self.message)
+        return history
+
 
     def get_min_score_leaf(self) -> 'MessageTree':
         """ Returns the leaf with the lowest score. """
@@ -81,7 +96,7 @@ class MessageTree:
         """
         Returns a string representation of the tree for debugging purposes.
         """
-        s = " " * depth + f"-{depth} id:{self.id} {self.langraph_node}"
+        s = " " * depth + f"-{depth} id:{self.id} {self.langraph_node} "
         if self.message is None:
             s += f"Root\n"
         elif isinstance(self.message, str):
@@ -131,6 +146,10 @@ class IndexedMessageTree:
         """ Returns the message history from the root to the current node. """
         return self.get().message_history()
 
+    def squashed_message_history(self) -> list[HumanMessage | AIMessage]:
+        """ Returns the squashed message history (compressed human messages) from the root to the current node. """
+        return self.get().squashed_message_history()
+
     def json_last(self) -> Any:
         """ Returns the json object of the current node. """
         return dict(self.get().json)
@@ -139,11 +158,12 @@ class IndexedMessageTree:
         self,
         message : HumanMessage | AIMessage,
         json: dict,
-        h_score: float
+        h_score: float, 
+        langraph_node : str = ""
     ) -> 'IndexedMessageTree':
         """ Inserts a message on the current branch. """
         node = self.root.atIndex(self.index)
-        new_node = MessageTree(params=node.params, parent=node, message=message)
+        new_node = MessageTree(node.params, node, message, langraph_node)
         node.children.append(new_node)
         self.index.append(len(node.children) - 1)
         new_node.json = json
@@ -153,7 +173,8 @@ class IndexedMessageTree:
 
     def insert_on_current_branch(
         self, 
-        message : HumanMessage | AIMessage
+        message : HumanMessage | AIMessage,
+        langraph_node : str = ""
     ) -> 'IndexedMessageTree':
         """ 
         Inserts a message on the current branch. 
@@ -161,30 +182,32 @@ class IndexedMessageTree:
         and json from the current node.
         """
         n = self.get()
-        return self.insert_on_current_branch_json_score(message, n.json, n.h)
+        return self.insert_on_current_branch_json_score(message, n.json, n.h, langraph_node)
 
     def insert_on_current_branch_score(
         self, 
         message : HumanMessage | AIMessage,
-        h_score: float
+        h_score: float,
+        langraph_node : str = ""
     ) -> 'IndexedMessageTree':
         """ 
         Inserts a message on the current branch.
         Defaults to inheriting json from the current node.
         """
         n = self.get()
-        return self.insert_on_current_branch_json_score(message, n.json, h_score)
+        return self.insert_on_current_branch_json_score(message, n.json, h_score, langraph_node)
 
     def insert_on_current_branch_json(
         self, 
         message : HumanMessage | AIMessage,
-        json: dict
+        json: dict,
+        langraph_node : str = ""
     ) -> 'IndexedMessageTree':
         """ 
         Inserts a message on the current branch. Defaults to inheriting score 
         """
         n = self.get()
-        return self.insert_on_current_branch_json_score(message, json, n.h)
+        return self.insert_on_current_branch_json_score(message, json, n.h, langraph_node)
 
     def select_best_branch(self) -> 'IndexedMessageTree':
         """ Selects the best branch and moves the index to it. """
@@ -196,7 +219,8 @@ class IndexedMessageTree:
 
     def insert_batch_on_current_branch(
         self,
-        messages: list[HumanMessage | AIMessage]
+        messages: list[HumanMessage | AIMessage],
+        langraph_node: str = ""
     ) -> None:
         """
         Inserts multiple messages on the current branch.
@@ -207,14 +231,22 @@ class IndexedMessageTree:
         """
         node = self.get()
         for message in messages:
-            new_node = MessageTree(params=node.params, parent=node, message=message)
-            new_node.json = node.json
+            new_node = MessageTree(node.params, node, message, langraph_node)
             new_node.update_score(node.h, node.g + 1)
             node.children.append(new_node)
 
     def to_str(self) -> None:
         """ Prints the tree for debugging purposes. """
         return self.root.to_str(0)
+    
+    def update_score(
+        self, 
+        h_score: float,
+        g_score : float | None = None
+    ) -> 'IndexedMessageTree':
+        """ Updates the score of the current node, given a new heuristic score. """
+        self.get().update_score(h_score, g_score)
+        return self
 
 #Testing...
 # tree = IndexedMessageTree(Params())

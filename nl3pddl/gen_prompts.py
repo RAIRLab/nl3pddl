@@ -128,5 +128,5 @@ def init_msgs_tree(d: Dataset, p: Params) -> IndexedMessageTree:
     msgs = init_msgs(d, p)
     tree = IndexedMessageTree(p)
     for msg in msgs:
-        tree.insert_on_current_branch(msg)
+        tree.insert_on_current_branch(msg, "START")
     return tree
