@@ -7,6 +7,7 @@ from .flow import generate_problem as generate_flow_problem
 from .bookseller import generate_problem as generate_bookseller_problem
 from .hiking import generate_hiking_problem
 from .keygrid import generate_keygrid_problem
+from .pacman_72 import generate_pacman_problem
 from .tilepuzzle import generate_sliding_puzzle_problem as generate_tilepuzzle_problem
 from .lightBubble import generate_problem as generate_bubble_problem
 
@@ -18,5 +19,6 @@ PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
     "flow": generate_flow_problem,
     "bookseller": generate_bookseller_problem,
     "hiking": generate_hiking_problem,
-    "keygrid": generate_keygrid_problem
+    "keygrid": generate_keygrid_problem,
+    "pacman-72": generate_pacman_problem
 }
