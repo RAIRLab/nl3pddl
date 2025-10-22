@@ -7,7 +7,7 @@ from .flow import generate_problem as generate_flow_problem
 from .bookseller import generate_problem as generate_bookseller_problem
 from .hiking import generate_hiking_problem
 from .keygrid import generate_keygrid_problem
-from .keygrid import generate_pacman_63_problem
+from .pacman_63 import generate_pacman_63_problem
 
 # GENS is a dictionary mapping problem names to their respective generation functions.
 PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
