@@ -1,2 +1,0 @@
-trial,domain_path,provider,model,give_pred_descriptions,desc_class,feedback_pipeline,hde_runs,hde_timeout,action_timeout,action_timeout_cause,evals_passed,total_evals
-2025-07-18_10-19-46,data/domains/flow,openai,gpt-4o-mini,True,first,landmark-validate,0,False,True,start,0,0

@@ -18,7 +18,5 @@ PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
     "flow": generate_flow_problem,
     "bookseller": generate_bookseller_problem,
     "hiking": generate_hiking_problem,
-    "keygrid": generate_keygrid_problem,
-    "tilepuzzle" : generate_tilepuzzle_problem,
-    "light-bubble" : generate_bubble_problem
+    "keygrid": generate_keygrid_problem
 }

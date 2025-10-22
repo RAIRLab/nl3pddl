@@ -1,7 +1,7 @@
 {
     "overall": {
-        "first": "",
-        "detailed-first": ""
+        "first": "The checckers domain involves moving red and blue checkers on a linear board by sliding or jumping over other checkers.",
+        "detailed-first": "This domain simulates a simplified version of checkers on a linear board where the goal is to swap positions of red and blue checkers. Players can move their checkers by sliding them to adjacent empty squares or jumping over an opponent's checker to land on an empty square directly beyond it. The game requires strategic planning to effectively maneuver the checkers while adhering to the movement rules."
     },
     "predicates": {
         "at" : {

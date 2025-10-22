@@ -2,4 +2,4 @@ Using the current list of predicates and any new predicates you feel you need,ge
 
 {action_nl}
 
-Regardless of whether you create any new predicates, include the set of all predicates used so far in the output.
+Regardless of whether you create any new predicates, include the set of all predicates used so far in the output. Remember this must be a typed STRIPS action. You may not use negative preconditions, disjunctive preconditions, or quantified preconditions, nor equality. The generated action thus must not include "or", "forall", "exists", or "=" anywhere.
