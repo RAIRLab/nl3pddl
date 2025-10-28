@@ -9,6 +9,7 @@ from .hiking import generate_hiking_problem
 from .keygrid import generate_keygrid_problem
 from .pacman_63 import generate_pacman_ai_problem
 from .pacman_72 import generate_pacman_problem
+from .bloxorz import generate_bloxorz_problem
 
 
 # GENS is a dictionary mapping problem names to their respective generation functions.
@@ -21,5 +22,6 @@ PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
     "hiking": generate_hiking_problem,
     "keygrid": generate_keygrid_problem,
     "pacman-63": generate_pacman_ai_problem,
-    "pacman-72": generate_pacman_problem
+    "pacman-72": generate_pacman_problem,
+    "bloxorz": generate_bloxorz_problem
 }
