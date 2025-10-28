@@ -1,4 +1,0 @@
-(pickup place1 key8)
-(unlock place1 place8 key8 shape3)
-(move place1 place8)
-(putdown place8 key8)

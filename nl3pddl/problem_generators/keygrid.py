@@ -1,6 +1,5 @@
 import argparse
 import random
-import math
 
 def generate_solvable_keygrid(n, filename):
     
@@ -24,8 +23,8 @@ def generate_solvable_keygrid(n, filename):
 
     with open(filename, 'w') as f:
         # Header
-        f.write(f"(define (problem grid-problem-{places}-{keys}-{locks}-{shapes})\n")
-        f.write("  (:domain grid)\n")
+        f.write(f"(define (problem keygrid-problem-{places}-{keys}-{locks}-{shapes})\n")
+        f.write("  (:domain keygrid)\n")
 
         # Objects
         f.write("  (:objects\n")

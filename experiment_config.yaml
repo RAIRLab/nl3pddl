@@ -30,7 +30,7 @@ threads: -1
 action-threshold: 5
 
 # Maximum number of reprompts to refine the domain.
-hde-threshold: 5
+hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
@@ -45,8 +45,16 @@ kstar-n-plans: 100
 # Grid Parameters ==============================================================
 # The following parameters define a parameter grid to evaluate over.
 # Every possible combination of these parameters will be evaluated over
-# every single domain in the dataset/domains folder.
 
+domains:
+  - bookseller
+  - checkers-jumping
+  - flow
+  - hiking
+  - pacman-63
+  # - pacman-72
+  # - keygrid
+  
 # What models are we evaluating?
 # This can be any valid provider and model pair, assuming the API key is set in
 # the ENV file and passed in.
@@ -81,6 +89,8 @@ feedback-pipelines:
     - ["landmark"]
     - ["validate"]
     - ["landmark", "validate"]
+    - ["landmark", "random-single"]
+    - ["validate", "random-single"]
     - ["landmark", "validate", "random-single"]
 
 # Specifies the search heuristic to use when generating plans.

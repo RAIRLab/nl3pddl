@@ -19,6 +19,7 @@ KSTAR_TIMEOUT : float = config["kstar-timeout"]
 THREADS : int = config["threads"]
 KSTAR_N_PLANS : int = config["kstar-n-plans"]
 
+DOMAINS : list[str] = config["domains"]
 MODELS : dict[str, list[str]] = config["models"]
 GIVE_PRED_DESCRIPTIONS : list[bool] = config["give-pred-description"]
 assert 1 <= len(GIVE_PRED_DESCRIPTIONS) <= 2, \

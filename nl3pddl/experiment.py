@@ -162,9 +162,10 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     def check_domain_syntax(state: State):
         json_last = state["messages"].json_last()
         res = check_domain_syntax_output(d, p, json_last)
+        # Only add a new message if we found an error
         new_messages = state["messages"].insert_on_current_branch(
             res, "check_domain_syntax"
-        ) if res else state["messages"]
+        ) if res is not None else state["messages"]
         #If syntactically valid, immediatly update the score based on how well it does on the evals, note that lower is better!
         if res is None:
             try:
