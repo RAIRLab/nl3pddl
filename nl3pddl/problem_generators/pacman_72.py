@@ -58,4 +58,4 @@ def generate_pacman_problem(n, output_file, seed=None):
 
     # Write to file
     with open(output_file, "w") as f:
-        f.write(problem)
+        f.write(problem) 
