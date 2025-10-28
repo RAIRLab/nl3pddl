@@ -12,7 +12,7 @@
     (carryingFood)
   )
 
-  (:action move
+  (:action move 
     :parameters (?from ?to - position)
     :precondition (and
       (at ?from)

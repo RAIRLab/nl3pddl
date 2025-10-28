@@ -7,7 +7,7 @@ import random
 def generate_pacman_problem(n, output_file, seed=None):
     
     grid_size = n + 3
-    num_food = n + 2
+    num_food = n + 2 
 
     if seed is not None:
         random.seed(seed)
