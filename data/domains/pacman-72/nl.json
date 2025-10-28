@@ -27,7 +27,7 @@
         },
         "connected": {
             "first": "Two positions are connected to each other.",
-            "detailed-first": "This predicate represents adjacency or valid movement paths between two positions. Pacman can only move between positions that are connected, ensuring movement respects the structure of the maze."
+            "detailed-first": "This predicate represents adjacency or valid movement paths between two positions. Pacman can only move between the positions that are connected, ensuring movement respects the structure of the maze."
         }
     },
     "actions": {

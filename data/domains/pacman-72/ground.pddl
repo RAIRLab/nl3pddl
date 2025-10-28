@@ -9,7 +9,7 @@
     (connected ?from ?to - position)
     (hasFood ?pos - position)
     (noFood ?pos - position)          ; complement of hasFood
-    (carryingFood)
+    (carryingFood) 
   )
 
   (:action move
