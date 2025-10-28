@@ -14,51 +14,55 @@
 
   ;; ===== Standing --> Lying-Y =====
   (:action move-north-from-standing
-    :parameters (?b - block ?from - tile ?to - tile)
+    :parameters (?b - block ?from - tile ?to1 - tile ?to2 - tile)
     :precondition (and
       (on ?b ?from)
-      (adjacent-north ?to ?from)
+      (adjacent-north ?to1 ?from)
+      (adjacent-north ?to2 ?to1)
     )
     :effect (and
       (not (on ?b ?from))
-      (occupies ?b ?from ?to)
+      (occupies ?b ?to2 ?to1)
     )
   )
 
   (:action move-south-from-standing
-    :parameters (?b - block ?from - tile ?to - tile)
+    :parameters (?b - block ?from - tile ?to1 - tile ?to2 - tile)
     :precondition (and
       (on ?b ?from)
-      (adjacent-south ?to ?from)
+      (adjacent-south ?to1 ?from)
+      (adjacent-south ?to2 ?to1)
     )
     :effect (and
       (not (on ?b ?from))
-      (occupies ?b ?to ?from)
+      (occupies ?b ?to1 ?to2)
     )
   )
 
   ;; ===== Standing --> Lying-X =====
   (:action move-east-from-standing
-    :parameters (?b - block ?from - tile ?to - tile)
+    :parameters (?b - block ?from - tile ?to1 - tile ?to2 - tile)
     :precondition (and
       (on ?b ?from)
-      (adjacent-east ?to ?from)
+      (adjacent-east ?to1 ?from)
+      (adjacent-east ?to2 ?to1)
     )
     :effect (and
       (not (on ?b ?from))
-      (occupies ?b ?from ?to)
+      (occupies ?b ?to1 ?to2)
     )
   )
 
   (:action move-west-from-standing
-    :parameters (?b - block ?from - tile ?to - tile)
+    :parameters (?b - block ?from - tile ?to1 - tile ?to2 - tile)
     :precondition (and
       (on ?b ?from)
-      (adjacent-west ?to ?from)
+      (adjacent-west ?to1 ?from)
+      (adjacent-west ?to2 ?to1)
     )
     :effect (and
       (not (on ?b ?from))
-      (occupies ?b ?to ?from)
+      (occupies ?b ?to2 ?to1)
     )
   )
 
