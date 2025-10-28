@@ -14,6 +14,11 @@ plans-per-problem: 2
 
 # General Experiment Config Parameters =========================================
 
+# This flag is used to test the experiment setup without actually running
+# any experiments. When set to true, the experiment will skip running and only
+# the parallelism will be tested.
+skip-experiment: false 
+
 # The level to log at:
 # See https://docs.python.org/3/library/logging.html#logging-levels
 # 10 for DEBUG, which contains our lowest level of logging

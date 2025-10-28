@@ -21,7 +21,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 
-from .config import THREADS, ACTION_THRESHOLD, HDE_THRESHOLD
+from .config import THREADS, ACTION_THRESHOLD, HDE_THRESHOLD, SKIP_EXPERIMENT
 from .check_output import check_action_output, check_domain_syntax_output
 from .gen_prompts import action_message, domain_template, raw_domain_msg
 from .dataset import Dataset
@@ -346,12 +346,17 @@ def run_experiment_instance(
     if the experiment ran without errors, and the final state of the experiment
     (in the event of an error, the final state before failure).
     """
-    graph = create_langgraph(d, p)
 
     initial_state : State = gen_initial_state(batch_id, d, p)
 
     # Langgraph experiment state
     state : State = initial_state
+
+    if SKIP_EXPERIMENT:
+        logger.info(f"Skipping experiment {batch_id} for domain {p.domain_path} with path {p.feedback_pipeline} as per configuration.")
+        return True, "Experiment skipped", state
+
+    graph = create_langgraph(d, p)
 
     # TODO: this is no longer meaningful in light of search
     config = {
@@ -424,10 +429,13 @@ def run_experiment() -> None:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
             for res in pool.map(run_experiment_instance_star, args):
-                (success, err_msg, state) = res
-                write_message_log(state, err_msg, results_dir)
-                if success:
-                    csv_results_row = gen_csv_results(state)
-                    csv_writer.writerow(csv_results_row)
+                try:
+                    (success, err_msg, state) = res
+                    write_message_log(state, err_msg, results_dir)
+                    if success:
+                        csv_results_row = gen_csv_results(state)
+                        csv_writer.writerow(csv_results_row)
+                except Exception as e:
+                    logger.error("Error processing result: %s", e)
 
     print("Successfully joined all threads. Experiment complete.")
