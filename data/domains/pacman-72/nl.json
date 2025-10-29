@@ -7,7 +7,7 @@
     "predicates": {
         "at": {
             "first": "Pacman is at a certain position.",
-            "detailed-first": "This predicate indicates Pacman’s current location in the environment. Only one 'at' predicate can be true at a time, representing Pacman’s exact position in the maze. All other positions will have 'not_at' to indicate Pacman is absent there. Moving to a new position deletes the 'at' predicate at the previous position and removes the 'not_at' predicate at the new position to maintain mutual exclusivity."
+            "detailed-first": "This predicate indicates Pacman's current location in the environment. Only one 'at' predicate can be true at a time, representing Pacman’s exact position in the maze. All other positions will have 'not_at' to indicate Pacman is absent there. Moving to a new position deletes the 'at' predicate at the previous position and removes the 'not_at' predicate at the new position to maintain mutual exclusivity."
         },
         "not_at": {
             "first": "Pacman is not at this position.",
