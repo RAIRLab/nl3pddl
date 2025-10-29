@@ -5,7 +5,6 @@ Simple utility to build PDDL problem files for the 'pacman-72' domain.
 import random
 
 def generate_pacman_problem(n, output_file, seed=None):
-    
     grid_size = n + 3
     num_food = n + 2 
 
@@ -48,7 +47,7 @@ def generate_pacman_problem(n, output_file, seed=None):
         problem += f"        (connected {a} {b})\n"
     problem += "    )\n\n"
 
-    # Goal: all food picked up (noFood predicates used)
+    # Goal: all food picked up
     problem += "    (:goal (and\n"
     for f in food_positions:
         problem += f"        (noFood {f})\n"
