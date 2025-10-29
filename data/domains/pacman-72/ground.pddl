@@ -4,11 +4,11 @@
 
   (:predicates
     (at ?pos - position)
-    (not_at ?pos - position)          ; complement of at
+    (not_at ?pos - position)          ; the complement of at
     (visited ?pos - position)
     (connected ?from ?to - position)
     (hasFood ?pos - position)
-    (noFood ?pos - position)          ; complement of hasFood
+    (noFood ?pos - position)          ; the complement of hasFood
     (carryingFood) 
   )
 

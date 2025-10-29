@@ -2,7 +2,7 @@
     "creation": "2025-10-13",
     "overall": {
         "first": "The Pacman domain involves navigating a maze-like environment to collect food by moving between connected positions and eating food items when available.",
-        "detailed-first": "This domain models Pacman’s movement through a grid of connected positions where he can explore and collect food. Pacman starts at a given location and can move to adjacent positions if they are connected and safe. Positions may contain food or be free of food. The domain uses complement predicates to indicate absence of Pacman or food at positions. The planning problem focuses on finding an efficient sequence of moves and eat actions that allow the Pacman to visit necessary locations and collect all food items. This setup captures spatial navigation, reachability, and resource collection behavior."
+        "detailed-first": "This domain models Pacman's movement through a grid of connected positions where he can explore and collect food. Pacman starts at a given location and can move to adjacent positions if they are connected and safe. Positions may contain food or be free of food. The domain uses complement predicates to indicate absence of Pacman or food at positions. The planning problem focuses on finding an efficient sequence of moves and eat actions that allow the Pacman to visit necessary locations and collect all food items. This setup captures spatial navigation, reachability, and resource collection behavior."
     },
     "predicates": {
         "at": {
