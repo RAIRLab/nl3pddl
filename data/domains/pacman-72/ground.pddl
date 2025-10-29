@@ -24,7 +24,7 @@
       (not (at ?from))        ; DELETE: Pacman is no longer at ?from
       (not_at ?from)
       (visited ?to)
-      (not (not_at ?to))      ; DELETE: ?to is no longer marked as not_at
+      (not (not_at ?to))      ; DELETE: ?to is no longer marked as not_at 
     )
   )
 

@@ -1,6 +1,6 @@
 """
 Simple utility to build PDDL problem files for the 'pacman-72' domain.
-Negated predicates are removed from the initial state.
+Negated predicates are removed from the initial states.
 """
 
 import random
