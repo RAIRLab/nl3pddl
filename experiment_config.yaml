@@ -57,6 +57,8 @@ domains:
   - flow
   - hiking
   - pacman-63
+  # - sudoku
+  # - bloxorz
   # - pacman-72
   # - keygrid
   
