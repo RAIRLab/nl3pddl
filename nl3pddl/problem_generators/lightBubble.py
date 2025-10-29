@@ -1,7 +1,11 @@
 import random
 
-def generate_problem(num_bubbles=6, num_steps=10, filename="lights_out_problem.pddl"):
-    
+def generate_problem(v, filename):
+
+
+    num_bubbles = v
+    num_steps = v + random.randint(1, v)
+
     # Create bubble names
     bubbles = [f"b{i+1}" for i in range(num_bubbles)]
 
@@ -27,7 +31,7 @@ def generate_problem(num_bubbles=6, num_steps=10, filename="lights_out_problem.p
 
     # Generate PDDL problem file
     with open(filename, "w") as f:
-        f.write(f"(define (problem lights_out_{num_bubbles})\n")
+        f.write(f"(define (problem lights_out_{num_bubbles}_{num_steps})\n")
         f.write("  (:domain lights-out-strips)\n")
         # Objects
         f.write("  (:objects\n")
@@ -63,8 +67,8 @@ def generate_problem(num_bubbles=6, num_steps=10, filename="lights_out_problem.p
 
         f.write(")\n")
 
-    print(f"PDDL problem generated: {filename}")
+    #print(f"PDDL problem generated: {filename}")
 
 if __name__ == "__main__":
-    generate_problem()
+    generate_problem(10, "problemOut.pddl")
 
