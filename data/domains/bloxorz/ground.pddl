@@ -4,14 +4,17 @@
 
   (:predicates
     (on ?b - block ?t - tile) ; block stands upright on one tile
-    (occupies ?b - block ?t1 - tile ?t2 - tile) ; block lies flat on two tiles
+    (occupies ?b - block ?t1 - tile ?t2 - tile) ; block lies flat on two tiles --> change names
     (adjacent-north ?t1 - tile ?t2 - tile)
     (adjacent-south ?t1 - tile ?t2 - tile)
     (adjacent-east ?t1 - tile ?t2 - tile)
     (adjacent-west ?t1 - tile ?t2 - tile)
-    (goal-tile ?t - tile)
+    (goal-tile ?t - tile) ;target tile
   )
 
+
+  ;; ===== ACTION NAMES =====
+  ;; =============== add direction
   ;; ===== Standing --> Lying-Y =====
   (:action move-north-from-standing
     :parameters (?b - block ?from - tile ?to1 - tile ?to2 - tile)
