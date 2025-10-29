@@ -8,14 +8,14 @@
   )
 
   (:init
-    (book-at book1 loc4)
-    (book-at book2 loc5)
-    (book-at book3 loc3)
-    (book-at book4 loc5)
+    (book-at book1 loc1)
+    (book-at book2 loc1)
+    (book-at book3 loc5)
+    (book-at book4 loc4)
 
-    (drone-at drone1 loc4)
+    (drone-at drone1 loc5)
     (empty drone1)
-    (drone-at drone2 loc4)
+    (drone-at drone2 loc5)
     (empty drone2)
 
     (path loc1 loc2)
@@ -31,9 +31,9 @@
   )
 
   (:goal (and
-    (book-at book1 loc4)
-    (book-at book2 loc3)
+    (book-at book1 loc3)
+    (book-at book2 loc4)
     (book-at book3 loc3)
-    (book-at book4 loc3)
+    (book-at book4 loc2)
   ))
 )

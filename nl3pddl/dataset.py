@@ -5,10 +5,11 @@ import os
 from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass
 
-from tqdm import tqdm
 import pddl
 from pddl.core import Domain, Problem
+from tqdm import tqdm
 
+from .config import DOMAINS
 from .logger import logger
 
 #TODO: this should be moved to a config file, we redefine it in gen_problems.py
@@ -23,20 +24,20 @@ LANDMARK_PROBLEM_DIR = "data/gen_landmarks" #Landmarks are only for testing prob
 def domains() -> list[str]:
     """returns a list of paths of folders in data/domains"""
     domain_paths = []
-    for root, dirs, files in os.walk("data/domains"):
+    for root, dirs, _ in os.walk("data/domains"):
         for dir_name in dirs:
             domain_path = os.path.join(root, dir_name)
             if os.path.isdir(domain_path):
                 domain_paths.append(dir_name)
     return domain_paths
 
-def get_new_domains() -> list[str]:
+def get_config_domains() -> list[str]:
     """returns a list of paths of folders in data/domains
-       marked as new in data/config.json"""
+       marked as being used in the config file"""
     new_domains = []
     for domain in domains():
         domain_path = os.path.join("data/domains", domain)
-        if os.path.isdir(domain_path):
+        if os.path.isdir(domain_path) and any(d in domain for d in DOMAINS):
             new_domains.append(domain_path)
     return new_domains
 
@@ -125,7 +126,7 @@ class Dataset:
         Reads the dataset from the data/domains folder and parses it into
         the internal data structures of the Dataset class.
         """
-        self.domain_paths = get_new_domains()
+        self.domain_paths = get_config_domains()
         for domain_path in tqdm(self.domain_paths, "Parsing Domains"):
             ground_path = os.path.join(domain_path, GROUND_TRUTH_FILE_NAME)
             try:
@@ -144,7 +145,9 @@ class Dataset:
                  os.listdir(feedback_dir) if f.endswith(".pddl")]
             self.feedback_problem_paths[domain_path] = feedback_problem_paths
 
-            for i, problem_path in enumerate(feedback_problem_paths):
+            for problem_path in feedback_problem_paths:
+                # extract i from the name of the problem file, e.g. problem-1.pddl -> 1
+                i = int(os.path.basename(problem_path).split("-")[1].split(".")[0])
                 with open(problem_path, "r", encoding="utf-8") as f:
                     self.feedback_problem_raws[problem_path] = f.read()
                 try:
@@ -156,7 +159,7 @@ class Dataset:
                 
                 self.feedback_problems[problem_path] = problem
                 self.feedback_plan_paths[problem_path] = \
-                    [os.path.join(feedback_dir, f"plan-{i+1}-{j}.txt") for j in
+                    [os.path.join(feedback_dir, f"plan-{i}-{j}.txt") for j in
                      range(1, PLANS_PER_PROBLEM + 1)]
                 for plan_path in self.feedback_plan_paths[problem_path]:
                     if os.path.exists(plan_path):
@@ -175,13 +178,13 @@ class Dataset:
             self.evaluation_problem_paths[domain_path] = \
                 [os.path.join(problem_dir, f) for f in os.listdir(problem_dir) \
                  if f.endswith(".pddl")]
-            for i, problem_file in enumerate(self.evaluation_problem_paths[domain_path]):
+            for problem_file in self.evaluation_problem_paths[domain_path]:
+                i = int(os.path.basename(problem_file).split("-")[1].split(".")[0])
                 with open(problem_file, "r", encoding="utf-8") as f:
                     self.evaluation_problem_raws[problem_file] = f.read()
-                self.evaluation_plan_paths[problem_file] = [os.path.join    (problem_dir, f"plan-{i+1}-{j}.txt") for j in range(1, PLANS_PER_PROBLEM + 1)]
+                self.evaluation_plan_paths[problem_file] = [os.path.join(problem_dir, f"plan-{i}-{j}.txt") for j in range(1, PLANS_PER_PROBLEM + 1)]
                 for plan_path in self.evaluation_plan_paths[problem_file]:
                     if os.path.exists(plan_path):
-                        #self.evaluation_plans[plan_path] = parse_plan(plan_path)
                         with open(plan_path, "r", encoding="utf-8") as f:
                             self.evaluation_plan_raws[plan_path] = f.read()
 

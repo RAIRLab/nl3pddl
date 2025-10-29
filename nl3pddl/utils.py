@@ -2,7 +2,6 @@
 Utility functions for working with PDDL problems and domains.
 """
 
-
 import json
 import os
 from typing import List, Tuple
@@ -125,7 +124,7 @@ def pred_to_str(p : Predicate) -> str:
 def grounded_pred_to_lm_str(p : Predicate) -> str:
     """
     Converts a Predicate object to a string representation.
-    This is the representation of predicates used in landmarks
+    This is the representation of predicates used in landmarks.
     """
     name = p.name
     vars = [t.name for t in p.terms]

@@ -1,7 +1,8 @@
 
 import os
-import yaml
 from pathlib import Path
+
+import yaml
 
 with open("experiment_config.yaml", "r") as f:
     config = yaml.safe_load(f)
@@ -17,13 +18,16 @@ HDE_THRESHOLD : int = config["hde-threshold"]
 KSTAR_TIMEOUT : float = config["kstar-timeout"]
 THREADS : int = config["threads"]
 KSTAR_N_PLANS : int = config["kstar-n-plans"]
+SKIP_EXPERIMENT : bool = config.get("skip-experiment", False)
 
+DOMAINS : list[str] = config["domains"]
 MODELS : dict[str, list[str]] = config["models"]
 GIVE_PRED_DESCRIPTIONS : list[bool] = config["give-pred-description"]
 assert 1 <= len(GIVE_PRED_DESCRIPTIONS) <= 2, \
     "give-pred-description can only be a list of length 1 or 2"
 DESC_CLASSES : list[str] = config["description-classes"]
 FEEDBACK_PIPELINES : list[list[str]] = config["feedback-pipelines"]
+SEARCH_HEURISTICS : list[str] = config["search-heuristic"]
 
 # Hardcoded paths
 PROMPT_DIR = "data/prompts"

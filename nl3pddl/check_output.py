@@ -169,7 +169,7 @@ def check_action_output(
         return None
     except Exception as e: # pylint: disable=broad-except
         return HumanMessage(f"Unable to parse action ```{action_str}```\n\
-        Error: {lark_err_str(e)} \nPlease revise the action and try again.")
+        Error: {lark_err_str(e)} \nPlease revise the action and try again. Remember that this must be a STRIPS action, it may not contain any additional PDDL features. I.E. there should be no 'or', 'forall', 'exists', or '=' anywhere in the action, and it may not contain negative preconditions.")
 
 def check_domain_syntax_output(d : Dataset,p: Params, message : Any) -> None | HumanMessage:
     """
@@ -194,7 +194,7 @@ def check_domain_syntax_output(d : Dataset,p: Params, message : Any) -> None | H
                 msg += f"Missing actions: {', '.join(missing)}. "
             if extra:
                 msg += f"Extra actions: {', '.join(extra)}. "
-            return HumanMessage(f"Action names do not match the expected action names. {msg} Please revise the domain and try again.")
+            return HumanMessage(f"Action names do not match the expected action names. \n {msg} \n These are the only allowed action names: {', '.join(ground_action_names)}.\n Please revise the domain and try again.")
         return None
     except Exception as e: # pylint: disable=broad-except 
         return HumanMessage(f"Unable to parse domain ```{domain_str}```\nError: {lark_err_str(e)} \nRecall that this must be a STRIPS domain, it may not contain any additional PDDL features.")
