@@ -2,10 +2,12 @@ import random
 
 def generate_problem(v, filename):
 
-
+    v += 2
     num_bubbles = v
     num_steps = v + random.randint(1, v)
+    
 
+    
     # Create bubble names
     bubbles = [f"b{i+1}" for i in range(num_bubbles)]
 
@@ -70,5 +72,5 @@ def generate_problem(v, filename):
     #print(f"PDDL problem generated: {filename}")
 
 if __name__ == "__main__":
-    generate_problem(10, "problemOut.pddl")
+        generate_problem(0, f"../../data/domains/light-bubble/problem_example.pddl")
 
