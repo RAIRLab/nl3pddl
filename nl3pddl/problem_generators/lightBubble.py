@@ -6,8 +6,6 @@ def generate_problem(v, filename):
     num_bubbles = v
     num_steps = v + random.randint(1, v)
     
-
-    
     # Create bubble names
     bubbles = [f"b{i+1}" for i in range(num_bubbles)]
 
