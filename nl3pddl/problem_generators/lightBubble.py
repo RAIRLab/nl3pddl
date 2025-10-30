@@ -3,7 +3,7 @@ import random
 def generate_problem(v, filename):
 
     v += 2
-    num_bubbles = v
+    num_bubbles = min(10, v)
     num_steps = v + random.randint(1, v)
     
     # Create bubble names
@@ -11,13 +11,27 @@ def generate_problem(v, filename):
 
     # Generate a random graph with kmax=3
     neighbors = {b: set() for b in bubbles}
+    
+
     for b in bubbles:
-        k = random.randint(1, min(3, num_bubbles-1))  # 1..3 neighbors
+        k = random.randint(1, min(3, num_bubbles - 1))  # target degree 1–3
+
+        # keep adding neighbors until reaching desired degree or no valid options remain
+        attempts = 0
         while len(neighbors[b]) < k:
-            n = random.choice(bubbles)
-            if n != b and len(neighbors[b]) < 3 and len(neighbors[n]) < 3:
-                neighbors[b].add(n)
-                neighbors[n].add(b)  # undirected
+        # get candidates that are not self and have <3 neighbors
+            candidates = [n for n in bubbles if n != b and len(neighbors[n]) < 3 and n not in neighbors[b]]
+            if not candidates:
+             # no valid neighbor left → stop to avoid infinite loop
+                break
+
+            n = random.choice(candidates)
+            neighbors[b].add(n)
+            neighbors[n].add(b)
+
+            attempts += 1
+            if attempts > 100:  # safeguard fallback
+                break
 
     # Initialize all bubbles to OFF (goal state)
     states = {b: "off" for b in bubbles}
@@ -95,5 +109,5 @@ def generate_problem(v, filename):
     #print(f"PDDL problem generated: {filename}")
 
 if __name__ == "__main__":
-        generate_problem(2, f"../../data/domains/light-bubble/problem_example.pddl")
+        generate_problem(10, f"../../data/domains/light-bubble/problem_example.pddl")
 
