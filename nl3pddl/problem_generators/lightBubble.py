@@ -34,7 +34,7 @@ def generate_problem(v, filename):
         if states[b] == "on" : allOffInitialy = 0
 
     if(allOffInitialy):
-        randBubble = random.randint(1, num_bubbles-1)
+        randBubble = random.choice(bubbles)
         for n in neighbors[randBubble]:
             states[n] = "on" if states[n] == "off" else "off"
 
