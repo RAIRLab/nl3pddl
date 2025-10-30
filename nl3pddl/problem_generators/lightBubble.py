@@ -32,43 +32,59 @@ def generate_problem(v, filename):
     # Generate PDDL problem file
     with open(filename, "w") as f:
         f.write(f"(define (problem lights_out_{num_bubbles}_{num_steps})\n")
+        print(f"(define (problem lights_out_{num_bubbles}_{num_steps})\n")
         f.write("  (:domain lights-out-strips)\n")
+        print("  (:domain lights-out-strips)\n")
         # Objects
         f.write("  (:objects\n")
+        print("  (:objects\n")
         for b in bubbles:
             f.write(f"    {b} - bubble\n")
+            print(f"    {b} - bubble\n")
         f.write("  )\n")
+        print("  )\n")
 
         # Initial state
         f.write("  (:init\n")
+        print("  (:init\n")
         for b in bubbles:
             f.write(f"    ({states[b]} {b})\n")
+            print(f"    ({states[b]} {b})\n")
         # Connections
         for b, ns in neighbors.items():
             for n in ns:
                 f.write(f"    (connected {b} {n})\n")
+                print(f"    (connected {b} {n})\n")
                 #f.write(f"    (connected {n} {b})\n")
-        # Neighbor counts
+        # Neighbor countsx
         for b, ns in neighbors.items():
             count = len(ns)
             if count == 1:
                 f.write(f"    (one-neighbor {b})\n")
+                print(f"    (one-neighbor {b})\n")
             elif count == 2:
                 f.write(f"    (two-neighbors {b})\n")
+                print(f"    (two-neighbors {b})\n")
             elif count == 3:
                 f.write(f"    (three-neighbors {b})\n")
+                print(f"    (three-neighbors {b})\n")
         f.write("  )\n")
+        print("  )\n")
 
         # Goal: all OFF
         f.write("  (:goal (and\n")
+        print("  (:goal (and\n")
         for b in bubbles:
             f.write(f"    (off {b})\n")
+            print(f"    (off {b})\n")
         f.write("  ))\n")
+        print("  ))\n")
 
         f.write(")\n")
+        print(")\n")
 
     #print(f"PDDL problem generated: {filename}")
 
 if __name__ == "__main__":
-        generate_problem(0, f"../../data/domains/light-bubble/problem_example.pddl")
+        generate_problem(2, f"../../data/domains/light-bubble/problem_example.pddl")
 
