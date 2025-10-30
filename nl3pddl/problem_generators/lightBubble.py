@@ -15,7 +15,7 @@ def generate_problem(v, filename):
         k = random.randint(1, min(3, num_bubbles-1))  # 1..3 neighbors
         while len(neighbors[b]) < k:
             n = random.choice(bubbles)
-            if n != b:
+            if n != b and len(neighbors[b]) < 3 and len(neighbors[n]) < 3:
                 neighbors[b].add(n)
                 neighbors[n].add(b)  # undirected
 
@@ -27,6 +27,15 @@ def generate_problem(v, filename):
         b = random.choice(bubbles)
         # toggle all neighbors
         for n in neighbors[b]:
+            states[n] = "on" if states[n] == "off" else "off"
+
+    allOffInitialy = 1
+    for b in bubbles: 
+        if states[b] == "on" : allOffInitialy = 0
+
+    if(allOffInitialy):
+        randBubble = random.randint(1, num_bubbles-1)
+        for n in neighbors[randBubble]:
             states[n] = "on" if states[n] == "off" else "off"
 
     # Generate PDDL problem file
