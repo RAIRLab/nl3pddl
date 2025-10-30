@@ -1,183 +1,61 @@
 (define (domain bloxorz)
   (:requirements :strips :typing)
-  (:types tile block)
+  (:types tile block direction)
+  (:constants north east west south - direction)
 
   (:predicates
-    (on ?b - block ?t - tile) ; block stands upright on one tile
-    (occupies ?b - block ?t1 - tile ?t2 - tile) ; block lies flat on two tiles --> change names
-    (adjacent-north ?t1 - tile ?t2 - tile)
-    (adjacent-south ?t1 - tile ?t2 - tile)
-    (adjacent-east ?t1 - tile ?t2 - tile)
-    (adjacent-west ?t1 - tile ?t2 - tile)
-    (goal-tile ?t - tile) ;target tile
+    (standing-on ?b - block ?t - tile) ; block stands upright on one tile
+    (lying-on ?b - block ?t - tile) ; block lies flat on a tile (one of the two)
+    (adjacent ?t1 - tile ?t2 - tile ?d - direction)
+    (target-tile ?t - tile)
+    (perpendicular ?d1 ?d2)
   )
 
-
-  ;; ===== ACTION NAMES =====
-  ;; =============== add direction
-  ;; ===== Standing --> Lying-Y =====
-  (:action move-north-from-standing
-    :parameters (?b - block ?from - tile ?to1 - tile ?to2 - tile)
+  (:action lay-down
+    :parameters (?b - block ?from - tile ?to1 - tile ?to2 - tile ?d - direction)
     :precondition (and
-      (on ?b ?from)
-      (adjacent-north ?to1 ?from)
-      (adjacent-north ?to2 ?to1)
+      (standing-on ?b ?from)
+      (adjacent ?to1 ?from ?d)
+      (adjacent ?to2 ?to1 ?d)
     )
     :effect (and
-      (not (on ?b ?from))
-      (occupies ?b ?to2 ?to1)
+      (not (standing-on ?b ?from))
+      (lying-on ?b ?to2)
+      (lying-on ?b ?to1)
     )
   )
 
-  (:action move-south-from-standing
-    :parameters (?b - block ?from - tile ?to1 - tile ?to2 - tile)
+  (:action stand-up
+    :parameters (?b - block ?t1 - tile ?t2 - tile ?t3 - tile ?d - direction)
     :precondition (and
-      (on ?b ?from)
-      (adjacent-south ?to1 ?from)
-      (adjacent-south ?to2 ?to1)
+      (lying-on ?b ?t1)
+      (lying-on ?b ?t2)
+      (adjacent ?t2 ?t1 ?d)
+      (adjacent ?t3 ?t2 ?d)
     )
     :effect (and
-      (not (on ?b ?from))
-      (occupies ?b ?to1 ?to2)
+      (not (laying-on ?b ?t1))
+      (not (laying-on ?b ?t2))
+      (standing-on ?b ?t3)
     )
   )
 
-  ;; ===== Standing --> Lying-X =====
-  (:action move-east-from-standing
-    :parameters (?b - block ?from - tile ?to1 - tile ?to2 - tile)
+  (:action roll
+    :parameters (?b - block ?t1 - tile ?t2 - tile ?t3 - tile ?t4 - tile ?blockd - direction ?tod - direction)
     :precondition (and
-      (on ?b ?from)
-      (adjacent-east ?to1 ?from)
-      (adjacent-east ?to2 ?to1)
+      (perpendicular ?blockd ?tod)
+      (lying-on ?b ?t1)
+      (lying-on ?b ?t2)
+      (adjacent ?t2 ?t1 ?blockd)
+      (adjacent ?t4 ?t3 ?blockd)
+      (adjacent ?t3 ?t1 ?tod)
+      (adjacent ?t4 ?t2 ?tod)
     )
     :effect (and
-      (not (on ?b ?from))
-      (occupies ?b ?to1 ?to2)
-    )
-  )
-
-  (:action move-west-from-standing
-    :parameters (?b - block ?from - tile ?to1 - tile ?to2 - tile)
-    :precondition (and
-      (on ?b ?from)
-      (adjacent-west ?to1 ?from)
-      (adjacent-west ?to2 ?to1)
-    )
-    :effect (and
-      (not (on ?b ?from))
-      (occupies ?b ?to2 ?to1)
-    )
-  )
-
-  ;; ===== Lying-Y --> Standing =====
-  (:action move-north-from-lying-y
-    :parameters (?b - block ?t1 - tile ?t2 - tile ?t3 - tile)
-    :precondition (and
-      (occupies ?b ?t1 ?t2)
-      (adjacent-north ?t2 ?t1)
-      (adjacent-north ?t3 ?t2)
-    )
-    :effect (and
-      (not (occupies ?b ?t1 ?t2))
-      (on ?b ?t3)
-    )
-  )
-
-  (:action move-south-from-lying-y
-    :parameters (?b - block ?t1 - tile ?t2 - tile ?t3 - tile)
-    :precondition (and
-      (occupies ?b ?t1 ?t2)
-      (adjacent-south ?t1 ?t2)
-      (adjacent-south ?t3 ?t1)
-    )
-    :effect (and
-      (not (occupies ?b ?t1 ?t2))
-      (on ?b ?t3)
-    )
-  )
-
-  ;; ===== Lying-X --> Standing =====
-  (:action move-east-from-lying-x
-    :parameters (?b - block ?t1 - tile ?t2 - tile ?t3 - tile)
-    :precondition (and
-      (occupies ?b ?t1 ?t2)
-      (adjacent-east ?t2 ?t1)
-      (adjacent-east ?t3 ?t2)
-    )
-    :effect (and
-      (not (occupies ?b ?t1 ?t2))
-      (on ?b ?t3)
-    )
-  )
-
-  (:action move-west-from-lying-x
-    :parameters (?b - block ?t1 - tile ?t2 - tile ?t3 - tile)
-    :precondition (and
-      (occupies ?b ?t1 ?t2)
-      (adjacent-west ?t1 ?t2)
-      (adjacent-west ?t3 ?t1)
-    )
-    :effect (and
-      (not (occupies ?b ?t1 ?t2))
-      (on ?b ?t3)
-    )
-  )
-
-  ;; ===== Lying-Y --> Lying-Y ===== (rolling without standing)
-  (:action move-north-while-lying-y
-    :parameters (?b - block ?t1 - tile ?t2 - tile ?t3 - tile ?t4 - tile)
-    :precondition (and
-      (occupies ?b ?t1 ?t2)
-      (adjacent-north ?t2 ?t1)
-      (adjacent-north ?t3 ?t2)
-      (adjacent-north ?t4 ?t3)
-    )
-    :effect (and
-      (not (occupies ?b ?t1 ?t2))
-      (occupies ?b ?t3 ?t4)
-    )
-  )
-
-  (:action move-south-while-lying-y
-    :parameters (?b - block ?t1 - tile ?t2 - tile ?t3 - tile ?t4 - tile)
-    :precondition (and
-      (occupies ?b ?t1 ?t2)
-      (adjacent-south ?t1 ?t2)
-      (adjacent-south ?t3 ?t1)
-      (adjacent-south ?t4 ?t3)
-    )
-    :effect (and
-      (not (occupies ?b ?t1 ?t2))
-      (occupies ?b ?t3 ?t4)
-    )
-  )
-
-  ;; ===== Lying-X --> Lying-X =====
-  (:action move-east-while-lying-x
-    :parameters (?b - block ?t1 - tile ?t2 - tile ?t3 - tile ?t4 - tile)
-    :precondition (and
-      (occupies ?b ?t1 ?t2)
-      (adjacent-east ?t2 ?t1)
-      (adjacent-east ?t3 ?t2)
-      (adjacent-east ?t4 ?t3)
-    )
-    :effect (and
-      (not (occupies ?b ?t1 ?t2))
-      (occupies ?b ?t3 ?t4)
-    )
-  )
-
-  (:action move-west-while-lying-x
-    :parameters (?b - block ?t1 - tile ?t2 - tile ?t3 - tile ?t4 - tile)
-    :precondition (and
-      (occupies ?b ?t1 ?t2)
-      (adjacent-west ?t1 ?t2)
-      (adjacent-west ?t3 ?t1)
-      (adjacent-west ?t4 ?t3)
-    )
-    :effect (and
-      (not (occupies ?b ?t1 ?t2))
-      (occupies ?b ?t3 ?t4)
+      (not (lying-on ?b ?t1))
+      (not (lying-on ?b ?t2))    
+      (lying-on ?b ?t3)
+      (lying-on ?b ?t4)
     )
   )
 )
