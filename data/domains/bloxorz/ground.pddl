@@ -7,7 +7,7 @@
     (standing-on ?b - block ?t - tile) ; block stands upright on one tile
     (lying-on ?b - block ?t - tile) ; block lies flat on a tile (one of the two)
     (adjacent ?t1 - tile ?t2 - tile ?d - direction)  ; direction of t2 from t1
-    (perpendicular ?d1 ?d2)
+    (perpendicular ?d1 - direction ?d2 - direction)
   )
 
   (:action lay-down
