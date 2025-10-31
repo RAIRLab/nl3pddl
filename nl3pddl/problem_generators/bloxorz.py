@@ -55,7 +55,7 @@ def generate_bloxorz_problem(grid_size, path_length, output_file, seed=None):
     problem += f"        (on b1 {start_tile})\n"
     for t1, t2, dir in adjacency:
         problem += f"        (adjacent-{dir} {t1} {t2})\n"
-    problem += f"        (goal-tile {goal_tile})\n"
+    problem += f"        (-tile {goal_tile})\n"
     problem += "    )\n\n"
 
     # Goal
