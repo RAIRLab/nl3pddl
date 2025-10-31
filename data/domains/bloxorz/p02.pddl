@@ -47,61 +47,29 @@
 
 
 
-    
-
-
-
       (adjacent t-01-02 t-01-01 west)
       (adjacent t-01-03 t-01-02 west)
+      (adjacent t-01-04 t-01-03 west)
 
       (adjacent t-02-02 t-02-01 west)
       (adjacent t-02-03 t-02-02 west)
       (adjacent t-02-04 t-02-03 west)
-      (adjacent t-02-05 t-02-04 west)
-      (adjacent t-02-06 t-02-05 west)
 
-      (adjacent t-03-02 t-03-01 west)
       (adjacent t-03-03 t-03-02 west)
       (adjacent t-03-04 t-03-03 west)
-      (adjacent t-03-05 t-03-04 west)
-      (adjacent t-03-06 t-03-05 west)
-      (adjacent t-03-07 t-03-06 west)
-      (adjacent t-03-08 t-03-07 west)
-      (adjacent t-03-09 t-03-08 west)
-
-      (adjacent t-04-03 t-04-02 west)
-      (adjacent t-04-04 t-04-03 west)
-      (adjacent t-04-05 t-04-04 west)
-      (adjacent t-04-06 t-04-05 west)
-      (adjacent t-04-07 t-04-06 west)
-      (adjacent t-04-08 t-04-07 west)
-      (adjacent t-04-09 t-04-08 west)
-      (adjacent t-04-10 t-04-09 west)
-
-      (adjacent t-05-07 t-05-06 west)
-      (adjacent t-05-08 t-05-07 west)
-      (adjacent t-05-09 t-05-08 west)
-      (adjacent t-05-10 t-05-09 west)
-
-      (adjacent t-06-08 t-06-07 west)
-      (adjacent t-06-09 t-06-08 west)
 
 
 
       (adjacent t-02-01 t-01-01 north)
-      (adjacent t-03-01 t-02-01 north)
 
       (adjacent t-02-02 t-01-02 north)
       (adjacent t-03-02 t-02-02 north)
-      (adjacent t-04-02 t-03-02 north)
 
       (adjacent t-02-03 t-01-03 north)
       (adjacent t-03-03 t-02-03 north)
-      (adjacent t-04-03 t-03-03 north)
 
+      (adjacent t-02-04 t-01-04 north)
       (adjacent t-03-04 t-02-04 north)
-      (adjacent t-04-04 t-03-04 north)
-
 
 
       (standing-on B t-02-01)
