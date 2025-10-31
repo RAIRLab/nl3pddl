@@ -4,12 +4,11 @@
 
   (:predicates
     (at ?pos - position)
-    (not_at ?pos - position)          ; complement of at
+    (not_at ?pos - position)          ; the complement of at
     (visited ?pos - position)
     (connected ?from ?to - position)
     (hasFood ?pos - position)
-    (noFood ?pos - position)          ; complement of hasFood
-    (carryingFood)
+    (noFood ?pos - position)          ; the complement of hasFood
   )
 
   (:action move
@@ -24,7 +23,7 @@
       (not (at ?from))        ; DELETE: Pacman is no longer at ?from
       (not_at ?from)
       (visited ?to)
-      (not (not_at ?to))      ; DELETE: ?to is no longer marked as not_at
+      (not (not_at ?to))      ; DELETE: ?to is no longer marked as not_at 
     )
   )
 
@@ -35,7 +34,6 @@
       (hasFood ?pos)
     )
     :effect (and
-      (carryingFood)
       (noFood ?pos)
       (not (hasFood ?pos))   ; DELETE: the food is gone
     )

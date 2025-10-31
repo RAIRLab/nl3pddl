@@ -2,12 +2,12 @@
     "creation": "2025-10-13",
     "overall": {
         "first": "The Pacman domain involves navigating a maze-like environment to collect food by moving between connected positions and eating food items when available.",
-        "detailed-first": "This domain models Pacman’s movement through a grid of connected positions where he can explore and collect food. Pacman starts at a given location and can move to adjacent positions if they are connected and safe. Positions may contain food or be free of food. The domain uses complement predicates to indicate absence of Pacman or food at positions. The planning problem focuses on finding an efficient sequence of moves and eat actions that allow Pacman to visit necessary locations and collect all food items. This setup captures spatial navigation, reachability, and resource collection behavior."
+        "detailed-first": "This domain models Pacman's movement through a grid of connected positions where he can explore and collect food. Pacman starts at a given location and can move to adjacent positions if they are connected and safe. Positions may contain food or be free of food. The domain uses complement predicates to indicate absence of Pacman or food at positions. The planning problem focuses on finding an efficient sequence of moves and eat actions that allow the Pacman to visit necessary locations and collect all food items. This setup captures spatial navigation, reachability, and resource collection behavior."
     },
     "predicates": {
         "at": {
             "first": "Pacman is at a certain position.",
-            "detailed-first": "This predicate indicates Pacman’s current location in the environment. Only one 'at' predicate can be true at a time, representing Pacman’s exact position in the maze. All other positions will have 'not_at' to indicate Pacman is absent there. Moving to a new position deletes the 'at' predicate at the previous position and removes the 'not_at' predicate at the new position to maintain mutual exclusivity."
+            "detailed-first": "This predicate indicates Pacman's current location in the environment. Only one 'at' predicate can be true at a time, representing Pacman’s exact position in the maze. All other positions will have 'not_at' to indicate Pacman is absent there. Moving to a new position deletes the 'at' predicate at the previous position and removes the 'not_at' predicate at the new position to maintain mutual exclusivity."
         },
         "not_at": {
             "first": "Pacman is not at this position.",
@@ -27,7 +27,7 @@
         },
         "connected": {
             "first": "Two positions are connected to each other.",
-            "detailed-first": "This predicate represents adjacency or valid movement paths between two positions. Pacman can only move between positions that are connected, ensuring movement respects the structure of the maze."
+            "detailed-first": "This predicate represents adjacency or valid movement paths between two positions. Pacman can only move between the positions that are connected, ensuring movement respects the structure of the maze."
         }
     },
     "actions": {
