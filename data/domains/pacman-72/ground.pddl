@@ -9,7 +9,6 @@
     (connected ?from ?to - position)
     (hasFood ?pos - position)
     (noFood ?pos - position)          ; the complement of hasFood
-    (carryingFood) 
   )
 
   (:action move
@@ -35,7 +34,6 @@
       (hasFood ?pos)
     )
     :effect (and
-      (carryingFood)
       (noFood ?pos)
       (not (hasFood ?pos))   ; DELETE: the food is gone
     )
