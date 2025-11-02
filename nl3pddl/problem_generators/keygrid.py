@@ -33,6 +33,7 @@ def generate_solvable_keygrid(n, filename):
             f.write(f"  shape{i} - shape\n")
         f.write(" )\n")
 
+    
         # Init
         f.write(" (:init\n")
 
