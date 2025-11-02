@@ -18,7 +18,7 @@ def bfs_path(adj, start, goal):
     return None
 
 #test
-def generate_hiking_problem(n, filename, density=0.5, water_ratio=0.5, seed=None):
+def generate_hiking_problem(n, filename, density=0.01, water_ratio=0.5, seed=None):
     if seed is not None:
         random.seed(seed)
 
@@ -29,23 +29,21 @@ def generate_hiking_problem(n, filename, density=0.5, water_ratio=0.5, seed=None
     
     adj = {i: set() for i in range(1, locations + 1)}
 
-    # Build spanning tree
-    unvisited = list(range(2, locations + 1))
-    connected = [1]
-    while unvisited:
-        from_loc = random.choice(connected)
-        to_loc = random.choice(unvisited)
-        adj[from_loc].add(to_loc)
-        adj[to_loc].add(from_loc)
-        connected.append(to_loc)
-        unvisited.remove(to_loc)
+    # Build a guaranteed long path (chain) from 1 to locations
+    for i in range(1, locations):
+        adj[i].add(i + 1)
+        adj[i + 1].add(i)
 
-    # Add extra edges
+    # Now optionally add a few random extra edges for variety
+    remaining_edges = list(range(1, locations + 1))
     for i in range(1, locations + 1):
         for j in range(i + 1, locations + 1):
             if random.random() < density:
-                adj[i].add(j)
-                adj[j].add(i)
+                # avoid undoing the long-path structure
+                if j != i + 1:
+                    adj[i].add(j)
+                    adj[j].add(i)
+
 
     # Find a guaranteed path from start to goal ---
     dry_path = bfs_path(adj, 1, locations)
@@ -111,9 +109,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate a solvable hiking PDDL problem with water.")
     parser.add_argument("n", type=int, default=3, help="Number of hills (problem size).")
     parser.add_argument("output", type=str, default="hiking_problem_with_water.pddl", help="Output filename.")
-    parser.add_argument("--density", type=float, default=0.5, help="Extra adjacency density (0–1).")
+    parser.add_argument("--density", type=float, default=0.1, help="Extra adjacency density (0–1).")
     parser.add_argument("--water", type=float, default=0.3, help="Fraction of locations to make wet (0–1).")
     parser.add_argument("--seed", type=int, default=None, help="Random seed.")
     args = parser.parse_args()
 
-    generate_hiking_problem(args.n, args.output, args.density, args.water, args.seed)
+    generate_hiking_problem(args.n, "../../data/domains/hiking/problem_generated.pddl", 0.01, args.water, args.seed)
