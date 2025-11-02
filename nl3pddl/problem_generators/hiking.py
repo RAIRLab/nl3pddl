@@ -25,7 +25,7 @@ def generate_hiking_problem(n, filename, density=0.5, water_ratio=0.5, seed=None
     if n < 1:
         n = 1
 
-    locations = n * 2 + 1
+    locations = n * 4 + 1
     
     adj = {i: set() for i in range(1, locations + 1)}
 
