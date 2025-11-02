@@ -42,6 +42,9 @@ def generate_solvable_keygrid(n, filename):
             f.write(f"  (conn place{i} place{i+1})\n")
             f.write(f"  (conn place{i+1} place{i})\n")
 
+
+
+        
         # Locks and keys
         # lock is placed at place(i+1)
         for i in range(1, locks + 1):
