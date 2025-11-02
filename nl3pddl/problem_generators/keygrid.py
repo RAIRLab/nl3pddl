@@ -21,7 +21,7 @@ def generate_solvable_keygrid(n, filename):
 
         # Problem header
         f.write(f"(define (problem grid-problem-{places}-{keys}-{locks}-{shapes})\n")
-        f.write(" (:domain grid)\n")
+        f.write(" (:domain keygrid)\n")
 
         # Objects
         f.write(" (:objects\n")
@@ -33,7 +33,6 @@ def generate_solvable_keygrid(n, filename):
             f.write(f"  shape{i} - shape\n")
         f.write(" )\n")
 
-    
         # Init
         f.write(" (:init\n")
 
@@ -42,9 +41,6 @@ def generate_solvable_keygrid(n, filename):
             f.write(f"  (conn place{i} place{i+1})\n")
             f.write(f"  (conn place{i+1} place{i})\n")
 
-
-
-        
         # Locks and keys
         # lock is placed at place(i+1)
         for i in range(1, locks + 1):
@@ -55,12 +51,11 @@ def generate_solvable_keygrid(n, filename):
         # Place key i at place i (so robot always finds correct key before its lock)
         for i in range(1, keys + 1):
             f.write(f"  (at key{i} place{i})\n")
-
+       
         f.write("  (at-robot place1)\n")
         f.write("  (open place1)\n")
         f.write("  (arm-empty)\n")
 
-    
         # All places AFTER the last lock must be open or the robot can't move into them.
         last_locked_place = locks + 1
         for p in range(last_locked_place + 1, places + 1):
@@ -76,9 +71,11 @@ def generate_solvable_keygrid(n, filename):
         f.write(")\n")  # end problem
 
 
-#if name == "main":
-#   parser = argparse.ArgumentParser(description="Generate a solvable PDDL KeyGrid problem.")
-#    parser.add_argument("n", type=int, help="number of locks/keys/shapes")
-#    parser.add_argument("output", type=str, help="output filename")
-#    args = parser.parse_args()
-#    generate_solvable_keygrid(args.n, "../../data/domains/grid/problem_generated.pddl")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate a solvable PDDL KeyGrid problem.")
+    parser.add_argument("n", type=int, help="number of locks/keys/shapes")
+    parser.add_argument("output", type=str, help="output filename")
+    args = parser.parse_args()
+
+    generate_solvable_keygrid(args.n, "../../data/domains/keygrid/problem_generated.pddl")
