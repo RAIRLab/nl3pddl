@@ -1,3 +1,8 @@
+"""
+hiking.py
+Generates guaranteed-solvable PDDL problems for the 'hiking' domain.
+"""
+
 import argparse
 import random
 from collections import deque
@@ -75,7 +80,7 @@ def generate_hiking_problem(n, filename, density=0.5, water_ratio=0.5, seed=None
         f.write("  (:domain hiking)\n\n")
 
         f.write("  (:objects\n")
-        for i in range(1, locations + 1):
+        for i in loc_ids:
             f.write(f"    loc{i} - loc\n")
         f.write("  )\n\n")
 

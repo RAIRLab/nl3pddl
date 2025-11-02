@@ -6,341 +6,31 @@ This file contains the driver for the NL3PDDL project.
 import os
 import csv
 import json
-from typing import Any, Literal
-import multiprocessing as mp
+import random
+from typing import Literal
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+import time
 
 # External package imports
-from pddl.parser.domain import DomainParser
+
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field
-from typing_extensions import TypedDict
+
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 
-from .config import THREADS
+from .config import THREADS, ACTION_THRESHOLD, HDE_THRESHOLD, SKIP_EXPERIMENT
 from .check_output import check_action_output, check_domain_syntax_output
-from .gen_prompts import action_message, domain_template, init_msgs, raw_domain_msg
+from .gen_prompts import action_message, domain_template, raw_domain_msg
 from .dataset import Dataset
-from .params import Params, action_names, domain_name, feedback_pipeline_str, get_action_iteration_threshold, get_hde_iteration_threshold, param_grid
-from .feedback_eval import multi_landmark_feedback, multi_val_feedback, val_evaluate, single_val_feedback, val_feedback_test
+from .params import Params, action_names, domain_name, param_grid
+from .feedback_eval import multi_landmark_feedback, multi_val_feedback, val_evaluate, val_feedback_test
 from .logger import logger
-
-# This is a pydantic model that we force the LLM to output in
-# the form of during the action generation phase.
-class ActionSchema(BaseModel):
-    """Always use this tool to structure your response to the user."""
-    pddl_action: str = Field(description=\
-        "String of raw typed STRIPS PDDL code for a single action \
-        (:action name :parameters (...) :precondition (...) :effect (...))"
-    )
-    predicates: list[str] = Field(description=\
-        "List of allowed predicates of the form \
-        (name arg1 - type1 arg2 - type2 ...) from this action and \
-        previous actions, adding any new predicates used in this action"
-    )
-    types: list[str] = Field(description=\
-        "List of allowed types from this action and previous actions, \
-        adding any new types used in this action"
-    )
-
-
-class DomainSchema(BaseModel):
-    """Always use this tool to structure your response to the user."""
-    pddl_domain: str = Field(description=
-        "String of raw typed STRIPS PDDL code for an entire domain \
-        (:domain name :requirements (...) :types (...) :predicates (...)\
-        :functions (...) :action (...))")
-
-class MessageTree:
-    """ 
-    A tree of messages, the leaves are a queue of scored messages that may be
-    selected from to continue the conversation.
-    """
-
-    def __init__(self, parent=None, message: HumanMessage | AIMessage | None = None):
-        self.parent = parent
-        self.children = []
-        self.message = message
-        self.score = 0
-        self.json = None # Json returned by the model if any
-
-    def leaves(self) -> list['MessageTree']:
-        """ Returns all leaves of the tree. """
-        if len(self.children) == 0:
-            return [self]
-        leaves = []
-        for child in self.children:
-            leaves.extend(child.leaves())
-        return leaves
-
-    def history(self) -> list[HumanMessage | AIMessage]:
-        """ Returns the message history from the root to this node. """
-        if self.parent is None:
-            return []
-        return self.parent.history() + [self.message]
-
-    def get_max_score_leaf(self) -> 'MessageTree':
-        """ Returns the leaf with the highest score. """
-        leaves = self.leaves()
-        if len(leaves) == 0:
-            return None
-        return max(leaves, key=lambda x: x.score)
-    
-    def index(self) -> list[int]:
-        """ Returns the index of this node in the tree. """
-        if self.parent is None:
-            return []
-        return self.parent.index() + [self.parent.children.index(self)]
-    
-    def atIndex(self, index: list[int]) -> 'MessageTree':
-        """ Returns the node at the given index. """
-        if len(index) == 0:
-            return self
-        return self.children[index[0]].atIndex(index[1:])
-
-class IndexedMessageTree:
-    """ 
-    Bundles a MessageTree with an index to a specific node for ease of
-    integrating with langgraph.
-    """
-
-    def __init__(self):
-        self.root = MessageTree()
-        self.index = []
-
-    def get(self) -> MessageTree:
-        """ Returns the current node. """
-        return self.root.atIndex(self.index)
-    
-    def index_leaves(self) -> list[MessageTree]:
-        """ Returns all leaves of the tree. """
-        return self.get().leaves()
-
-    def history(self) -> list[HumanMessage | AIMessage]:
-        """ Returns the message history from the root to the current node. """
-        return self.get().history()
-
-    def json_last(self) -> Any:
-        """ Returns the json object of the current node. """
-        return dict(self.get().json)
-
-    def insert_on_current_branch_json_score(self, message : HumanMessage | AIMessage, json: dict, score: float) -> 'IndexedMessageTree':
-        """ Inserts a message on the current branch. """
-        node = self.root.atIndex(self.index)
-        new_node = MessageTree(parent=node, message=message)
-        node.children.append(new_node)
-        self.index.append(len(node.children) - 1)
-        new_node.json = json
-        new_node.score = score
-        return self
-
-    def insert_on_current_branch(self, message : HumanMessage | AIMessage) -> 'IndexedMessageTree':
-        """ 
-        Inserts a message on the current branch. 
-        Defaults to inheriting score 
-        and json from the current node.
-        """
-        node = self.root.atIndex(self.index)
-        return self.insert_on_current_branch_json_score(message, node.json, node.score)
-
-    def insert_on_current_branch_score(self, message : HumanMessage | AIMessage, score: float) -> 'IndexedMessageTree':
-        """ 
-        Inserts a message on the current branch.
-        Defaults to inheriting json from the current node.
-        """
-        node = self.root.atIndex(self.index)
-        return self.insert_on_current_branch_json_score(message, node.json, score)
-
-    def insert_on_current_branch_json(self, message : HumanMessage | AIMessage, json: dict) -> 'IndexedMessageTree':
-        """ Inserts a message on the current branch. Defaults to inheriting score """
-        node = self.root.atIndex(self.index)
-        return self.insert_on_current_branch_json_score(message, json, node.score)
-
-    def select_best_branch(self) -> 'IndexedMessageTree':
-        """ Selects the best branch and moves the index to it. """
-        best_leaf = self.root.get_max_score_leaf()
-        if best_leaf is None:
-            return self
-        self.index = best_leaf.index()
-        return self
-
-    def insert_batch_on_current_branch(self, messages: list[HumanMessage | AIMessage]):
-        """ Inserts multiple messages on the current branch. Defaults to inheriting score """
-        """ This should be immediately followed by a select_best_branch() call """
-        node = self.get()
-        for message in messages:
-            new_node = MessageTree(parent=node, message=message)
-            new_node.score = node.score
-            node.children.append(new_node)
-
-
-# LangGraph State, this object keeps track of all state for a single experiment
-class State(TypedDict):
-    """ The LangGraph application State"""
-    #Run ID, identifier for the experiment run, allows us to filter in langsmith
-    run_id: str
-    # Experiment parameters, should not be modified during the run
-    PARAMS: Params
-    #LLM Message History up to the current tree level with associated scores
-    messages: IndexedMessageTree
-    # The json object of the message returned by the model
-    #json_last: list[Any]
-    # The index of the action we are currently trying to write
-    action_index: int
-    # The current action has passed validation
-    action_valid: bool
-    # We are done and have constructed all actions
-    actions_done: bool
-    # List of good action outputs, this is a list of ActionSchema.
-    # This becomes valid to use for domain construction after
-    # the action generation phase
-    actions : list[ActionSchema]
-    # The domain we are currently working on is syntactically valid
-    domain_syntax_passed: bool
-
-    # Number of iterations we have done in the action generation phase
-    action_iterations : int 
-
-    # Exited without producing a valid action after exceeding the retry limit
-    action_timeout : bool = False 
-    action_timeout_cause : str = "" # Action that caused the timeout 
-
-    # feedback mode keeps track of what type of feedback we are
-    # giving right now
-    feedback_index : int = 0
-    feedback_cycles : int = 0
-
-    # number of times we have actually given landmark feedback to the model
-    landmark_runs : int = 0
-
-    # number of times we have given val feedback to the model
-    val_runs : int = 0
-
-    # The number of times we loop exclusively on syntax issues
-    domain_check_runs : int = 0
-
-    # Landmark node passed
-    landmark_passed: bool = False
-
-    # Total Number of iterations we have done in the HDE validation phase
-    # This *actually* is a measure of how many times we have hit the 
-    # domain syntax validator node, which is the number of times we have called
-    # the language model + 1, see val_runs and landmark_runs for specific 
-    # counts of types of feedback
-    hde_iterations : int
-    
-    # Exited without producing a valid domain after exceeding the retry limit
-    hde_timeout : bool = False 
-
-    # The domain we are currently working on is HDE, and we can begin evaluating it.
-    val_passed: bool = False
-
-    evals_passed: int = 0  # Number of evaluations passed
-    total_evals: int = 0  # Total number of evaluations attempted
-
-    # Path of nodes taken through the langgraph, for debugging
-    langgraph_path : list[str] = [] 
-
-# Results file generation helpers ==============================================
-
-# CSV header for the results file
-RESULTS_HEADER = [
-    "trial",
-    "domain_path",
-    "provider",
-    "model",
-    "give_pred_descriptions",
-    "desc_class",
-    "feedback_pipeline",
-    "landmark_runs",
-    "val_runs",
-    "hde_runs",
-    "hde_timeout",
-    "action_timeout",
-    "action_timeout_cause",
-    "evals_passed",
-    "total_evals",
-    #"domain_raw"
-]
-
-def gen_csv_results(s : State) -> tuple:
-    """
-    Generates a tuple of results for the experiment, to be written to the
-    results file, Requires that the experiment has completed successfully.
-    needs to match the RESULTS_HEADER.
-    """
-    return (
-        #s["run_id"],
-        s["PARAMS"].trial,
-        s["PARAMS"].domain_path,
-        s["PARAMS"].provider,
-        s["PARAMS"].model,
-        s["PARAMS"].give_pred_descriptions,
-        s["PARAMS"].desc_class,
-        feedback_pipeline_str(s["PARAMS"]),
-        s["landmark_runs"],
-        s["val_runs"],
-        s["hde_iterations"],
-        s["hde_timeout"],
-        s["action_timeout"],
-        s["action_timeout_cause"],
-        s["evals_passed"],
-        s["total_evals"],
-        #s["json_last"].pddl_domain if s["json_last"] else ""
-    )
-
-def write_message_log(s : State, err_msg : str, results_dir : str) -> None:
-    """
-    Writes the message log to a file in the results directory.
-    """
-    domain_path = s['PARAMS'].domain_path.split("/")[-1]
-    log_path = os.path.join(results_dir, f"""{s['PARAMS'].provider}_{s['PARAMS'].model}_{domain_path}_{s['PARAMS'].desc_class}_{s['PARAMS'].trial}_{feedback_pipeline_str(s['PARAMS'])}_messages.log""")
-    with open(log_path, 'w', encoding="utf-8") as f:
-
-        f.write("NON VAR INFO =========================================\n\n")
-        #f.write(f"RUN ID: {s['run_id']}\n")
-        f.write(f"TRIAL: {s['PARAMS'].trial}\n")
-        f.write("\nExperiment Params ====================================\n\n")
-        f.write(f"PROVIDER: {s['PARAMS'].provider}\n")
-        f.write(f"MODEL: {s['PARAMS'].model}\n")
-        f.write(f"DOMAIN PATH: {s['PARAMS'].domain_path}\n")
-        f.write(f"DESC CLASS: {s['PARAMS'].desc_class}\n")
-        f.write(f"FEEDBACK PIPELINE: {feedback_pipeline_str(s['PARAMS'])}\n")
-        f.write(f"GIVE PRED DESCRIPTIONS: {s['PARAMS'].give_pred_descriptions}\n")
-
-        if err_msg != "":
-            f.write("\nERROR MESSAGE ======================================\n\n")
-            f.write(err_msg + "\n")
-            return
-        
-        f.write("\nEXPERIMENT RESULTS ===================================\n\n")
-        f.write(f"DOMAIN CHECK RUNS: {s['domain_check_runs']}\n")
-        f.write(f"LANDMARK RUNS: {s['landmark_runs']}\n")
-        f.write(f"VAL RUNS: {s['val_runs']}\n")
-        f.write(f"HDE ITERATIONS: {s['hde_iterations']}\n")
-        f.write(f"HDE TIMEOUT: {s['hde_timeout']}\n")
-        f.write(f"ACTION TIMEOUT: {s['action_timeout']}\n")
-        f.write(f"ACTION TIMEOUT CAUSE: {s['action_timeout_cause']}\n")
-        f.write(f"EVALS PASSED: {s['evals_passed']}\n")
-        f.write(f"TOTAL EVALS: {s['total_evals']}\n")
-        f.write("LANGGRAPH PATH:\n\t" + '->\n\t'.join(s['langgraph_path']) + "\n")
-        
-        f.write("\nFINAL DOMAIN =====================================\n\n")
-        try:
-            domain_str = DomainParser()(s["messages"].json_last()["pddl_domain"] if s["messages"].json_last() else "")
-            f.write(str(domain_str))
-        except Exception as e:
-            f.write("No Domain was Generated by the Model, most likely because the pipeline never passed the domain construction stage.\n")
-
-        f.write("\nMessages ===========================================\n\n\n")
-        for msg in s["messages"].history():
-            f.write(str(msg))
-            # f.write(msg.type.upper() + "\n\n")
-            # f.write(msg.content + "\n\n\n")
-        
+from .response_schema import ActionSchema, DomainSchema
+from .experiment_state import State, gen_initial_state        
+from .experiment_reporter import gen_csv_results, RESULTS_HEADER, write_message_log
 
 # Experiments Helpers ==========================================================
 
@@ -349,30 +39,62 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     Creates a langgraph for a single experiment with the given
     experimental parameters.
     """
-    model = init_chat_model(p.model, model_provider=p.provider, timeout=60, max_retries=3)
+    # Handle Hugging Face models through OpenAI-compatible API
+    # https://huggingface.co/NousResearch/Hermes-4-405B?inference_api=true&inference_provider=nebius&language=python&client=openai
+    if p.provider == "huggingface":
+        model = init_chat_model(
+            p.model,
+            model_provider="openai",
+            timeout=60,
+            max_retries=3,
+            base_url="https://router.huggingface.co/v1",
+            api_key=hf_token,
+        )
+    else:
+        model = init_chat_model(p.model, model_provider=p.provider, timeout=60, max_retries=3)
+
     action_model = model.with_structured_output(ActionSchema)
     domain_model = model.with_structured_output(DomainSchema)
 
     # Lang-graph nodes =========================================================
 
     def call_action_model(state: State):
+        """ 
+        Calls the model using the ActionSchema structured output to generate the next action. 
+        """
         logger.debug("Calling action model")
-        json_obj = action_model.invoke(state["messages"].history())
+        history = state["messages"].squashed_message_history()
+        json_obj = action_model.invoke(history)
         raw = json.dumps(json_obj.model_dump())
         return {
-            "messages": state["messages"].insert_on_current_branch_json(AIMessage(raw), json_obj),
+            "messages": state["messages"].insert_on_current_branch_json(
+                AIMessage(raw),
+                json_obj, 
+                "call_action_model"
+            ),
             "langgraph_path": state["langgraph_path"] + ["call_action_model"]
         }
     
     def call_domain_model(state: State):
-        json_obj = domain_model.invoke(state["messages"].history())
+        """
+        Calls the model using the DomainSchema structured output to generate the domain.
+        """
+        history = state["messages"].squashed_message_history()
+        json_obj = domain_model.invoke(history)
         raw = json.dumps(json_obj.model_dump())
         return {
-            "messages": state["messages"].insert_on_current_branch_json(AIMessage(raw), json_obj),
+            "messages": state["messages"].insert_on_current_branch_json(
+                AIMessage(raw),
+                json_obj, 
+                "call_domain_model"
+            ),
             "langgraph_path": state["langgraph_path"] + ["call_domain_model"]
         }
 
     def next_action(state: State):
+        """
+        Stores the current action and prepares for the next action generation.
+        """
         action_index = state["action_index"]
         actions_names = action_names(d, p)
         actions = state["actions"]
@@ -389,7 +111,10 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
                 "Starting Action %d/%d: %s",
                 action_index + 1, len(actions_names), action_name
             )
-            updated_messages = state["messages"].insert_on_current_branch(action_message(d, p, action_name))
+            updated_messages = state["messages"].insert_on_current_branch(
+                action_message(d, p, action_name),
+                "next_action"
+            )
             return {
                 "messages": updated_messages,
                 "action_index" : action_index + 1,
@@ -406,8 +131,12 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             "Checking action... %s",
             "valid" if res is None else "invalid"
         )
+        updated_messages = state["messages"].insert_on_current_branch(
+            res, 
+            "check_action"
+        ) if res else state["messages"]
         return {
-            "messages": state["messages"].insert_on_current_branch(res) if res else state["messages"],
+            "messages": updated_messages,
             "action_valid" : res is None,
             "action_iterations" : state["action_iterations"] + 1,
             "langgraph_path": state["langgraph_path"] + ["check_action"]
@@ -419,24 +148,35 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             domain_name(d, p),
             state["actions"]
         )
+        updated_messages = state["messages"].insert_on_current_branch_json(
+            raw_domain_msg(full_domain_raw), 
+            {"pddl_domain":full_domain_raw}, 
+            "build_domain"
+        )
+        #updated_messages.get().update_score(float("inf"), 0) # Search starts here!
         return {
-            "messages" : state["messages"].insert_on_current_branch_json(raw_domain_msg(full_domain_raw), {"pddl_domain":full_domain_raw}),
+            "messages" : updated_messages,
             "langgraph_path": state["langgraph_path"] + ["build_domain"]
         }
     
     def check_domain_syntax(state: State):
         json_last = state["messages"].json_last()
         res = check_domain_syntax_output(d, p, json_last)
-        new_messages = state["messages"].insert_on_current_branch(res) if res else state["messages"]
-        #If syntactically valid, immediatly update the score based on how well it does on the evals
+        # Only add a new message if we found an error
+        new_messages = state["messages"].insert_on_current_branch(
+            res, "check_domain_syntax"
+        ) if res is not None else state["messages"]
+        #If syntactically valid, immediatly update the score based on how well it does on the evals, note that lower is better!
         if res is None:
             try:
                 scores = val_feedback_test(d, p, json_last["pddl_domain"])
-                new_messages.get().score = scores[0]
+                new_messages.update_score(scores[1] - scores[0])
             except Exception as e:
-                new_messages.get().score = 0
+                # If validation fails, use a penalty score (no passing tests)
+                logger.error(f"Error during validation test: {e}")
+                # TODO: shouldn't hardcode the error penalty like this
+                new_messages.update_score(float("inf"))
         return {
-            # TODO: need to actually append the last message to proposed if the syntax check failed
             "messages": new_messages,
             # We pass the syntax check if any of the proposed messages passed it
             "domain_syntax_passed" : res is None,
@@ -446,37 +186,47 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
 
     def feedback(state: State):
-        landmark_feedback_msgs : list[HumanMessage] = []
-        val_feedback_msgs : list[HumanMessage] = []
+        landmark_feedback_msgs : list[HumanMessage] | None = []
+        val_feedback_msgs : list[HumanMessage] | None = []
+        feedback_messages : list[HumanMessage] | None = []
         current_node = state["messages"].get()
         
-        # Exit early if we have a perfect score
-        # TODO: Extract 10 as the constant for perfect score
-        if current_node.score == 10:
+        # Stop giving feedback if H score is 0 (perfect) or no feedback pipeline
+        if current_node.h == 0 or p.feedback_pipeline == []:
             return {
                 "landmark_passed": True,
                 "val_passed": True,
                 "langgraph_path": state["langgraph_path"] + ["feedback"]
             }
-
+        
         try:
             if "landmark" in p.feedback_pipeline:
                 landmark_feedback_msgs = multi_landmark_feedback(d, p, state["messages"].json_last()["pddl_domain"])
             if "validate" in p.feedback_pipeline:
                 val_feedback_msgs = multi_val_feedback(d, p, state["messages"].json_last()["pddl_domain"])
+
+            if landmark_feedback_msgs is not None and val_feedback_msgs is not None:
+                feedback_messages = landmark_feedback_msgs + val_feedback_msgs
+
+            # If "random-single" is in the pipeline, select a single random feedback message from the combined feedback and just use that
+            if "random-single" in p.feedback_pipeline and feedback_messages is not None and len(feedback_messages) > 0:
+                feedback_messages = [random.choice(feedback_messages)]
+
         except Exception as e:
-            # TODO: Fix
             msg = f"Error during feedback generation: {str(e)}" 
             logger.error(msg)
             val_feedback_msgs = [HumanMessage(msg)]
 
-        state["messages"].insert_batch_on_current_branch(landmark_feedback_msgs + val_feedback_msgs)
-        state["messages"].select_best_branch()
+        state["messages"].insert_batch_on_current_branch(
+            feedback_messages, langraph_node="feedback"
+        )
+        state["messages"] = state["messages"].select_best_branch()
         
         return {
             "messages": state["messages"],
             "landmark_passed": landmark_feedback_msgs is None,
             "val_passed": val_feedback_msgs is None,
+            # TODO: not used anymore
             "landmark_runs": state["landmark_runs"] + (1 if landmark_feedback_msgs is not None else 0),
             "val_runs": state["val_runs"] + (1 if val_feedback_msgs is not None else 0),
             "langgraph_path": state["langgraph_path"] + ["feedback"]
@@ -516,7 +266,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def route_check_action(state: State) ->\
     Literal['action_timeout_node', 'next_action', 'call_action_model']:
-        if state["action_iterations"] >= get_action_iteration_threshold():
+        if state["action_iterations"] >= ACTION_THRESHOLD:
             return "action_timeout_node"
         elif state["action_valid"]:
             return "next_action"
@@ -532,10 +282,9 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
     def route_check_domain_syntax(state: State) ->\
     Literal['hde_timeout_node', "feedback", 'call_domain_model']:
-        if state["hde_iterations"] >= get_hde_iteration_threshold():
+        if state["hde_iterations"] >= HDE_THRESHOLD:
             return "hde_timeout_node"
         elif state["domain_syntax_passed"]:
-            #return p.feedback_pipeline[state["feedback_index"] % len(p.feedback_pipeline)]
             return "feedback"
         else:
             return "call_domain_model"
@@ -555,8 +304,6 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     graph_builder.add_node("build_domain", build_domain)
     graph_builder.add_node("call_domain_model", call_domain_model)
     graph_builder.add_node("check_domain_syntax", check_domain_syntax)
-    # graph_builder.add_node("landmark", landmark)
-    # graph_builder.add_node("validate", validate)
     graph_builder.add_node("feedback", feedback)
     graph_builder.add_node("action_timeout_node", action_timeout_node)
     graph_builder.add_node("hde_timeout_node", hde_timeout_node)
@@ -572,8 +319,6 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         "check_domain_syntax", 
         route_check_domain_syntax
     )
-    # graph_builder.add_conditional_edges("landmark", route_landmark)
-    # graph_builder.add_conditional_edges("validate", route_hde)
     graph_builder.add_conditional_edges("feedback", route_feedback)
     graph_builder.add_edge("action_timeout_node", END)
     graph_builder.add_edge("hde_timeout_node", "final_evaluation")
@@ -583,21 +328,11 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
 
 def graph_pipeline_image() -> None:
     """
-    Saves the graph as a PNG image to the given filename.
+    Saves the graph as a PNG image.
     """
     experiment_init()
     graph = create_langgraph(None, Params()) # Dummy dataset and params
     graph.get_graph().draw_png("results/pipeline.png")
-
-def init_messages_as_message_tree(d: Dataset, p: Params) -> IndexedMessageTree:
-    """
-    Initializes the message history as an IndexedMessageTree.
-    """
-    msgs = init_msgs(d, p)
-    tree = IndexedMessageTree()
-    for msg in msgs:
-        tree.insert_on_current_branch(msg)
-    return tree
 
 def run_experiment_instance(
     d: Dataset,     # Dataset
@@ -611,46 +346,24 @@ def run_experiment_instance(
     if the experiment ran without errors, and the final state of the experiment
     (in the event of an error, the final state before failure).
     """
-    graph = create_langgraph(d, p)
 
-    initial_state : State = {
-        "run_id": batch_id,
-        "PARAMS": p,
-        "messages": init_messages_as_message_tree(d, p),
-        "action_index": 0,
-        #"json_last": None,
-        "action_valid": False,
-        "actions_done": False,
-        "actions" : [],
-        "domain_syntax_passed": False,
-        "val_passed": False,
-        "feedback_index": 0,
-        "feedback_cycles": 0,
-        "landmark_passed": False,
-        "landmark_runs": 0,
-        "val_runs": 0,
-        "domain_check_runs": 0,
-        "action_iterations" : 0,
-        "hde_iterations" : 0,
-        "action_timeout" : False,
-        "action_timeout_cause" : "",
-        "hde_timeout" : False,
-        "evals_passed": 0,
-        "total_evals": 0,
-        "langgraph_path": []
-    }
+    initial_state : State = gen_initial_state(batch_id, d, p)
 
     # Langgraph experiment state
     state : State = initial_state
 
-    # Set the recursion limit for the graph execution to be high enough to 
-    # accommodate the worst case scenario
-    #TODO: occasionally seems to fail, investigate
+    if SKIP_EXPERIMENT:
+        logger.info(f"Skipping experiment {batch_id} for domain {p.domain_path} with path {p.feedback_pipeline} as per configuration.")
+        return True, "Experiment skipped", state
+
+    graph = create_langgraph(d, p)
+
+    # TODO: this is no longer meaningful in light of search
     config = {
         "recursion_limit": 
             len(d.domains[p.domain_path].actions) * 
-            get_action_iteration_threshold() + 
-            get_hde_iteration_threshold() * 3 + 25,
+            ACTION_THRESHOLD + 
+            HDE_THRESHOLD * 3 + 25,
     }
 
     # Run the graph
@@ -678,17 +391,21 @@ def experiment_init() -> None:
         raise RuntimeError("OPENAI_API_KEY environment variable not set.\
                             Please set it in your .env file.")
     if not os.environ.get("DEEPSEEK_API_KEY"):
-        raise RuntimeError("DEEPEEK_API_KEY environment variable not set.\
+        raise RuntimeError("DEEPSEEK_API_KEY environment variable not set.\
                             Please set it in your .env file.")
+
+    if not os.environ.get("HF_API_KEY"):
+        raise RuntimeError("HF_API_KEY environment variable is not set.\
+                            Please set it in your .env file.")
+    else:
+        global hf_token 
+        hf_token = os.environ.get("HF_API_KEY")
 
 def run_experiment() -> None:
     """
     Driver, runs the experiments in parallel using the parameter grid
     """
     experiment_init()
-
-    # Number of experiments we run in parallel, None means core count
-    num_processes = THREADS if THREADS > 0 else None
 
     # Load the PDDL dataset
     dataset = Dataset()
@@ -704,14 +421,21 @@ def run_experiment() -> None:
 
     # Run the experiments in parallel and write the results
     args = [(dataset, params, date_time) for params in param_grid(dataset)]
-    with mp.Pool(processes=num_processes) as pool:
+    num_processes = THREADS if THREADS > 0 else len(args)
+    print("number of processes", num_processes)
+    time.sleep(1)
+
+    with ThreadPoolExecutor(max_workers=num_processes) as pool:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
-            for res in pool.imap_unordered(run_experiment_instance_star, args):
-                (success, err_msg, state) = res
-                write_message_log(state, err_msg, results_dir)
-                if success:
-                    csv_results_row = gen_csv_results(state)
-                    csv_writer.writerow(csv_results_row)
-                    
-    print("Successfully joined all processes.")
+            for res in pool.map(run_experiment_instance_star, args):
+                try:
+                    (success, err_msg, state) = res
+                    write_message_log(state, err_msg, results_dir)
+                    if success:
+                        csv_results_row = gen_csv_results(state)
+                        csv_writer.writerow(csv_results_row)
+                except Exception as e:
+                    logger.error("Error processing result: %s", e)
+
+    print("Successfully joined all threads. Experiment complete.")

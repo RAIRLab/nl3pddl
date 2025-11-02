@@ -1,7 +1,12 @@
 .venv
-*/__pycache__
+__pycache__/
+*/__pycache__/
 .env
 figs/
+results/
 #data/gen_problems/*
-old-figs
+old_figs
 found_plans
+old_results
+data/gen_problems
+data/gen_landmarks

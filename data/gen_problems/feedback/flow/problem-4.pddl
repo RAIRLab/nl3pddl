@@ -3,8 +3,7 @@
 (:objects 
     c_1
 	c_3
-	c_2
-	c_4 - color
+	c_2 - color
     p_0_0
 	p_0_1
 	p_0_2
@@ -140,13 +139,11 @@
 	(adjacent p_4_4 p_3_4)
 	(adjacent p_4_4 p_4_3)
     (flow-end p_0_4 c_1)
-	(flow-end p_1_0 c_1)
-	(flow-end p_1_2 c_3)
-	(flow-end p_3_2 c_3)
-	(flow-end p_1_3 c_2)
-	(flow-end p_2_0 c_2)
-	(flow-end p_2_2 c_4)
-	(flow-end p_3_3 c_4)
+	(flow-end p_4_1 c_1)
+	(flow-end p_1_4 c_3)
+	(flow-end p_3_3 c_3)
+	(flow-end p_2_2 c_2)
+	(flow-end p_4_2 c_2)
 )
 
 (:goal (and
@@ -157,7 +154,6 @@
     (flow-complete c_1)
 	(flow-complete c_3)
 	(flow-complete c_2)
-	(flow-complete c_4)
     (not-empty p_0_0)
 	(not-empty p_0_1)
 	(not-empty p_0_2)
