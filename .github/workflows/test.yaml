@@ -1,0 +1,54 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, huggingface ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Set up Python 3.13 (free-threaded)
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+        allow-prereleases: true
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential graphviz graphviz-dev
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "latest"
+
+    - name: Create virtual environment with free-threaded Python
+      run: |
+        uv venv --python 3.13t
+
+    - name: Install Python dependencies
+      run: |
+        uv sync
+
+    - name: Build VAL submodule
+      run: |
+        cd submodules/VAL
+        mkdir -p build
+        cd build
+        cmake ..
+        make
+        cd ../../../
+
+    - name: Run problem generator validation tests
+      run: |
+        uv run python driver.py -t
