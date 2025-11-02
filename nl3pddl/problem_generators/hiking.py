@@ -17,7 +17,7 @@ def bfs_path(adj, start, goal):
                 queue.append(path + [nbr])
     return None
 
-
+#test
 def generate_hiking_problem(n, filename, density=0.5, water_ratio=0.5, seed=None):
     if seed is not None:
         random.seed(seed)
