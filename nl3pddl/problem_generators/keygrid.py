@@ -76,10 +76,9 @@ def generate_solvable_keygrid(n, filename):
         f.write(")\n")  # end problem
 
 
-if name == "main":
-    parser = argparse.ArgumentParser(description="Generate a solvable PDDL KeyGrid problem.")
-    parser.add_argument("n", type=int, help="number of locks/keys/shapes")
-    parser.add_argument("output", type=str, help="output filename")
-    args = parser.parse_args()
-
-    generate_solvable_keygrid(args.n, "../../data/domains/grid/problem_generated.pddl")
+#if name == "main":
+#   parser = argparse.ArgumentParser(description="Generate a solvable PDDL KeyGrid problem.")
+#    parser.add_argument("n", type=int, help="number of locks/keys/shapes")
+#    parser.add_argument("output", type=str, help="output filename")
+#    args = parser.parse_args()
+#    generate_solvable_keygrid(args.n, "../../data/domains/grid/problem_generated.pddl")
