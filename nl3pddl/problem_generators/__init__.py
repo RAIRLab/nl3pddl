@@ -12,6 +12,7 @@ from .pacman_72 import generate_pacman_problem
 from .bloxorz import generate_bloxorz_problem
 
 
+
 # GENS is a dictionary mapping problem names to their respective generation functions.
 PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
     "blocks": generate_blocks_problem,

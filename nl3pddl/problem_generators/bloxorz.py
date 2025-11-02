@@ -2,7 +2,7 @@
 Simple utility to build PDDL problem files for the 'bloxorz' domain
 """
 
-def generate_bloxorz_problem_from_data(data_file, output_file):
+def generate_bloxorz_problem(data_file, output_file):
     # Read the grid
     with open(data_file, 'r') as f:
         lines = [line.rstrip('\n') for line in f if line.strip()]
