@@ -1,104 +1,81 @@
-"""
-generate_pddl_problem.py
-Simple utility to programmatically build PDDL problem files for the 'grid' domain.
-"""
-
 import argparse
 import random
 
+def generate_solvable_keygrid(n, filename):
 
-
-def generate_keygrid_problem(n, filename):
-    # Putting args in the local variables
-    places = n * 2 + 1
+    locks = n
     keys = n
     shapes = n
-    locks = n
-    seed = None
 
-    density = 0.5
+    # Total number of places: n locked segments + n extra open places + start
+    places = n * 2 + 1  
 
-    # Apply seed if given
-    if seed is not None:
-        random.seed(seed)
+    # Fixed seed for reproducibility
+    seed = 42
+    random.seed(seed)
 
-    # Just to check
-    print(";; Places:", places)
-    print(";; Keys:", keys)
-    print(";; Shapes:", shapes)
-    print(";; Locks:", locks)
-    print(";; Seed:", seed)
-
-
-    # Starting generating a pddl file 
-
-    # Step 2: Print the problem header
     with open(filename, 'w') as f:
+
+        # Header comment
+        f.write(f";; Solvable KeyGrid: places={places}, keys={keys}, locks={locks}, shapes={shapes}, seed={seed}\n")
+
+        # Problem header
         f.write(f"(define (problem grid-problem-{places}-{keys}-{locks}-{shapes})\n")
-        f.write("  (:domain grid)\n")
+        f.write(" (:domain grid)\n")
 
-        #Starting generating objects 
-        f.write("  (:objects\n")
-
-        # Places
+        # Objects
+        f.write(" (:objects\n")
         for i in range(1, places + 1):
-            f.write(f"    place{i} - place\n")
-
-        # Keys
+            f.write(f"  place{i} - place\n")
         for i in range(1, keys + 1):
-            f.write(f"    key{i} - key\n")
-
-        # Shapes
+            f.write(f"  key{i} - key\n")
         for i in range(1, shapes + 1):
-            f.write(f"    shape{i} - shape\n")
+            f.write(f"  shape{i} - shape\n")
+        f.write(" )\n")
 
-        f.write("  )\n")  # end of :objects
+        # Init
+        f.write(" (:init\n")
+
+        # Linear chain topology
+        for i in range(1, places):
+            f.write(f"  (conn place{i} place{i+1})\n")
+            f.write(f"  (conn place{i+1} place{i})\n")
+
+        # Locks and keys
+        # lock is placed at place(i+1)
+        for i in range(1, locks + 1):
+            f.write(f"  (key-shape key{i} shape{i})\n")
+            f.write(f"  (lock-shape place{i+1} shape{i})\n")
+            f.write(f"  (locked place{i+1})\n")
+
+        # Place key i at place i (so robot always finds correct key before its lock)
+        for i in range(1, keys + 1):
+            f.write(f"  (at key{i} place{i})\n")
+
+        f.write("  (at-robot place1)\n")
+        f.write("  (open place1)\n")
+        f.write("  (arm-empty)\n")
+
+    
+        # All places AFTER the last lock must be open or the robot can't move into them.
+        last_locked_place = locks + 1
+        for p in range(last_locked_place + 1, places + 1):
+            f.write(f"  (open place{p})\n")
+
+        f.write(" )\n")  # end init
+
+        # Goal – reach the *last* place
+        f.write(" (:goal\n")
+        f.write(f"  (at-robot place{places})\n")
+        f.write(" )\n")
+
+        f.write(")\n")  # end problem
 
 
-        # Init section
-        f.write("  (:init\n")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate a solvable PDDL KeyGrid problem.")
+    parser.add_argument("n", type=int, help="number of locks/keys/shapes")
+    parser.add_argument("output", type=str, help="output filename")
+    args = parser.parse_args()
 
-        # Connectivity: random undirected edges between places
-        for i in range(1, places + 1):
-            for j in range(i + 1, places + 1):
-                if random.random() < density:  # 50% chance to connect, can make density an arg
-                    f.write(f"    (conn place{i} place{j})\n")
-                    f.write(f"    (conn place{j} place{i})\n")
-
-        # Shapes: assign keys to random shapes
-        for k in range(1, keys + 1):
-            shape_id = random.randint(1, shapes)
-            f.write(f"    (key-shape key{k} shape{shape_id})\n")
-
-        # Locks: pick some places to be locked (not place1!)
-        locked_places = random.sample(range(2, places + 1), min(locks, places - 1))
-        for lp in locked_places:
-            shape_id = random.randint(1, shapes)
-            f.write(f"    (lock-shape place{lp} shape{shape_id})\n")
-            f.write(f"    (locked place{lp})\n")
-
-        # Place keys in random places
-        for k in range(1, keys + 1):
-            p = random.randint(1, places)
-            f.write(f"    (at key{k} place{p})\n")
-
-        # Robot start at place1
-        f.write("    (at-robot place1)\n")
-
-        # By default, place1 is open
-        f.write("    (open place1)\n")
-
-        # Arm empty at start
-        f.write("    (arm-empty)\n")
-
-        f.write("  )\n")  # end of :init
-
-        # Goal section
-        # Pick a random place (not place1) for the goal
-        goal_place = random.randint(2, places)
-        f.write("  (:goal\n")
-        f.write("    (at-robot place" + str(goal_place) + ")\n")
-        f.write("  )\n")
-
-        f.write(")\n")  # close define
-
+    generate_solvable_keygrid(args.n, "../../data/domains/grid/problem_generated.pddl")
