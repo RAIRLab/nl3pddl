@@ -163,11 +163,13 @@ def format_pddl(
     # Objects section (row-wise, matching your example style)
     obj_lines: List[str] = []
     obj_lines.append("(:objects B - block")
+    tiles = []
     for r in sorted(rows.keys()):
         cols = rows[r]
         if not cols:
             continue
         names = [tn((r, c)) for c in cols]
+        tiles.extend(names)
         # Put each row on its own line for readability
         obj_lines.append("    " + " ".join(names))
     obj_lines[-1] += "  - tile)"  # attach type to final tile line
@@ -193,8 +195,12 @@ def format_pddl(
     for (a, b) in south_edges:
         init_lines.append(f"  (adjacent {tn(b)} {tn(a)} north)")
 
+    for t in tiles:
+        init_lines.append(f"  (active {t})")
+
     # Start position
     init_lines.append(f"\n  (standing-on B {tn(start)})")
+
 
     init_block = "(:init\n" + "\n".join(init_lines) + "\n)"
 
