@@ -107,7 +107,7 @@ class MessageTree:
             s += f" str? (G: {self.g}, H: {self.h}, Score: {self.score})\n"
         else:
             if ALWAYS_EVALUATE:
-                s += f"{self.message.type.upper()} (G: {self.g}, H: {self.h}, Score: {self.score}, True Score: {self.true_score})\n"
+                s += f"{self.message.type.upper()} (G: {self.g}, H: {self.h}, Score: {self.score}, Eval Score: {self.true_score})\n"
             else:
                 s += f"{self.message.type.upper()} (G: {self.g}, H: {self.h}, Score: {self.score})\n"
         for child in self.children:
@@ -172,6 +172,7 @@ class IndexedMessageTree:
         node.children.append(new_node)
         self.index.append(len(node.children) - 1)
         new_node.json = json
+        new_node.true_score = node.true_score
         new_node.update_score(h_score, node.g + 1)
         # Evaluate the combined score using the search heuristic
         return self
