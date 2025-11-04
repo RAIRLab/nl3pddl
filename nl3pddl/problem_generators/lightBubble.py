@@ -2,7 +2,7 @@ import random
 
 def generate_problem(v, filename):
 
-    v += 2
+    v += 10
     num_bubbles = min(10, v)
     num_steps = v + random.randint(1, v)
     

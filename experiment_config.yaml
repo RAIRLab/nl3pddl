@@ -52,14 +52,15 @@ kstar-n-plans: 100
 # Every possible combination of these parameters will be evaluated over
 
 domains:
-  #- bookseller
+  # - bookseller
   # - checkers-jumping
   # - flow
   # - hiking
-  # - pacman-63 
+  - pacman-63 
   - keygrid 
-  # - pacman-72 # NOT ALL PROBLEMS ARE SOLVABLE
+  # - pacman-72 # Still very broken do not use
   # - sliding-puzzle # Generator does not generate valid problems.
+  - light-bubble
   
 # What models are we evaluating?
 # This can be any valid provider and model pair, assuming the API key is set in
