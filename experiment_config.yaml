@@ -56,8 +56,8 @@ domains:
   # - checkers-jumping
   # - flow
   # - hiking
-  - pacman-63 # NOT ALL PROBLEMS ARE SOLVABLE
-  # - keygrid # No plans generated!
+  # - pacman-63 
+  - keygrid 
   # - pacman-72 # NOT ALL PROBLEMS ARE SOLVABLE
   # - sliding-puzzle # Generator does not generate valid problems.
   
