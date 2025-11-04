@@ -85,4 +85,4 @@ if __name__ == "__main__":
     if args.n < 1:
          print("Error: 'n' must be a positive integer (number of locks).")
     else:
-        generate_solvable_keygrid(args.n, args.output)
+        generate_keygrid_problem(args.n, args.output)

@@ -410,21 +410,20 @@ def experiment_init() -> None:
         global hf_token 
         hf_token = os.environ.get("HF_API_KEY")
 
-def run_experiment() -> None:
-    """
-    Driver, runs the experiments in parallel using the parameter grid
-    """
-    experiment_init()
-
-    # Load the PDDL dataset
-    dataset = Dataset()
-
-    # Build full parameter list to size the run and estimate cost
-    param_list = list(param_grid(dataset))
+def experiment_cost_estimate_prompt(param_list) -> None:
     num_experiments = len(param_list)
-
     per_experiment_call_costs = []
+
+    # Warn about missing price entries 
+    models = set(p.model for p in param_list)
+    for model in models:
+        if model not in PRICE:
+            print(f"Price information for model '{model}' not found. Cost estimation may be inaccurate.")
+
+    # Sum up per-experiment costs
     for p in param_list:
+        if p.model not in PRICE:
+            continue
         price_entry = PRICE[p.model]
         in_rate = float(price_entry["input"])  # USD per input token
         out_rate = float(price_entry["output"])  # USD per output token
@@ -441,7 +440,22 @@ def run_experiment() -> None:
     choice = input("Proceed with experiment? [y/N]: ").strip().lower()
     if choice != "y":
         print("Aborting by user choice.")
-        return
+        exit(1)
+
+def run_experiment() -> None:
+    """
+    Driver, runs the experiments in parallel using the parameter grid
+    """
+    experiment_init()
+
+    # Load the PDDL dataset
+    dataset = Dataset()
+
+    # Build full parameter list to size the run and estimate cost
+    param_list = list(param_grid(dataset))
+    
+    # Estimate cost and confirm with user before starting the experiment
+    experiment_cost_estimate_prompt(param_list)
 
     # Prepare the results output file and dir
     date_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")

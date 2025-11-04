@@ -4,8 +4,10 @@ which creates generates randomized problems at various levels of difficulty for
 the domains we evaluate over. 
 '''
 
+from concurrent.futures import ThreadPoolExecutor
 import os
 import shutil
+from time import time
 from typing import Any, Callable
 from pathlib import Path
 
@@ -112,10 +114,18 @@ def gen_domain_problems(domain_name, generator):
                 with open(plan_path, 'w', encoding='utf-8') as file:
                     file.write(plan_str)
 
+def generate_problem(item) -> None:
+    domain, generator = item
+    if domain in config.DOMAINS:
+        print(f"Generating problems for domain {domain}")
+        gen_domain_problems(domain, generator)
+    else:
+        print(f"Skipping domain {domain} as not in config domains list.")
+
 def generate_problems() -> None:
     if os.path.exists(config.GENERATED_PROBLEMS_DIR):
         shutil.rmtree(config.GENERATED_PROBLEMS_DIR)
-    for domain, generator in PROBLEM_GENERATORS.items():
-        if domain in config.DOMAINS:
-            print(f"Generating problems for domain {domain}")
-            gen_domain_problems(domain, generator)
+    items = PROBLEM_GENERATORS.items()
+    with ThreadPoolExecutor(max_workers=len(items)) as pool:
+        pool.map(generate_problem, items)
+    print("Joined all processes")

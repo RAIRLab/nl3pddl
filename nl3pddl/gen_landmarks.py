@@ -10,8 +10,10 @@ from forbiditerative import planners
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+
 import pddl
 
+from .config import DOMAINS
 from nl3pddl.utils import grounded_pred_to_lm_str
 
 # Define paths
@@ -63,7 +65,7 @@ def generate_landmarks():
     """
     # Find all domain and problem files
     all_data = []
-    domain_files = glob.glob(f"{DOMAINS_PATH}/*/ground.pddl")
+    domain_files = [os.path.join(DOMAINS_PATH, domain, "ground.pddl") for domain in DOMAINS]
 
     for domain_file in domain_files:
         domain_name = extract_pddl_domain_name(domain_file)
