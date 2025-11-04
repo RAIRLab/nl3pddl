@@ -55,7 +55,7 @@ domains:
   # - bookseller
   # - checkers-jumping
   # - flow
-  # - hiking
+  - hiking
   # - pacman-63 
   # - keygrid 
   # - pacman-72 # Still very broken do not use
