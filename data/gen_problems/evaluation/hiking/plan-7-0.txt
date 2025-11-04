@@ -1,2 +1,0 @@
-(walk loc1 loc11)
-(walk loc11 loc15)

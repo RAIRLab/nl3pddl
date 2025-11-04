@@ -1,5 +1,0 @@
-(move_pacman n2_0 n1_0)
-(move_pacman n1_0 n0_0)
-(eat_food n0_0 n0_1)
-(move_pacman n0_1 n0_2)
-(eat_food n0_2 n0_3)

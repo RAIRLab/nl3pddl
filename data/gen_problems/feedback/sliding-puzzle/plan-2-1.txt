@@ -1,6 +1,0 @@
-(move t3 p12 p22)
-(move t3 p22 p12)
-(move t3 p12 p22)
-(move t2 p11 p12)
-(move t1 p21 p11)
-(move t3 p22 p21)

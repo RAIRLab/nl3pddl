@@ -1,2 +1,0 @@
-(eat_food n1_2 n1_3)
-(eat_food n1_2 n2_2)
