@@ -1,86 +1,38 @@
 {
-    "overall": {
-        "first": "The Bloxorz domain models a block that rolls across a grid of tiles to reach a goal tile.",
-        "detailed-first": "This domain operates over a finite set of tiles and a single block. The block can stand upright on one tile or lie flat across two adjacent tiles. It moves by rolling north, south, east, or west according to tile adjacencies. The objective is to roll the block onto the goal tile in its standing position."
+  "overall": {
+    "first": "The Bloxorz domain models a block that rolls across a grid of tiles to reach a goal tile.",
+    "detailed-first": "This domain operates over a finite set of tiles and a single block. The block can stand upright on one tile or lie flat across two adjacent tiles. It moves by rolling north, south, east, or west according to tile adjacencies. The objective is to roll the block onto the goal tile in its standing position."
+  },
+  "predicates": {
+    "standing-on": {
+      "first": "A block stands upright on one tile.",
+      "detailed-first": "Indicates that the block is standing vertically on a single tile. In this state, the block occupies only that one position and can roll in any direction to become lying flat."
     },
-    "predicates": {
-        "on": {
-            "first": "A block stands upright on one tile.",
-            "detailed-first": "Indicates that the block is standing vertically on a single tile. In this state, the block occupies only that one position and can roll in any direction to become lying flat."
-        },
-        "occupies": {
-            "first": "A block lies flat across two tiles.",
-            "detailed-first": "Specifies that the block is lying horizontally or vertically, occupying two adjacent tiles at once. Its orientation determines how it can move next."
-        },
-        "adjacent-north": {
-            "first": "One tile is directly north of another.",
-            "detailed-first": "Defines the northward adjacency relationship between two tiles, allowing the block to roll north between them."
-        },
-        "adjacent-south": {
-            "first": "One tile is directly south of another.",
-            "detailed-first": "Defines the southward adjacency relationship between two tiles, enabling southward rolling movements."
-        },
-        "adjacent-east": {
-            "first": "One tile is directly east of another.",
-            "detailed-first": "Defines the eastward adjacency relationship between two tiles, allowing eastward movement of the block."
-        },
-        "adjacent-west": {
-            "first": "One tile is directly west of another.",
-            "detailed-first": "Defines the westward adjacency relationship between two tiles, enabling westward rolling movements."
-        },
-        "goal-tile": {
-            "first": "A tile is the goal position.",
-            "detailed-first": "Marks a tile as the designated goal location that the block must occupy in its standing position to complete the puzzle."
-        }
+    "lying-on": {
+      "first": "A block lies flat across two tiles.",
+      "detailed-first": "Specifies that the block is lying horizontally or vertically, occupying two adjacent tiles at once. Its orientation determines how it can move next."
     },
-    "actions": {
-        "move-north-from-standing": {
-            "first": "A standing block rolls north to lie flat across two tiles.",
-            "detailed-first": "When the block stands on a tile and the tile directly north is adjacent, the block rolls northward, transitioning from standing to lying flat across the two tiles."
-        },
-        "move-south-from-standing": {
-            "first": "A standing block rolls south to lie flat across two tiles.",
-            "detailed-first": "When the block stands on a tile and the tile directly south is adjacent, the block rolls southward, changing to a lying-flat position over both tiles."
-        },
-        "move-east-from-standing": {
-            "first": "A standing block rolls east to lie flat across two tiles.",
-            "detailed-first": "When the block stands on a tile and the tile to the east is adjacent, it rolls east, ending up flat across those two tiles."
-        },
-        "move-west-from-standing": {
-            "first": "A standing block rolls west to lie flat across two tiles.",
-            "detailed-first": "When the block stands upright on a tile and the adjacent tile lies to the west, it rolls westward and becomes flat across both tiles."
-        },
-        "move-north-from-lying-y": {
-            "first": "A flat block oriented north-south rolls north and becomes standing.",
-            "detailed-first": "If the block is lying flat along the north-south axis and space allows for a roll northward, it pivots forward and ends up standing upright on the next tile."
-        },
-        "move-south-from-lying-y": {
-            "first": "A flat block oriented north-south rolls south and becomes standing.",
-            "detailed-first": "If the block lies flat along the north-south direction and there are tiles to the south, it rolls southward and stands upright on the next tile."
-        },
-        "move-east-from-lying-x": {
-            "first": "A flat block oriented east-west rolls east and becomes standing.",
-            "detailed-first": "When the block is lying horizontally across two east-west tiles, it can roll eastward to stand upright on the next tile."
-        },
-        "move-west-from-lying-x": {
-            "first": "A flat block oriented east-west rolls west and becomes standing.",
-            "detailed-first": "If the block lies horizontally along the east-west axis, it can roll west to transition into a standing position on the adjacent tile."
-        },
-        "move-north-while-lying-y": {
-            "first": "A flat block oriented north-south rolls north while remaining flat.",
-            "detailed-first": "If the block lies north-south across two tiles, and two more tiles extend northward, it rolls northward one step, staying flat across the new two tiles."
-        },
-        "move-south-while-lying-y": {
-            "first": "A flat block oriented north-south rolls south while remaining flat.",
-            "detailed-first": "When the block lies north-south across two tiles and there is room to the south, it rolls one step south while staying flat across the new tiles."
-        },
-        "move-east-while-lying-x": {
-            "first": "A flat block oriented east-west rolls east while remaining flat.",
-            "detailed-first": "If the block is flat along the east-west axis, it can roll one tile east while maintaining its flat horizontal orientation."
-        },
-        "move-west-while-lying-x": {
-            "first": "A flat block oriented east-west rolls west while remaining flat.",
-            "detailed-first": "When the block lies flat along two east-west tiles, it can roll westward across two new adjacent tiles without changing orientation."
-        }
+    "adjacent": {
+      "first": "Defines adjacency between tiles in a given direction.",
+      "detailed-first": "Establishes the directional neighbor relationship (north, south, east, west) between tiles, enabling legal block movements."
+    },
+    "perpendicular": {
+      "first": "Defines orthogonal directions.",
+      "detailed-first": "Used to ensure correct orientation when rolling a lying block perpendicular to its axis."
     }
+  },
+  "actions": {
+    "lay-down": {
+      "first": "A standing block rolls in one direction to lie flat across two tiles.",
+      "detailed-first": "When the block stands on a tile and two adjacent tiles extend in a direction, it rolls forward, ending up lying flat over those two tiles."
+    },
+    "stand-up": {
+      "first": "A flat block rolls to stand upright on the next tile.",
+      "detailed-first": "When the block lies flat and rolls along its long axis, it ends up standing on the next tile."
+    },
+    "roll": {
+      "first": "A flat block rolls sideways while staying flat.",
+      "detailed-first": "When the block lies flat across two tiles, it can roll sideways (perpendicular direction) to remain flat across the next two tiles."
+    }
+  }
 }
