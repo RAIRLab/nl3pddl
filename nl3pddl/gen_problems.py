@@ -4,18 +4,21 @@ which creates generates randomized problems at various levels of difficulty for
 the domains we evaluate over. 
 '''
 
+from concurrent.futures import ThreadPoolExecutor
 import os
 import shutil
+from time import time
 from typing import Any, Callable
+from pathlib import Path
 
+import pddl
 from kstar_planner import planners
 
 from nl3pddl.problem_generators import PROBLEM_GENERATORS
 from nl3pddl.logger import logger
 import nl3pddl.config as config
-from pathlib import Path
 
-
+# TODO: merge into utils, we have a nearly identical function for kstar in feedback_eval.py
 def plan_file(
     domain_path : Path,
     problem_path : Path,
@@ -27,8 +30,8 @@ def plan_file(
     
     # passing in domain_path as str gives error as kstar expects Path type
     plan_obj = planners.plan_topk(
-        domain_file = domain_path,
-        problem_file = problem_path,
+        domain_file = Path(domain_path),
+        problem_file = Path(problem_path),
         number_of_plans_bound = config.PLANS_PER_PROBLEM,
         timeout = config.KSTAR_TIMEOUT
     )
@@ -37,6 +40,7 @@ def plan_file(
         return None
     return plan_obj
 
+#TODO: move into utils
 def plan_to_string(plan_obj : dict[str, Any]) -> str:
     """
     Return a VAL parsable plan from json object output by K*
@@ -52,7 +56,11 @@ def gen_problem_till_success(
         i : int, 
         problem_file : Path, 
         domain_file : Path
-) -> dict[str, Any]: 
+) -> dict[str, Any]:
+    """ 
+    Try to generate a problem and plans on it until successful.
+    This shouldn't be necessary for good generators, but is a safeguard.
+    """
     while True:
         generator(i, problem_file)
         print(f"Generated {problem_file}")
@@ -60,6 +68,7 @@ def gen_problem_till_success(
             domain_file, problem_file
         )
         if plans is None:
+            # Alert the user we are retrying
             logger.error(
                 f"Failed to gen plans for {problem_file}, retrying..."
             )
@@ -72,6 +81,12 @@ def gen_domain_problems(domain_name, generator):
     assert os.path.exists(domain_file), \
         f"Domain file {domain_file} does not exist. " \
         "Please ensure the domain is generated first."
+    # Parse PDDL domain name to align output directory naming
+    try:
+        pddl_domain = pddl.parse_domain(domain_file)
+        output_domain_name = pddl_domain.name
+    except Exception as e: # pylint: disable=broad-except
+        raise AssertionError(f"Failed to parse domain name from {domain_file}: {e}")
     
     problem_counts = {
         config.FEEDBACK_PROBLEMS_DIR: config.NUM_FEEDBACK_PROBLEMS,
@@ -80,7 +95,7 @@ def gen_domain_problems(domain_name, generator):
     #Create problems director if it doesn't exist
 
     for dir_path, num_problems in problem_counts.items():
-        output_dir = os.path.join(dir_path, domain_name)
+        output_dir = os.path.join(dir_path, output_domain_name)
         os.makedirs(output_dir, exist_ok=True)
         for i in range(1, num_problems + 1):
             problem_file = os.path.join(output_dir, f"problem-{i}.pddl")
@@ -99,10 +114,18 @@ def gen_domain_problems(domain_name, generator):
                 with open(plan_path, 'w', encoding='utf-8') as file:
                     file.write(plan_str)
 
+def generate_problem(item) -> None:
+    domain, generator = item
+    if domain in config.DOMAINS:
+        print(f"Generating problems for domain {domain}")
+        gen_domain_problems(domain, generator)
+    else:
+        print(f"Skipping domain {domain} as not in config domains list.")
+
 def generate_problems() -> None:
     if os.path.exists(config.GENERATED_PROBLEMS_DIR):
         shutil.rmtree(config.GENERATED_PROBLEMS_DIR)
-    for domain, generator in PROBLEM_GENERATORS.items():
-        if domain in config.DOMAINS:
-            print(f"Generating problems for domain {domain}")
-            gen_domain_problems(domain, generator)
+    items = PROBLEM_GENERATORS.items()
+    with ThreadPoolExecutor(max_workers=len(items)) as pool:
+        pool.map(generate_problem, items)
+    print("Joined all processes")

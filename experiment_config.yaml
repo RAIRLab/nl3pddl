@@ -56,28 +56,42 @@ domains:
   - checkers-jumping
   - flow
   - hiking
-  - pacman-63
-  # - sudoku
-  # - bloxorz
-  # - pacman-72
-  # - keygrid
+  # - pacman-63 # NOT ALL PROBLEMS ARE SOLVABLE
+  # - keygrid # No plans generated!
+  # - pacman-72 # NOT ALL PROBLEMS ARE SOLVABLE
+  # - sliding-puzzle # Generator does not generate valid problems.
   
 # What models are we evaluating?
 # This can be any valid provider and model pair, assuming the API key is set in
 # the ENV file and passed in.
 models:
-  openai:
-    - o4-mini
+  # openai:
+    # - o4-mini
     #    - gpt-4o-mini
     # - gpt-5-nano
-  #deepseek:
-  #        - deepseek-chat
+  deepseek:
+    - deepseek-chat
   #huggingface:
   #       - "Qwen/Qwen2.5-7B-Instruct"
   #- NousResearch/Hermes-4-405B
 
-#Supported model providers are: together, azure_openai, groq, ibm, azure_ai, deepseek, bedrock, google_anthropic_vertex, google_genai, o
-#│llama, cohere, xai, huggingface, perplexity, anthropic, openai, fireworks, mistralai, google_vertexai, bedrock_converse
+price:
+  o4-mini:
+    input: 4.0e-6
+    output: 1.6e-5
+  deepseek-chat:
+    input: 2.8e-7
+    output: 4.2e-7
+  deepseek-reasoner:
+    input: 2.8e-7
+    output: 4.2e-7
+    
+# Average token usage and call counts for cost estimation
+avg-tokens:
+  input: 459      # average input tokens per model call (estimated from blocks)
+  output: 190     # average output tokens per model call (estimated from blocks)
+
+avg-calls-per-experiment: 10  # average number of model calls per experiment
 
 # Description classes to evaluate over, should correspond to the classes
 # present in the dataset/*/nl.json files.
@@ -111,5 +125,3 @@ search-heuristic:
 # Should the model be presented with a description of predicates from the
 # problem set when initially generating the domain?
 give-pred-description: [true]
-
-

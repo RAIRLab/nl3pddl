@@ -1,7 +1,7 @@
 import argparse
 import random
 
-def generate_solvable_keygrid(n, filename):
+def generate_keygrid_problem(n, filename):
     
     locks = n           # Number of locked doors (place2 to place_{n+1})
     keys = n            # Number of unique keys (key1 to key_n)
@@ -85,4 +85,4 @@ if __name__ == "__main__":
     if args.n < 1:
          print("Error: 'n' must be a positive integer (number of locks).")
     else:
-        generate_solvable_keygrid(args.n, args.output)
+        generate_keygrid_problem(args.n, args.output)

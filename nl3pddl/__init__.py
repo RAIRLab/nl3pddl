@@ -8,4 +8,4 @@ from .gen_landmarks import generate_landmarks
 from .experiment import run_experiment, graph_pipeline_image
 from .plot import plot_all_figures
 from .test_generators import test_generators
-
+from .config import config
