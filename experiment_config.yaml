@@ -14,6 +14,11 @@ plans-per-problem: 2
 
 # General Experiment Config Parameters =========================================
 
+# This flag is used to test the experiment setup without actually running
+# any experiments. When set to true, the experiment will skip running and only
+# the parallelism will be tested.
+skip-experiment: false 
+
 # The level to log at:
 # See https://docs.python.org/3/library/logging.html#logging-levels
 # 10 for DEBUG, which contains our lowest level of logging
@@ -30,7 +35,7 @@ threads: -1
 action-threshold: 5
 
 # Maximum number of reprompts to refine the domain.
-hde-threshold: 5
+hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
@@ -45,8 +50,18 @@ kstar-n-plans: 100
 # Grid Parameters ==============================================================
 # The following parameters define a parameter grid to evaluate over.
 # Every possible combination of these parameters will be evaluated over
-# every single domain in the dataset/domains folder.
 
+domains:
+  - bookseller
+  - checkers-jumping
+  - flow
+  - hiking
+  - pacman-63
+  # - sudoku
+  # - bloxorz
+  # - pacman-72
+  # - keygrid
+  
 # What models are we evaluating?
 # This can be any valid provider and model pair, assuming the API key is set in
 # the ENV file and passed in.
@@ -94,6 +109,8 @@ feedback-pipelines:
     - ["landmark"]
     - ["validate"]
     - ["landmark", "validate"]
+    - ["landmark", "random-single"]
+    - ["validate", "random-single"]
     - ["landmark", "validate", "random-single"]
 
 # Specifies the search heuristic to use when generating plans.

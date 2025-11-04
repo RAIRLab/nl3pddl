@@ -10,7 +10,6 @@ from .hiking import generate_hiking_problem
 from .pacman_63 import generate_pacman_63_problem
 from .pacman_72 import generate_pacman_problem
 from .tilepuzzle import generate_sliding_puzzle_problem as generate_tilepuzzle_problem
-# light-bubble generator uses a different signature; wrap later if needed
 
 # GENS is a dictionary mapping problem names to their respective generation functions.
 PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {

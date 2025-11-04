@@ -26,6 +26,7 @@ from .config import (
     ACTION_THRESHOLD,
     HDE_THRESHOLD,
     PRICE,
+    SKIP_EXPERIMENT,
     AVERAGE_INPUT_TOKENS,
     AVERAGE_OUTPUT_TOKENS,
     AVERAGE_CALLS_PER_EXPERIMENT,
@@ -170,9 +171,10 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     def check_domain_syntax(state: State):
         json_last = state["messages"].json_last()
         res = check_domain_syntax_output(d, p, json_last)
+        # Only add a new message if we found an error
         new_messages = state["messages"].insert_on_current_branch(
             res, "check_domain_syntax"
-        ) if res else state["messages"]
+        ) if res is not None else state["messages"]
         #If syntactically valid, immediatly update the score based on how well it does on the evals, note that lower is better!
         if res is None:
             try:
@@ -353,12 +355,17 @@ def run_experiment_instance(
     if the experiment ran without errors, and the final state of the experiment
     (in the event of an error, the final state before failure).
     """
-    graph = create_langgraph(d, p)
 
     initial_state : State = gen_initial_state(batch_id, d, p)
 
     # Langgraph experiment state
     state : State = initial_state
+
+    if SKIP_EXPERIMENT:
+        logger.info(f"Skipping experiment {batch_id} for domain {p.domain_path} with path {p.feedback_pipeline} as per configuration.")
+        return True, "Experiment skipped", state
+
+    graph = create_langgraph(d, p)
 
     # TODO: this is no longer meaningful in light of search
     config = {
@@ -456,10 +463,13 @@ def run_experiment() -> None:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
             for res in pool.map(run_experiment_instance_star, args):
-                (success, err_msg, state) = res
-                write_message_log(state, err_msg, results_dir)
-                if success:
-                    csv_results_row = gen_csv_results(state)
-                    csv_writer.writerow(csv_results_row)
+                try:
+                    (success, err_msg, state) = res
+                    write_message_log(state, err_msg, results_dir)
+                    if success:
+                        csv_results_row = gen_csv_results(state)
+                        csv_writer.writerow(csv_results_row)
+                except Exception as e:
+                    logger.error("Error processing result: %s", e)
 
     print("Successfully joined all threads. Experiment complete.")

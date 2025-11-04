@@ -6,7 +6,7 @@ the domains we evaluate over.
 
 import os
 import shutil
-from typing import Any
+from typing import Any, Callable
 
 from kstar_planner import planners
 
@@ -18,8 +18,8 @@ import pddl
 
 
 def plan_file(
-    domain_path : str,
-    problem_path : str,
+    domain_path : Path,
+    problem_path : Path,
 ) -> dict | None:
     """
     Given a domain path and a problem invoke K* and produce k optimal plans as
@@ -49,10 +49,10 @@ def plan_to_string(plan_obj : dict[str, Any]) -> str:
     return result_plan_string
 
 def gen_problem_till_success(
-        generator, 
-        i, 
-        problem_file, 
-        domain_file
+        generator : Callable[[int, Path], None],
+        i : int, 
+        problem_file : Path, 
+        domain_file : Path
 ) -> dict[str, Any]: 
     while True:
         generator(i, problem_file)
@@ -67,8 +67,9 @@ def gen_problem_till_success(
             continue
         return plans["plans"]
 
-def gen_domain_problems(domain_folder_name, generator): 
-    domain_file = f"data/domains/{domain_folder_name}/ground.pddl"
+def gen_domain_problems(domain_name, generator): 
+    domain_file = f"data/domains/{domain_name}/ground.pddl"
+    domain_file = Path(domain_file)
     assert os.path.exists(domain_file), \
         f"Domain file {domain_file} does not exist. " \
         "Please ensure the domain is generated first."
@@ -90,6 +91,7 @@ def gen_domain_problems(domain_folder_name, generator):
         os.makedirs(output_dir, exist_ok=True)
         for i in range(1, num_problems + 1):
             problem_file = os.path.join(output_dir, f"problem-{i}.pddl")
+            problem_file = Path(problem_file)
             # Try generating a problem and plans on it, fail if impossible
             # The number of plans is determined by config.KSTAR_N_PLANS
             plans = gen_problem_till_success(generator, i, problem_file, domain_file)
@@ -107,6 +109,7 @@ def gen_domain_problems(domain_folder_name, generator):
 def generate_problems() -> None:
     if os.path.exists(config.GENERATED_PROBLEMS_DIR):
         shutil.rmtree(config.GENERATED_PROBLEMS_DIR)
-    for domain_folder, generator in PROBLEM_GENERATORS.items():
-        print(f"Generating problems for domain folder {domain_folder}")
-        gen_domain_problems(domain_folder, generator)
+    for domain, generator in PROBLEM_GENERATORS.items():
+        if domain in config.DOMAINS:
+            print(f"Generating problems for domain {domain}")
+            gen_domain_problems(domain, generator)
