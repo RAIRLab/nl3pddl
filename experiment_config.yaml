@@ -57,10 +57,9 @@ domains:
   - flow
   - hiking
   - pacman-63
-  # - sudoku
-  # - bloxorz
-  # - pacman-72
-  # - keygrid
+  - keygrid
+  - sliding-puzzle
+  - pacman-72
   
 # What models are we evaluating?
 # This can be any valid provider and model pair, assuming the API key is set in
