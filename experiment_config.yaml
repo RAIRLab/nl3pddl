@@ -39,6 +39,10 @@ plans-per-problem: 2
 # the parallelism will be tested.
 skip-experiment: false 
 
+# Evaluate the generated domains against the evaluation problems every single step, and log 
+# the results to the csv file.
+always-evaluate: true
+
 # The level to log at:
 # See https://docs.python.org/3/library/logging.html#logging-levels
 # 10 for DEBUG, which contains our lowest level of logging
@@ -59,7 +63,7 @@ hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 10
+trials: 5
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5
@@ -95,7 +99,7 @@ models:
     # - gpt-5-nano
   deepseek:
     - deepseek-chat
-    - deepseek-reasoner
+  #  - deepseek-reasoner
   #huggingface:
   #       - "Qwen/Qwen2.5-7B-Instruct"
   #- NousResearch/Hermes-4-405B
