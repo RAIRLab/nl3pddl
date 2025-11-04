@@ -3,7 +3,7 @@
     "problem": "problem-5.pddl",
     "problem_num": 5,
     "trivial_state_landmarks": [
-        "Atom lift-at(f4)"
+        "Atom lift-at(f2)"
     ],
     "non_trivial_state_landmarks": [
         "Atom served(p7)",
@@ -14,7 +14,9 @@
         "Atom served(p2)",
         "Atom served(p1)",
         "Atom lift-at(f1)",
-        "Atom lift-at(f2)",
+        "Atom lift-at(f3)",
+        "Atom lift-at(f4)",
+        "Atom lift-at(f5)",
         "Atom lift-at(f6)",
         "Atom lift-at(f7)",
         "Atom boarded(p7)",
@@ -43,82 +45,98 @@
     ],
     "landmarks": [
         [
-            "depart f1 p5"
+            "down f5 f1",
+            "down f4 f1",
+            "down f3 f1",
+            "down f2 f1",
+            "down f6 f1",
+            "down f7 f1"
         ],
         [
-            "depart f7 p7"
+            "depart f4 p1"
         ],
         [
-            "up f6 f7",
-            "up f2 f7",
-            "up f3 f7",
-            "up f4 f7",
-            "up f5 f7",
-            "up f1 f7"
-        ],
-        [
-            "board f4 p3"
-        ],
-        [
-            "depart f1 p4"
-        ],
-        [
-            "down f5 f2",
-            "down f7 f2",
-            "down f3 f2",
-            "down f4 f2",
-            "down f6 f2",
-            "up f1 f2"
-        ],
-        [
-            "board f2 p1"
-        ],
-        [
-            "board f7 p5"
-        ],
-        [
-            "up f3 f6",
+            "up f5 f6",
+            "up f2 f6",
             "up f4 f6",
             "down f7 f6",
-            "up f1 f6",
-            "up f5 f6",
-            "up f2 f6"
+            "up f3 f6",
+            "up f1 f6"
+        ],
+        [
+            "board f3 p1"
         ],
         [
             "board f2 p6"
         ],
         [
-            "board f7 p4"
+            "down f4 f3",
+            "up f2 f3",
+            "down f7 f3",
+            "up f1 f3",
+            "down f5 f3",
+            "down f6 f3"
         ],
         [
-            "board f2 p2"
+            "down f7 f5",
+            "up f3 f5",
+            "up f1 f5",
+            "up f2 f5",
+            "up f4 f5",
+            "down f6 f5"
         ],
         [
-            "board f6 p7"
+            "board f3 p4"
         ],
         [
-            "depart f6 p3"
+            "up f1 f7",
+            "up f6 f7",
+            "up f3 f7",
+            "up f4 f7",
+            "up f5 f7",
+            "up f2 f7"
         ],
         [
-            "down f3 f1",
-            "down f4 f1",
-            "down f6 f1",
-            "down f7 f1",
-            "down f2 f1",
-            "down f5 f1"
+            "board f2 p5"
+        ],
+        [
+            "depart f6 p4"
+        ],
+        [
+            "board f5 p3"
         ],
         [
             "depart f7 p6"
         ],
         [
-            "depart f1 p1"
+            "depart f6 p7"
+        ],
+        [
+            "down f7 f4",
+            "up f1 f4",
+            "down f5 f4",
+            "down f6 f4",
+            "up f2 f4",
+            "up f3 f4"
         ],
         [
             "depart f1 p2"
+        ],
+        [
+            "board f5 p7"
+        ],
+        [
+            "depart f4 p5"
+        ],
+        [
+            "board f2 p2"
+        ],
+        [
+            "depart f1 p3"
         ]
     ],
     "raw_output": {
-        "planner_output": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/james/repos/nl2pddl3/.venv/bin/python /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/translate/translate.py /home/james/repos/nl2pddl3/data/domains/miconic/ground.pddl /home/james/repos/nl2pddl3/data/gen_problems/feedback/miconic/problem-5.pddl --sas-file output.sas\nParsing...\nParsing: [0.000s CPU, 0.002s wall-clock]\nNormalizing task... [0.000s CPU, 0.000s wall-clock]\nInstantiating...\nGenerating Datalog program... [0.000s CPU, 0.000s wall-clock]\nNormalizing Datalog program...\nNormalizing Datalog program: [0.000s CPU, 0.001s wall-clock]\nPreparing model... [0.000s CPU, 0.000s wall-clock]\nGenerated 18 rules.\nComputing model... [0.000s CPU, 0.001s wall-clock]\n169 relevant atoms\n91 auxiliary atoms\n260 final queue length\n296 total queue pushes\nCompleting instantiation... [0.000s CPU, 0.001s wall-clock]\nInstantiating: [0.000s CPU, 0.003s wall-clock]\nComputing fact groups...\nFinding invariants...\n6 initial candidates\nFinding invariants: [0.000s CPU, 0.001s wall-clock]\nChecking invariant weight... [0.000s CPU, 0.000s wall-clock]\nInstantiating groups... [0.000s CPU, 0.000s wall-clock]\nCollecting mutex groups... [0.000s CPU, 0.000s wall-clock]\nChoosing groups...\n14 uncovered facts\nChoosing groups: [0.000s CPU, 0.000s wall-clock]\nBuilding translation key... [0.000s CPU, 0.000s wall-clock]\nComputing fact groups: [0.000s CPU, 0.001s wall-clock]\nBuilding STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]\nBuilding dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]\nBuilding mutex information...\nBuilding mutex information: [0.000s CPU, 0.000s wall-clock]\nTranslating task...\nProcessing axioms...\nSimplifying axioms... [0.000s CPU, 0.000s wall-clock]\nTranslator axioms removed by simplifying: 0\nComputing negative axioms... [0.000s CPU, 0.000s wall-clock]\nProcessing axioms: [0.010s CPU, 0.000s wall-clock]\nTranslating task: [0.010s CPU, 0.001s wall-clock]\n7 effect conditions simplified\n0 implied preconditions added\nDetecting unreachable propositions...\n0 operators removed\n0 axioms removed\n1 propositions removed\nDetecting unreachable propositions: [0.000s CPU, 0.000s wall-clock]\nReordering and filtering variables...\n15 of 15 variables necessary.\n0 of 1 mutex groups necessary.\n56 of 56 operators necessary.\n0 of 0 axiom rules necessary.\nReordering and filtering variables: [0.000s CPU, 0.000s wall-clock]\nTranslator variables: 15\nTranslator derived variables: 0\nTranslator facts: 35\nTranslator goal facts: 7\nTranslator mutex groups: 0\nTranslator total mutex groups size: 0\nTranslator operators: 56\nTranslator axioms: 0\nTranslator task size: 239\nTranslator peak memory: 28752 KB\nWriting output... [0.000s CPU, 0.000s wall-clock]\nDone! [0.010s CPU, 0.008s wall-clock]\ntranslate exit code: 0\n\nINFO     Running search (/home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin).\nINFO     search stdin: output.sas\nINFO     search time limit: None\nINFO     search memory limit: None\nINFO     search command line string: /home/james/repos/nl2pddl3/.venv/lib/python3.10/site-packages/forbiditerative/builds/release/bin/downward --evaluator 'h=lmcount(lm_factory=lm_exhaust(),dump_action_landmarks=true)' --always --search 'lazy_greedy([h,const(infinity())])' --internal-plan-file sas_plan < output.sas\n[t=3.1299e-05s, 11192 KB] reading input...\n[t=0.000307833s, 11324 KB] done reading input!\n[t=0.00136777s, 11588 KB] Initializing landmark count heuristic...\n[t=0.00142856s, 11588 KB] Generating landmark graph...\n[t=0.00145606s, 11588 KB] Initializing Exploration...\n[t=0.00149218s, 11588 KB] Generating landmarks by testing all facts with RPG method\n[t=0.00165129s, 11720 KB] Removed 0 reasonable or obedient reasonable orders\n[t=0.00168061s, 11720 KB] Landmarks generation time: 0.00024759s\n[t=0.0017071s, 11720 KB] Discovered 33 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00172135s, 11720 KB] 0 edges\n[t=0.00173315s, 11720 KB] Landmark graph generation time: 0.000314623s\n[t=0.00175482s, 11720 KB] Landmark graph contains 33 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00176838s, 11720 KB] Landmark graph contains 0 orderings.\n[t=0.00177948s, 11720 KB] Dumping landmarks from landmark graph: \n[t=0.00188376s, 11720 KB] Action landmarks end.\n[t=0.00196924s, 11720 KB] Building successor generator...done!\n[t=0.00204165s, 11720 KB] peak memory difference for successor generator creation: 0 KB\n[t=0.00206143s, 11720 KB] time for successor generation creation: 1.5579e-05s\n[t=0.00207603s, 11720 KB] Variables: 15\n[t=0.00209771s, 11720 KB] FactPairs: 35\n[t=0.0021097s, 11720 KB] Bytes per state: 4\n[t=0.0022058s, 11720 KB] Conducting lazy best first search, (real) bound = 2147483647\n[t=0.00228057s, 11720 KB] 15 initial landmarks, 7 goal landmarks\n[t=0.00231226s, 11720 KB] Initial heuristic value for lmcount(lm_factory = lm_exhaust, dump_action_landmarks = true): 18\n[t=0.00234736s, 11720 KB] Completely explored state space -- no solution!\n[t=0.00235972s, 11720 KB] Actual search time: 6.1433e-05s\n[t=0.00238047s, 11720 KB] Expanded 0 state(s).\n[t=0.00238047s, 11720 KB] Reopened 0 state(s).\n[t=0.00238047s, 11720 KB] Evaluated 1 state(s).\n[t=0.00238047s, 11720 KB] Evaluations: 1\n[t=0.00238047s, 11720 KB] Generated 0 state(s).\n[t=0.00238047s, 11720 KB] Dead ends: 1 state(s).\n[t=0.00238047s, 11720 KB] Number of registered states: 1\n[t=0.00238047s, 11720 KB] Int hash set load factor: 1/1 = 1\n[t=0.00238047s, 11720 KB] Int hash set resizes: 0\n[t=0.00238047s, 11720 KB] Search time: 0.000175136s\n[t=0.00238047s, 11720 KB] Total time: 0.00238047s\nSearch stopped without finding a solution.\nPeak memory: 11720 KB\nRemove intermediate file output.sas\nsearch exit code: 12\n\nDriver aborting after search\nINFO     Planner time: 0.06s\n",
+        "planner_output": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/do/rair/nl3pddl/.venv/bin/python3 /home/do/rair/nl3pddl/.venv/lib/python3.13t/site-packages/forbiditerative/builds/release/bin/translate/translate.py /home/do/rair/nl3pddl/data/domains/miconic/ground.pddl /home/do/rair/nl3pddl/data/gen_problems/feedback/miconic/problem-5.pddl --sas-file output.sas\nParsing...\nParsing: [0.000s CPU, 0.002s wall-clock]\nNormalizing task... [0.000s CPU, 0.000s wall-clock]\nInstantiating...\nGenerating Datalog program... [0.000s CPU, 0.000s wall-clock]\nNormalizing Datalog program...\nNormalizing Datalog program: [0.000s CPU, 0.001s wall-clock]\nPreparing model... [0.000s CPU, 0.001s wall-clock]\nGenerated 18 rules.\nComputing model... [0.010s CPU, 0.004s wall-clock]\n169 relevant atoms\n91 auxiliary atoms\n260 final queue length\n296 total queue pushes\nCompleting instantiation... [0.000s CPU, 0.001s wall-clock]\nInstantiating: [0.010s CPU, 0.007s wall-clock]\nComputing fact groups...\nFinding invariants...\n6 initial candidates\nFinding invariants: [0.000s CPU, 0.001s wall-clock]\nChecking invariant weight... [0.000s CPU, 0.000s wall-clock]\nInstantiating groups... [0.000s CPU, 0.000s wall-clock]\nCollecting mutex groups... [0.000s CPU, 0.000s wall-clock]\nChoosing groups...\n14 uncovered facts\nChoosing groups: [0.000s CPU, 0.000s wall-clock]\nBuilding translation key... [0.000s CPU, 0.000s wall-clock]\nComputing fact groups: [0.000s CPU, 0.001s wall-clock]\nBuilding STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]\nBuilding dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]\nBuilding mutex information...\nBuilding mutex information: [0.000s CPU, 0.000s wall-clock]\nTranslating task...\nProcessing axioms...\nSimplifying axioms... [0.000s CPU, 0.000s wall-clock]\nTranslator axioms removed by simplifying: 0\nComputing negative axioms... [0.000s CPU, 0.000s wall-clock]\nProcessing axioms: [0.000s CPU, 0.000s wall-clock]\nTranslating task: [0.000s CPU, 0.001s wall-clock]\n7 effect conditions simplified\n0 implied preconditions added\nDetecting unreachable propositions...\n0 operators removed\n0 axioms removed\n1 propositions removed\nDetecting unreachable propositions: [0.000s CPU, 0.001s wall-clock]\nReordering and filtering variables...\n15 of 15 variables necessary.\n0 of 1 mutex groups necessary.\n56 of 56 operators necessary.\n0 of 0 axiom rules necessary.\nReordering and filtering variables: [0.000s CPU, 0.000s wall-clock]\nTranslator variables: 15\nTranslator derived variables: 0\nTranslator facts: 35\nTranslator goal facts: 7\nTranslator mutex groups: 0\nTranslator total mutex groups size: 0\nTranslator operators: 56\nTranslator axioms: 0\nTranslator task size: 239\nTranslator peak memory: 1086320 KB\nWriting output... [0.000s CPU, 0.001s wall-clock]\nDone! [0.010s CPU, 0.013s wall-clock]\ntranslate exit code: 0\n\nINFO     Running search (/home/do/rair/nl3pddl/.venv/lib/python3.13t/site-packages/forbiditerative/builds/release/bin).\nINFO     search stdin: output.sas\nINFO     search time limit: None\nINFO     search memory limit: None\nINFO     search command line string: /home/do/rair/nl3pddl/.venv/lib/python3.13t/site-packages/forbiditerative/builds/release/bin/downward --evaluator 'h=lmcount(lm_factory=lm_exhaust(),dump_action_landmarks=true)' --always --search 'lazy_greedy([h,const(infinity())])' --internal-plan-file sas_plan < output.sas\n[t=0.000114665s, 10508 KB] reading input...\n[t=0.00112402s, 10508 KB] done reading input!\n[t=0.00330733s, 10900 KB] Initializing landmark count heuristic...\n[t=0.00342404s, 10900 KB] Generating landmark graph...\n[t=0.0034807s, 10900 KB] Initializing Exploration...\n[t=0.00354916s, 10900 KB] Generating landmarks by testing all facts with RPG method\n[t=0.00382894s, 10900 KB] Removed 0 reasonable or obedient reasonable orders\n[t=0.00387488s, 10900 KB] Landmarks generation time: 0.000442602s\n[t=0.00391801s, 10900 KB] Discovered 35 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00395645s, 10900 KB] 0 edges\n[t=0.00399447s, 10900 KB] Landmark graph generation time: 0.000606611s\n[t=0.00403376s, 10900 KB] Landmark graph contains 35 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00407086s, 10900 KB] Landmark graph contains 0 orderings.\n[t=0.0041095s, 10900 KB] Dumping landmarks from landmark graph: \n[t=0.00431932s, 10900 KB] Action landmarks end.\n[t=0.00444222s, 10900 KB] Building successor generator...done!\n[t=0.00457547s, 10900 KB] peak memory difference for successor generator creation: 0 KB\n[t=0.00460936s, 10900 KB] time for successor generation creation: 2.2071e-05s\n[t=0.00464916s, 10900 KB] Variables: 15\n[t=0.00468717s, 10900 KB] FactPairs: 35\n[t=0.00472405s, 10900 KB] Bytes per state: 4\n[t=0.00485014s, 10900 KB] Conducting lazy best first search, (real) bound = 2147483647\n[t=0.00492637s, 10900 KB] 15 initial landmarks, 7 goal landmarks\n[t=0.00497401s, 10900 KB] Initial heuristic value for lmcount(lm_factory = lm_exhaust, dump_action_landmarks = true): 20\n[t=0.00501124s, 10900 KB] Completely explored state space -- no solution!\n[t=0.0050479s, 10900 KB] Actual search time: 0.000117561s\n[t=0.00508785s, 10900 KB] Expanded 0 state(s).\n[t=0.00508785s, 10900 KB] Reopened 0 state(s).\n[t=0.00508785s, 10900 KB] Evaluated 1 state(s).\n[t=0.00508785s, 10900 KB] Evaluations: 1\n[t=0.00508785s, 10900 KB] Generated 0 state(s).\n[t=0.00508785s, 10900 KB] Dead ends: 1 state(s).\n[t=0.00508785s, 10900 KB] Number of registered states: 1\n[t=0.00508785s, 10900 KB] Int hash set load factor: 1/1 = 1\n[t=0.00508785s, 10900 KB] Int hash set resizes: 0\n[t=0.00508785s, 10900 KB] Search time: 0.000238438s\n[t=0.00508785s, 10900 KB] Total time: 0.00508785s\nSearch stopped without finding a solution.\nPeak memory: 10900 KB\nRemove intermediate file output.sas\nsearch exit code: 12\n\nDriver aborting after search\nINFO     Planner time: 0.19s\n",
         "planner_error": "",
         "landmarks": [
             {
@@ -127,7 +145,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f7 p7"
+                    "depart f6 p7"
                 ]
             },
             {
@@ -145,7 +163,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f1 p5"
+                    "depart f4 p5"
                 ]
             },
             {
@@ -154,7 +172,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f1 p4"
+                    "depart f6 p4"
                 ]
             },
             {
@@ -163,7 +181,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f6 p3"
+                    "depart f1 p3"
                 ]
             },
             {
@@ -181,7 +199,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f1 p1"
+                    "depart f4 p1"
                 ]
             },
             {
@@ -214,6 +232,20 @@
             },
             {
                 "facts": [
+                    "Atom lift-at(f3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "down f4 f3",
+                    "down f5 f3",
+                    "down f6 f3",
+                    "down f7 f3",
+                    "up f1 f3",
+                    "up f2 f3"
+                ]
+            },
+            {
+                "facts": [
                     "Atom lift-at(f4)"
                 ],
                 "disjunctive": "False",
@@ -224,6 +256,20 @@
                     "up f1 f4",
                     "up f2 f4",
                     "up f3 f4"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom lift-at(f5)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "down f6 f5",
+                    "down f7 f5",
+                    "up f1 f5",
+                    "up f2 f5",
+                    "up f3 f5",
+                    "up f4 f5"
                 ]
             },
             {
@@ -260,7 +306,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "board f6 p7"
+                    "board f5 p7"
                 ]
             },
             {
@@ -269,7 +315,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f7 p7"
+                    "depart f6 p7"
                 ]
             },
             {
@@ -310,7 +356,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "board f7 p5"
+                    "board f2 p5"
                 ]
             },
             {
@@ -319,7 +365,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f1 p5"
+                    "depart f4 p5"
                 ]
             },
             {
@@ -335,7 +381,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "board f7 p4"
+                    "board f3 p4"
                 ]
             },
             {
@@ -344,7 +390,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f1 p4"
+                    "depart f6 p4"
                 ]
             },
             {
@@ -360,7 +406,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "board f4 p3"
+                    "board f5 p3"
                 ]
             },
             {
@@ -369,7 +415,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f6 p3"
+                    "depart f1 p3"
                 ]
             },
             {
@@ -410,7 +456,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "board f2 p1"
+                    "board f3 p1"
                 ]
             },
             {
@@ -419,7 +465,7 @@
                 ],
                 "disjunctive": "False",
                 "first_achievers": [
-                    "depart f1 p1"
+                    "depart f4 p1"
                 ]
             },
             {

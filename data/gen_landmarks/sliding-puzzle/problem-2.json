@@ -1,0 +1,156 @@
+{
+    "domain": "sliding-puzzle",
+    "problem": "problem-2.pddl",
+    "problem_num": 2,
+    "trivial_state_landmarks": [
+        "Atom empty(p22)",
+        "Atom at(t1, p21)",
+        "Atom at(t2, p11)",
+        "Atom at(t3, p12)"
+    ],
+    "non_trivial_state_landmarks": [
+        "Atom at(t1, p11)",
+        "Atom at(t2, p12)",
+        "Atom at(t3, p21)",
+        "Atom empty(p11)",
+        "Atom empty(p12)",
+        "Atom empty(p21)"
+    ],
+    "non_applicable_state_landmarks": [],
+    "landmarks": [
+        [
+            "move t3 p22 p21",
+            "move t3 p11 p21"
+        ],
+        [
+            "move t2 p11 p21",
+            "move t2 p11 p12"
+        ],
+        [
+            "move t1 p21 p22",
+            "move t1 p21 p11"
+        ],
+        [
+            "move t1 p12 p11",
+            "move t1 p21 p11"
+        ],
+        [
+            "move t2 p22 p12",
+            "move t2 p11 p12"
+        ],
+        [
+            "move t3 p12 p22",
+            "move t3 p12 p11"
+        ]
+    ],
+    "raw_output": {
+        "planner_output": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/do/rair/nl3pddl/.venv/bin/python3 /home/do/rair/nl3pddl/.venv/lib/python3.13t/site-packages/forbiditerative/builds/release/bin/translate/translate.py /home/do/rair/nl3pddl/data/domains/tilepuzzle/ground.pddl /home/do/rair/nl3pddl/data/gen_problems/feedback/sliding-puzzle/problem-2.pddl --sas-file output.sas\nParsing...\nParsing: [0.000s CPU, 0.001s wall-clock]\nNormalizing task... [0.000s CPU, 0.000s wall-clock]\nInstantiating...\nGenerating Datalog program... [0.000s CPU, 0.000s wall-clock]\nNormalizing Datalog program...\nNormalizing Datalog program: [0.000s CPU, 0.001s wall-clock]\nPreparing model... [0.000s CPU, 0.000s wall-clock]\nGenerated 8 rules.\nComputing model... [0.000s CPU, 0.000s wall-clock]\n70 relevant atoms\n32 auxiliary atoms\n102 final queue length\n138 total queue pushes\nCompleting instantiation... [0.000s CPU, 0.000s wall-clock]\nInstantiating: [0.000s CPU, 0.002s wall-clock]\nComputing fact groups...\nFinding invariants...\n5 initial candidates\nFinding invariants: [0.010s CPU, 0.001s wall-clock]\nChecking invariant weight... [0.000s CPU, 0.000s wall-clock]\nInstantiating groups... [0.000s CPU, 0.000s wall-clock]\nCollecting mutex groups... [0.000s CPU, 0.000s wall-clock]\nChoosing groups...\n0 uncovered facts\nChoosing groups: [0.000s CPU, 0.000s wall-clock]\nBuilding translation key... [0.000s CPU, 0.000s wall-clock]\nComputing fact groups: [0.010s CPU, 0.001s wall-clock]\nBuilding STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]\nBuilding dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]\nBuilding mutex information...\nBuilding mutex information: [0.000s CPU, 0.000s wall-clock]\nTranslating task...\nProcessing axioms...\nSimplifying axioms... [0.000s CPU, 0.000s wall-clock]\nTranslator axioms removed by simplifying: 0\nComputing negative axioms... [0.000s CPU, 0.000s wall-clock]\nProcessing axioms: [0.000s CPU, 0.000s wall-clock]\nTranslating task: [0.000s CPU, 0.001s wall-clock]\n0 effect conditions simplified\n0 implied preconditions added\nDetecting unreachable propositions...\n0 operators removed\n0 axioms removed\n4 propositions removed\nDetecting unreachable propositions: [0.000s CPU, 0.002s wall-clock]\nReordering and filtering variables...\n4 of 4 variables necessary.\n4 of 8 mutex groups necessary.\n24 of 24 operators necessary.\n0 of 0 axiom rules necessary.\nReordering and filtering variables: [0.000s CPU, 0.000s wall-clock]\nTranslator variables: 4\nTranslator derived variables: 0\nTranslator facts: 16\nTranslator goal facts: 4\nTranslator mutex groups: 4\nTranslator total mutex groups size: 16\nTranslator operators: 24\nTranslator axioms: 0\nTranslator task size: 160\nTranslator peak memory: 1086320 KB\nWriting output... [0.000s CPU, 0.000s wall-clock]\nDone! [0.010s CPU, 0.007s wall-clock]\ntranslate exit code: 0\n\nINFO     Running search (/home/do/rair/nl3pddl/.venv/lib/python3.13t/site-packages/forbiditerative/builds/release/bin).\nINFO     search stdin: output.sas\nINFO     search time limit: None\nINFO     search memory limit: None\nINFO     search command line string: /home/do/rair/nl3pddl/.venv/lib/python3.13t/site-packages/forbiditerative/builds/release/bin/downward --evaluator 'h=lmcount(lm_factory=lm_exhaust(),dump_action_landmarks=true)' --always --search 'lazy_greedy([h,const(infinity())])' --internal-plan-file sas_plan < output.sas\n[t=3.3964e-05s, 10508 KB] reading input...\n[t=0.00023918s, 10508 KB] done reading input!\n[t=0.00160963s, 10896 KB] Initializing landmark count heuristic...\n[t=0.00173097s, 10896 KB] Generating landmark graph...\n[t=0.00177576s, 10896 KB] Initializing Exploration...\n[t=0.0018173s, 10896 KB] Generating landmarks by testing all facts with RPG method\n[t=0.00190547s, 10896 KB] Removed 0 reasonable or obedient reasonable orders\n[t=0.00194303s, 10896 KB] Landmarks generation time: 0.00020719s\n[t=0.00197011s, 10896 KB] Discovered 10 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00199298s, 10896 KB] 0 edges\n[t=0.00201582s, 10896 KB] Landmark graph generation time: 0.000313669s\n[t=0.00204669s, 10896 KB] Landmark graph contains 10 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00207077s, 10896 KB] Landmark graph contains 0 orderings.\n[t=0.00210029s, 10896 KB] Dumping landmarks from landmark graph: \n[t=0.00238484s, 10896 KB] Action landmarks end.\n[t=0.00254574s, 10896 KB] Building successor generator...done!\n[t=0.00263704s, 10896 KB] peak memory difference for successor generator creation: 0 KB\n[t=0.0026726s, 10896 KB] time for successor generation creation: 1.9687e-05s\n[t=0.00271962s, 10896 KB] Variables: 4\n[t=0.00276089s, 10896 KB] FactPairs: 16\n[t=0.00279447s, 10896 KB] Bytes per state: 4\n[t=0.00302337s, 10896 KB] Conducting lazy best first search, (real) bound = 2147483647\n[t=0.00308723s, 10896 KB] 4 initial landmarks, 4 goal landmarks\n[t=0.00312282s, 10896 KB] Initial heuristic value for lmcount(lm_factory = lm_exhaust, dump_action_landmarks = true): 6\n[t=0.00314931s, 10896 KB] Completely explored state space -- no solution!\n[t=0.00317397s, 10896 KB] Actual search time: 8.3788e-05s\n[t=0.00320134s, 10896 KB] Expanded 0 state(s).\n[t=0.00320134s, 10896 KB] Reopened 0 state(s).\n[t=0.00320134s, 10896 KB] Evaluated 1 state(s).\n[t=0.00320134s, 10896 KB] Evaluations: 1\n[t=0.00320134s, 10896 KB] Generated 0 state(s).\n[t=0.00320134s, 10896 KB] Dead ends: 1 state(s).\n[t=0.00320134s, 10896 KB] Number of registered states: 1\n[t=0.00320134s, 10896 KB] Int hash set load factor: 1/1 = 1\n[t=0.00320134s, 10896 KB] Int hash set resizes: 0\n[t=0.00320134s, 10896 KB] Search time: 0.000179257s\n[t=0.00320134s, 10896 KB] Total time: 0.00320134s\nSearch stopped without finding a solution.\nPeak memory: 10896 KB\nRemove intermediate file output.sas\nsearch exit code: 12\n\nDriver aborting after search\nINFO     Planner time: 0.12s\n",
+        "planner_error": "",
+        "landmarks": [
+            {
+                "facts": [
+                    "Atom at(t1, p11)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move t1 p12 p11",
+                    "move t1 p21 p11"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(t2, p12)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move t2 p11 p12",
+                    "move t2 p22 p12"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(t3, p21)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move t3 p11 p21",
+                    "move t3 p22 p21"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom empty(p22)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move t1 p22 p12",
+                    "move t1 p22 p21",
+                    "move t2 p22 p12",
+                    "move t2 p22 p21",
+                    "move t3 p22 p12",
+                    "move t3 p22 p21"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(t1, p21)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move t1 p11 p21",
+                    "move t1 p22 p21"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(t2, p11)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move t2 p12 p11",
+                    "move t2 p21 p11"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom at(t3, p12)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move t3 p11 p12",
+                    "move t3 p22 p12"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom empty(p11)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move t2 p11 p12",
+                    "move t2 p11 p21"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom empty(p12)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move t3 p12 p11",
+                    "move t3 p12 p22"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom empty(p21)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "move t1 p21 p11",
+                    "move t1 p21 p22"
+                ]
+            }
+        ]
+    }
+}

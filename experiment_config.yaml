@@ -61,6 +61,19 @@ models:
   #       - "Qwen/Qwen2.5-7B-Instruct"
   #- NousResearch/Hermes-4-405B
 
+price:
+  o4-mini:
+    input:
+      4.0e-6
+    output:
+      1.6e-5
+
+# Average token usage and call counts for cost estimation
+avg-tokens:
+  input: 459      # average input tokens per model call (estimated from blocks)
+  output: 190     # average output tokens per model call (estimated from blocks)
+
+avg-calls-per-experiment: 10  # average number of model calls per experiment
 #Supported model providers are: together, azure_openai, groq, ibm, azure_ai, deepseek, bedrock, google_anthropic_vertex, google_genai, o
 #│llama, cohere, xai, huggingface, perplexity, anthropic, openai, fireworks, mistralai, google_vertexai, bedrock_converse
 
@@ -94,5 +107,3 @@ search-heuristic:
 # Should the model be presented with a description of predicates from the
 # problem set when initially generating the domain?
 give-pred-description: [true]
-
-

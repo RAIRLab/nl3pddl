@@ -6,7 +6,7 @@
       (has_food ?location - node)
       (no_food ?location - node)
       (is_safe ?location - node)               ; complement of is_opponent_ghost
-      (is_visited ?location)
+      (is_visited ?location - node)
       (at ?location - node)
       (not_at ?location - node)
       (connected ?n1 ?n2 - node)

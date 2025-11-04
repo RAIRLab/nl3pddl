@@ -1,0 +1,539 @@
+{
+    "domain": "pacman-63",
+    "problem": "problem-4.pddl",
+    "problem_num": 4,
+    "trivial_state_landmarks": [],
+    "non_trivial_state_landmarks": [
+        "Atom no_food(n6_0)",
+        "Atom no_food(n2_0)",
+        "Atom no_food(n0_3)",
+        "Atom no_food(n4_2)",
+        "Atom no_food(n5_1)",
+        "Atom at(n6_0)",
+        "Atom at(n2_0)",
+        "Atom at(n0_3)",
+        "Atom at(n4_2)",
+        "Atom at(n5_1)"
+    ],
+    "non_applicable_state_landmarks": [
+        "NegatedAtom at(n0_0)",
+        "NegatedAtom at(n0_5)",
+        "NegatedAtom at(n3_0)",
+        "NegatedAtom at(n3_4)",
+        "NegatedAtom at(n5_0)",
+        "NegatedAtom at(n6_2)",
+        "NegatedAtom at(n3_6)",
+        "NegatedAtom at(n2_6)",
+        "NegatedAtom at(n1_6)",
+        "NegatedAtom at(n1_5)",
+        "NegatedAtom at(n6_6)",
+        "NegatedAtom at(n6_4)",
+        "NegatedAtom at(n6_5)",
+        "NegatedAtom at(n0_1)",
+        "NegatedAtom at(n0_4)",
+        "NegatedAtom at(n2_4)",
+        "NegatedAtom at(n1_4)",
+        "NegatedAtom at(n6_1)",
+        "NegatedAtom at(n4_6)",
+        "NegatedAtom at(n5_6)",
+        "NegatedAtom at(n0_2)",
+        "NegatedAtom at(n1_1)",
+        "NegatedAtom at(n2_3)",
+        "NegatedAtom at(n6_0)",
+        "NegatedAtom at(n4_5)",
+        "NegatedAtom at(n5_5)",
+        "NegatedAtom at(n1_2)",
+        "NegatedAtom at(n1_3)",
+        "NegatedAtom at(n4_4)",
+        "NegatedAtom at(n5_4)",
+        "NegatedAtom at(n2_2)",
+        "NegatedAtom at(n4_3)",
+        "NegatedAtom at(n5_3)",
+        "NegatedAtom at(n2_1)",
+        "NegatedAtom at(n3_2)",
+        "NegatedAtom at(n3_1)",
+        "NegatedAtom at(n5_2)",
+        "NegatedAtom at(n2_0)",
+        "NegatedAtom at(n4_1)",
+        "NegatedAtom at(n0_3)",
+        "NegatedAtom at(n4_2)",
+        "NegatedAtom at(n5_1)",
+        "NegatedAtom no_food(n6_0)",
+        "NegatedAtom no_food(n2_0)",
+        "NegatedAtom no_food(n0_3)",
+        "NegatedAtom no_food(n4_2)",
+        "NegatedAtom no_food(n5_1)"
+    ],
+    "landmarks": [
+        [
+            "eat_food n6_1 n6_0",
+            "eat_food n5_0 n6_0"
+        ],
+        [
+            "eat_food n3_0 n2_0",
+            "eat_food n2_1 n2_0"
+        ],
+        [
+            "eat_food n0_2 n0_3",
+            "eat_food n0_4 n0_3",
+            "eat_food n1_3 n0_3"
+        ],
+        [
+            "eat_food n3_2 n4_2",
+            "eat_food n4_1 n4_2",
+            "eat_food n5_2 n4_2",
+            "eat_food n4_3 n4_2"
+        ],
+        [
+            "eat_food n6_1 n5_1",
+            "eat_food n4_1 n5_1",
+            "eat_food n5_2 n5_1",
+            "eat_food n5_0 n5_1"
+        ]
+    ],
+    "raw_output": {
+        "planner_output": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/do/rair/nl3pddl/.venv/bin/python3 /home/do/rair/nl3pddl/.venv/lib/python3.13t/site-packages/forbiditerative/builds/release/bin/translate/translate.py /home/do/rair/nl3pddl/data/domains/pacman_63/ground.pddl /home/do/rair/nl3pddl/data/gen_problems/feedback/pacman-63/problem-4.pddl --sas-file output.sas\nParsing...\nParsing: [0.000s CPU, 0.002s wall-clock]\nNormalizing task... [0.000s CPU, 0.000s wall-clock]\nInstantiating...\nGenerating Datalog program... [0.000s CPU, 0.002s wall-clock]\nNormalizing Datalog program...\nNormalizing Datalog program: [0.000s CPU, 0.001s wall-clock]\nPreparing model... [0.000s CPU, 0.001s wall-clock]\nGenerated 19 rules.\nComputing model... [0.010s CPU, 0.007s wall-clock]\n693 relevant atoms\n529 auxiliary atoms\n1222 final queue length\n1581 total queue pushes\nCompleting instantiation... [0.000s CPU, 0.002s wall-clock]\nInstantiating: [0.010s CPU, 0.014s wall-clock]\nComputing fact groups...\nFinding invariants...\n8 initial candidates\nFinding invariants: [0.000s CPU, 0.000s wall-clock]\nChecking invariant weight... [0.000s CPU, 0.000s wall-clock]\nInstantiating groups... [0.000s CPU, 0.000s wall-clock]\nCollecting mutex groups... [0.000s CPU, 0.000s wall-clock]\nChoosing groups...\n184 uncovered facts\nChoosing groups: [0.000s CPU, 0.000s wall-clock]\nBuilding translation key... [0.000s CPU, 0.000s wall-clock]\nComputing fact groups: [0.000s CPU, 0.001s wall-clock]\nBuilding STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]\nBuilding dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]\nBuilding mutex information...\nBuilding mutex information: [0.000s CPU, 0.000s wall-clock]\nTranslating task...\nProcessing axioms...\nSimplifying axioms... [0.000s CPU, 0.000s wall-clock]\nTranslator axioms removed by simplifying: 0\nComputing negative axioms... [0.000s CPU, 0.000s wall-clock]\nProcessing axioms: [0.000s CPU, 0.000s wall-clock]\nTranslating task: [0.010s CPU, 0.003s wall-clock]\n0 effect conditions simplified\n0 implied preconditions added\nDetecting unreachable propositions...\n0 operators removed\n0 axioms removed\n186 propositions removed\nDetecting unreachable propositions: [0.000s CPU, 0.005s wall-clock]\nReordering and filtering variables...\n47 of 91 variables necessary.\n0 of 0 mutex groups necessary.\n142 of 145 operators necessary.\n0 of 0 axiom rules necessary.\nReordering and filtering variables: [0.010s CPU, 0.002s wall-clock]\nTranslator variables: 47\nTranslator derived variables: 0\nTranslator facts: 94\nTranslator goal facts: 5\nTranslator mutex groups: 0\nTranslator total mutex groups size: 0\nTranslator operators: 142\nTranslator axioms: 0\nTranslator task size: 599\nTranslator peak memory: 1086320 KB\nWriting output... [0.000s CPU, 0.002s wall-clock]\nDone! [0.030s CPU, 0.031s wall-clock]\ntranslate exit code: 0\n\nINFO     Running search (/home/do/rair/nl3pddl/.venv/lib/python3.13t/site-packages/forbiditerative/builds/release/bin).\nINFO     search stdin: output.sas\nINFO     search time limit: None\nINFO     search memory limit: None\nINFO     search command line string: /home/do/rair/nl3pddl/.venv/lib/python3.13t/site-packages/forbiditerative/builds/release/bin/downward --evaluator 'h=lmcount(lm_factory=lm_exhaust(),dump_action_landmarks=true)' --always --search 'lazy_greedy([h,const(infinity())])' --internal-plan-file sas_plan < output.sas\n[t=4.6968e-05s, 10508 KB] reading input...\n[t=0.000759178s, 10508 KB] done reading input!\n[t=0.00199145s, 10896 KB] Initializing landmark count heuristic...\n[t=0.00208612s, 10896 KB] Generating landmark graph...\n[t=0.00213656s, 10896 KB] Initializing Exploration...\n[t=0.00221855s, 10896 KB] Generating landmarks by testing all facts with RPG method\n[t=0.00304038s, 10896 KB] Removed 0 reasonable or obedient reasonable orders\n[t=0.0031167s, 10896 KB] Landmarks generation time: 0.00103389s\n[t=0.00315184s, 10896 KB] Discovered 57 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00317984s, 10896 KB] 0 edges\n[t=0.00320658s, 10896 KB] Landmark graph generation time: 0.00114719s\n[t=0.00323618s, 10896 KB] Landmark graph contains 57 landmarks, of which 0 are disjunctive and 0 are conjunctive.\n[t=0.00326301s, 10896 KB] Landmark graph contains 0 orderings.\n[t=0.00329235s, 10896 KB] Dumping landmarks from landmark graph: \n[t=0.00347777s, 10896 KB] Action landmarks end.\n[t=0.00359841s, 10896 KB] Building successor generator...done!\n[t=0.00371951s, 10896 KB] peak memory difference for successor generator creation: 0 KB\n[t=0.00374428s, 10896 KB] time for successor generation creation: 3.6638e-05s\n[t=0.00377917s, 10896 KB] Variables: 47\n[t=0.00380849s, 10896 KB] FactPairs: 94\n[t=0.00383402s, 10896 KB] Bytes per state: 8\n[t=0.00410208s, 10896 KB] Conducting lazy best first search, (real) bound = 2147483647\n[t=0.0041972s, 10896 KB] 47 initial landmarks, 5 goal landmarks\n[t=0.00423997s, 10896 KB] Initial heuristic value for lmcount(lm_factory = lm_exhaust, dump_action_landmarks = true): 10\n[t=0.00427344s, 10896 KB] Completely explored state space -- no solution!\n[t=0.00431112s, 10896 KB] Actual search time: 0.000119916s\n[t=0.00435234s, 10896 KB] Expanded 0 state(s).\n[t=0.00435234s, 10896 KB] Reopened 0 state(s).\n[t=0.00435234s, 10896 KB] Evaluated 1 state(s).\n[t=0.00435234s, 10896 KB] Evaluations: 1\n[t=0.00435234s, 10896 KB] Generated 0 state(s).\n[t=0.00435234s, 10896 KB] Dead ends: 1 state(s).\n[t=0.00435234s, 10896 KB] Number of registered states: 1\n[t=0.00435234s, 10896 KB] Int hash set load factor: 1/1 = 1\n[t=0.00435234s, 10896 KB] Int hash set resizes: 0\n[t=0.00435234s, 10896 KB] Search time: 0.000252465s\n[t=0.00435234s, 10896 KB] Total time: 0.00435234s\nSearch stopped without finding a solution.\nPeak memory: 10896 KB\nRemove intermediate file output.sas\nsearch exit code: 12\n\nDriver aborting after search\nINFO     Planner time: 0.14s\n",
+        "planner_error": "",
+        "landmarks": [
+            {
+                "facts": [
+                    "Atom no_food(n6_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "eat_food n5_0 n6_0",
+                    "eat_food n6_1 n6_0"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom no_food(n2_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "eat_food n2_1 n2_0",
+                    "eat_food n3_0 n2_0"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom no_food(n0_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "eat_food n0_2 n0_3",
+                    "eat_food n0_4 n0_3",
+                    "eat_food n1_3 n0_3"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom no_food(n4_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "eat_food n3_2 n4_2",
+                    "eat_food n4_1 n4_2",
+                    "eat_food n4_3 n4_2",
+                    "eat_food n5_2 n4_2"
+                ]
+            },
+            {
+                "facts": [
+                    "Atom no_food(n5_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "eat_food n4_1 n5_1",
+                    "eat_food n5_0 n5_1",
+                    "eat_food n5_2 n5_1",
+                    "eat_food n6_1 n5_1"
+                ]
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n0_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n0_5)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n3_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n3_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n5_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n6_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n3_6)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n2_6)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n1_6)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n1_5)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n6_6)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n6_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n6_5)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n0_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n0_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n2_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n1_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n6_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n4_6)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n5_6)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n0_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n1_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n2_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom at(n6_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "eat_food n5_0 n6_0",
+                    "eat_food n6_1 n6_0"
+                ]
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n6_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n4_5)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n5_5)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n1_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n1_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n4_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n5_4)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n2_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n4_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n5_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n2_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n3_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n3_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n5_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom at(n2_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "eat_food n2_1 n2_0",
+                    "eat_food n3_0 n2_0"
+                ]
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n2_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n4_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom at(n0_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "eat_food n0_2 n0_3",
+                    "eat_food n0_4 n0_3",
+                    "eat_food n1_3 n0_3"
+                ]
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n0_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom at(n4_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "eat_food n3_2 n4_2",
+                    "eat_food n4_1 n4_2",
+                    "eat_food n4_3 n4_2",
+                    "eat_food n5_2 n4_2"
+                ]
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n4_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "Atom at(n5_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": [
+                    "eat_food n4_1 n5_1",
+                    "eat_food n5_0 n5_1",
+                    "eat_food n5_2 n5_1",
+                    "eat_food n6_1 n5_1"
+                ]
+            },
+            {
+                "facts": [
+                    "NegatedAtom at(n5_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom no_food(n6_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom no_food(n2_0)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom no_food(n0_3)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom no_food(n4_2)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            },
+            {
+                "facts": [
+                    "NegatedAtom no_food(n5_1)"
+                ],
+                "disjunctive": "False",
+                "first_achievers": []
+            }
+        ]
+    }
+}

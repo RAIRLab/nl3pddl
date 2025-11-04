@@ -66,7 +66,9 @@ def generate_sliding_puzzle_problem(n, filename, seed=42):
         f.write(f"(define (problem sliding-puzzle-{n}x{n})\n")
         f.write("  (:domain sliding-puzzle)\n\n")
         f.write("  (:objects\n")
-        f.write("    " + " ".join(tiles) + " - tile\n")
+        # Only write the tile type line if there are tiles. For 1x1, there are none.
+        if tiles:
+            f.write("    " + " ".join(tiles) + " - tile\n")
         f.write("    " + " ".join(positions) + " - position\n")
         f.write("  )\n\n")
 

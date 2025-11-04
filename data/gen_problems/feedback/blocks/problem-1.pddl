@@ -10,20 +10,20 @@
 
   (:init
     (ontable b4)
-    (ontable b3)
     (ontable b1)
     (ontable b2)
+    (ontable b3)
     (clear b4)
-    (clear b3)
     (clear b1)
     (clear b2)
+    (clear b3)
     (handempty)
   )
 
   (:goal (and
+    (ontable b2)
     (ontable b3)
-    (on b2 b3)
+    (ontable b1)
     (ontable b4)
-    (on b1 b4)
   ))
 )

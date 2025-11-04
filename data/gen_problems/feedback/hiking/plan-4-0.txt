@@ -1,2 +1,1 @@
-(climb loc1 loc6)
-(walk loc6 loc9)
+(walk loc1 loc9)

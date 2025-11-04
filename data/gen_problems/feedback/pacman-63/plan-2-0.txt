@@ -1,0 +1,6 @@
+(move_pacman n4_1 n3_1)
+(move_pacman n3_1 n2_1)
+(move_pacman n2_1 n1_1)
+(eat_food n1_1 n1_2)
+(eat_food n4_1 n4_0)
+(eat_food n3_1 n4_1)
