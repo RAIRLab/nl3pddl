@@ -1,5 +1,25 @@
 # This is the configuration file for the experiment
-# Domains are strictly determined by what is present in the data/domains folder!
+
+# Misc Settings ===============================================================
+
+# Used for cost estimation of experiments.
+price:
+  o4-mini:
+    input: 4.0e-6
+    output: 1.6e-5
+  deepseek-chat:
+    input: 2.8e-7
+    output: 4.2e-7
+  deepseek-reasoner:
+    input: 2.8e-7
+    output: 4.2e-7
+    
+# Average token usage and call counts for cost estimation
+avg-tokens:
+  input: 459      # average input tokens per model call (estimated from blocks)
+  output: 190     # average output tokens per model call (estimated from blocks)
+
+avg-calls-per-experiment: 10  # average number of model calls per experiment
 
 # Problem Generation Parameters ================================================
 
@@ -39,7 +59,7 @@ hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 5
+trials: 10
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5
@@ -52,14 +72,18 @@ kstar-n-plans: 100
 # Every possible combination of these parameters will be evaluated over
 
 domains:
-  #- bookseller
-  # - checkers-jumping
-  # - flow
-  # - hiking
-  - pacman-63 # NOT ALL PROBLEMS ARE SOLVABLE
-  # - keygrid # No plans generated!
-  # - pacman-72 # NOT ALL PROBLEMS ARE SOLVABLE
-  # - sliding-puzzle # Generator does not generate valid problems.
+  - bookseller
+  - checkers-jumping
+  - flow
+  - hiking
+  - pacman-63 
+  - keygrid 
+  - light-bubble
+  # - pacman-72 # Still very broken do not use
+  # - sudoku # Generator generates unparsable problems.
+  # - sliding-puzzle # Generator does not generate problems.
+
+
   
 # What models are we evaluating?
 # This can be any valid provider and model pair, assuming the API key is set in
@@ -71,27 +95,10 @@ models:
     # - gpt-5-nano
   deepseek:
     - deepseek-chat
+    - deepseek-reasoner
   #huggingface:
   #       - "Qwen/Qwen2.5-7B-Instruct"
   #- NousResearch/Hermes-4-405B
-
-price:
-  o4-mini:
-    input: 4.0e-6
-    output: 1.6e-5
-  deepseek-chat:
-    input: 2.8e-7
-    output: 4.2e-7
-  deepseek-reasoner:
-    input: 2.8e-7
-    output: 4.2e-7
-    
-# Average token usage and call counts for cost estimation
-avg-tokens:
-  input: 459      # average input tokens per model call (estimated from blocks)
-  output: 190     # average output tokens per model call (estimated from blocks)
-
-avg-calls-per-experiment: 10  # average number of model calls per experiment
 
 # Description classes to evaluate over, should correspond to the classes
 # present in the dataset/*/nl.json files.

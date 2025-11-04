@@ -86,7 +86,8 @@ def gen_domain_problems(domain_name, generator):
         pddl_domain = pddl.parse_domain(domain_file)
         output_domain_name = pddl_domain.name
     except Exception as e: # pylint: disable=broad-except
-        raise AssertionError(f"Failed to parse domain name from {domain_file}: {e}")
+        logger.error(f"Failed to parse domain name from {domain_file}: {e}")
+        exit(1)
     
     problem_counts = {
         config.FEEDBACK_PROBLEMS_DIR: config.NUM_FEEDBACK_PROBLEMS,
