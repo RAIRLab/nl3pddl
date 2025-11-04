@@ -25,7 +25,7 @@ def is_solvable(tiles, n):
 def generate_sliding_puzzle_problem(n, filename, seed=42):
     random.seed(seed)
 
-    size = n * n - 1
+    size = n + 5 - 1
     tiles = [f"t{i}" for i in range(1, size + 1)]
     positions = [f"p{r}{c}" for r in range(1, n + 1) for c in range(1, n + 1)]
 
