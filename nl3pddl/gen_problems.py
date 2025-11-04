@@ -7,16 +7,16 @@ the domains we evaluate over.
 import os
 import shutil
 from typing import Any, Callable
+from pathlib import Path
 
+import pddl
 from kstar_planner import planners
 
 from nl3pddl.problem_generators import PROBLEM_GENERATORS
 from nl3pddl.logger import logger
 import nl3pddl.config as config
-from pathlib import Path
-import pddl
 
-
+# TODO: merge into utils, we have a nearly identical function for kstar in feedback_eval.py
 def plan_file(
     domain_path : Path,
     problem_path : Path,
@@ -38,6 +38,7 @@ def plan_file(
         return None
     return plan_obj
 
+#TODO: move into utils
 def plan_to_string(plan_obj : dict[str, Any]) -> str:
     """
     Return a VAL parsable plan from json object output by K*
@@ -53,7 +54,11 @@ def gen_problem_till_success(
         i : int, 
         problem_file : Path, 
         domain_file : Path
-) -> dict[str, Any]: 
+) -> dict[str, Any]:
+    """ 
+    Try to generate a problem and plans on it until successful.
+    This shouldn't be necessary for good generators, but is a safeguard.
+    """
     while True:
         generator(i, problem_file)
         print(f"Generated {problem_file}")
@@ -61,6 +66,7 @@ def gen_problem_till_success(
             domain_file, problem_file
         )
         if plans is None:
+            # Alert the user we are retrying
             logger.error(
                 f"Failed to gen plans for {problem_file}, retrying..."
             )
