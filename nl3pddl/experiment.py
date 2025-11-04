@@ -418,7 +418,6 @@ def run_experiment() -> None:
 
     per_experiment_call_costs = []
     for p in param_list:
-        # Expecting PRICE to have entries like PRICE[model]["input"], PRICE[model]["output"]
         price_entry = PRICE[p.model]
         in_rate = float(price_entry["input"])  # USD per input token
         out_rate = float(price_entry["output"])  # USD per output token

@@ -28,11 +28,11 @@ FEEDBACK_PIPELINES : list[list[str]] = config["feedback-pipelines"]
 SEARCH_HEURISTICS : list[str] = config["search-heuristic"]
 
 # Pricing and estimation inputs
-PRICE_PER_TOKEN : dict[str, dict[str, float]] = config.get("price", {})
-AVG_TOKENS : dict[str, float] = config.get("avg-tokens", {"input": 0.0, "output": 0.0})
-AVERAGE_INPUT_TOKENS : float = AVG_TOKENS.get("input", 0.0)
-AVERAGE_OUTPUT_TOKENS : float = AVG_TOKENS.get("output", 0.0)
-AVERAGE_CALLS_PER_EXPERIMENT : float = config.get("avg-calls-per-experiment", 0.0)
+PRICE_PER_TOKEN : dict[str, dict[str, float]] = config["price"]
+AVG_TOKENS : dict[str, float] = config["avg-tokens"]
+AVERAGE_INPUT_TOKENS : float = AVG_TOKENS["input"]
+AVERAGE_OUTPUT_TOKENS : float = AVG_TOKENS["output"]
+AVERAGE_CALLS_PER_EXPERIMENT : float = config["avg-calls-per-experiment"]
 
 # Hardcoded paths
 PROMPT_DIR = "data/prompts"
