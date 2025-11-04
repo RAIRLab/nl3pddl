@@ -56,11 +56,13 @@ domains:
   # - checkers-jumping
   # - flow
   # - hiking
-  - pacman-63 
-  - keygrid 
+  # - pacman-63 
+  # - keygrid 
   # - pacman-72 # Still very broken do not use
+  # - sudoku # Generator generates unparsable problems.
   # - sliding-puzzle # Generator does not generate valid problems.
-  - light-bubble
+  # - light-bubble
+
   
 # What models are we evaluating?
 # This can be any valid provider and model pair, assuming the API key is set in

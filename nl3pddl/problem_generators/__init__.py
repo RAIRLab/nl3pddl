@@ -11,6 +11,7 @@ from .pacman_63 import generate_pacman_63_problem
 from .pacman_72 import generate_pacman_problem
 from .sliding_puzzle import generate_sliding_puzzle_problem
 from .lightBubble import generate_problem as generate_light_bubble_problem
+from .sudoku import generate_sudoku_problem
 
 # GENS is a dictionary mapping problem names to their respective generation functions.
 # DO NOT COMMENT OUT GENERATORS HERE; instead, modify the experiment_config.yaml to include/exclude domains.
@@ -25,5 +26,6 @@ PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
     "pacman-63": generate_pacman_63_problem,
     "pacman-72": generate_pacman_problem,
     "sliding-puzzle": generate_sliding_puzzle_problem,
-    "light-bubble": generate_light_bubble_problem
+    "light-bubble": generate_light_bubble_problem,
+    "sudoku": generate_sudoku_problem,
 }
