@@ -52,11 +52,11 @@ kstar-n-plans: 100
 # Every possible combination of these parameters will be evaluated over
 
 domains:
-  - bookseller
-  - checkers-jumping
-  - flow
-  - hiking
-  # - pacman-63 # NOT ALL PROBLEMS ARE SOLVABLE
+  #- bookseller
+  # - checkers-jumping
+  # - flow
+  # - hiking
+  - pacman-63 # NOT ALL PROBLEMS ARE SOLVABLE
   # - keygrid # No plans generated!
   # - pacman-72 # NOT ALL PROBLEMS ARE SOLVABLE
   # - sliding-puzzle # Generator does not generate valid problems.

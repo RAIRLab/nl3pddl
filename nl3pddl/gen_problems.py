@@ -38,6 +38,9 @@ def plan_file(
     if plan_obj.get("unsolvable", False):
         print("No plan found for domain and problem")
         return None
+    if plan_obj.get("timeout_triggered", False):
+        print("Planning timed out for domain and problem")
+        return None
     return plan_obj
 
 #TODO: move into utils
@@ -68,10 +71,7 @@ def gen_problem_till_success(
             domain_file, problem_file
         )
         if plans is None:
-            # Alert the user we are retrying
-            logger.error(
-                f"Failed to gen plans for {problem_file}, retrying..."
-            )
+            print(f"Failed to gen plans for {problem_file} for the above reason, retrying...")
             continue
         return plans["plans"]
 
@@ -105,7 +105,7 @@ def gen_domain_problems(domain_name, generator):
             plans = gen_problem_till_success(generator, i, problem_file, domain_file)
             # Write each plan to a file
             for j, plan in enumerate(plans):
-                print(f"Generated plan for {problem_file}: {plan}")
+                print(f"Generated plan of length {len(plan['actions'])} for problem {i}")
                 plan_str = plan_to_string(plan)
                 plan_path = os.path.join(
                     output_dir, 

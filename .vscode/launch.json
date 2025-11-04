@@ -5,11 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Driver",
+            "name": "Python Debugger: Driver Run",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/driver.py",
             "args": ["-r"],
+            "console": "integratedTerminal"
+        },
+         {
+            "name": "Python Debugger: Driver Generate",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/driver.py",
+            "args": ["-g"],
             "console": "integratedTerminal"
         }
     ]
