@@ -24,6 +24,7 @@ def generate_hanoi_problem(n, filename):
                 f.write(f"    (smaller {disks[j]} {disks[i]})\n")
         f.write("\n")
 
+
         # Initial stack: all on peg1, in size order (largest at bottom)
         for i in range(n):
             if i == 0:
