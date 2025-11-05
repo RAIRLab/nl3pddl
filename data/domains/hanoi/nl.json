@@ -1,0 +1,46 @@
+{
+    "overall": {
+        "first": "The Tower of Hanoi domain models the classic disk-moving puzzle involving n pegs and multiple disks of decreasing size stacked on the first peg.",
+        "detailed-first": "In this domain, a set of disks of different sizes are initially stacked on one peg in descending order (largest at the bottom). The goal is to move the entire stack to another peg, following the rules: only one disk can be moved at a time, a disk can only be moved if it is clear (nothing on top of it), and no larger disk may be placed on top of a smaller one. The challenge increases exponentially with the number of disks."
+    },
+    "predicates": {
+        "on": {
+            "first": "A disk is resting on a peg or another disk.",
+            "detailed-first": "Indicates that a particular disk currently sits on a peg or directly on another disk, representing its support base."
+        },
+        "on-top": {
+            "first": "A disk is directly on top of another disk.",
+            "detailed-first": "Specifies that one disk is immediately above another disk in the stack, forming part of the tower structure."
+        },
+        "clear-disk": {
+            "first": "A disk has no other disks placed on top of it.",
+            "detailed-first": "Represents that the given disk is free to be moved because no smaller disk is currently stacked above it."
+        },
+        "clear-peg": {
+            "first": "A peg has no disks currently placed on it.",
+            "detailed-first": "Marks that a given peg is empty, allowing a disk to be placed directly onto it."
+        },
+        "smaller": {
+            "first": "One disk is smaller than another.",
+            "detailed-first": "Defines a static ordering between disks based on their relative sizes. This relationship prevents larger disks from being placed on top of smaller ones."
+        }
+    },
+    "actions": {
+        "move-peg-to-peg": {
+            "first": "Move a clear disk from one empty peg to another.",
+            "detailed-first": "Transfers a disk that is clear and currently resting on a peg to another peg that is empty, updating which pegs are clear."
+        },
+        "move-disk-to-peg": {
+            "first": "Move a clear disk from on top of another disk to an empty peg.",
+            "detailed-first": "Removes a clear disk from its position on another disk and places it onto a peg that has no disks, freeing the disk below."
+        },
+        "move-peg-to-disk": {
+            "first": "Move a clear disk from a peg onto another clear, larger disk.",
+            "detailed-first": "Takes a disk that is clear and currently resting on a peg and places it onto a larger disk that is also clear, maintaining the size ordering rule."
+        },
+        "move-disk-to-disk": {
+            "first": "Move a clear disk from on top of one disk to another clear, larger disk.",
+            "detailed-first": "Transfers a disk that is clear and stacked on another disk onto a different disk that is also clear and larger, preserving the puzzle's legality constraints."
+        }
+    }
+}

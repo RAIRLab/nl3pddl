@@ -1,5 +1,5 @@
 """
-Simple utility to build PDDL problem files for the 'pacman-72' domain.
+Utility to build PDDL problem files for the 'pacman-72' domain.
 """
 
 import random
@@ -11,8 +11,8 @@ def generate_pacman_problem(n, output_file, seed=None):
     if seed is not None:
         random.seed(seed)
 
-    # Generate position names
-    positions = [f"p{x}{y}" for x in range(grid_size) for y in range(grid_size)]
+    # Generate position names (now using dashes)
+    positions = [f"p{x}-{y}" for x in range(grid_size) for y in range(grid_size)]
 
     # Randomly choose start position and food positions
     start_pos = random.choice(positions)
@@ -22,29 +22,41 @@ def generate_pacman_problem(n, output_file, seed=None):
     neighbors = []
     for x in range(grid_size):
         for y in range(grid_size):
-            current = f"p{x}{y}"
+            current = f"p{x}-{y}"
             if x + 1 < grid_size:
-                neighbors.append((current, f"p{x+1}{y}"))
-                neighbors.append((f"p{x+1}{y}", current))
+                neighbors.append((current, f"p{x+1}-{y}"))
+                neighbors.append((f"p{x+1}-{y}", current))
             if y + 1 < grid_size:
-                neighbors.append((current, f"p{x}{y+1}"))
-                neighbors.append((f"p{x}{y+1}", current))
+                neighbors.append((current, f"p{x}-{y+1}"))
+                neighbors.append((f"p{x}-{y+1}", current))
 
-    # Start building PDDL content
+    # Begin building PDDL content
     problem = f"(define (problem pacman-72-prob-{n})\n"
     problem += "    (:domain pacman-72)\n"
     problem += "    (:objects\n"
     problem += "        " + " ".join(positions) + " - position\n"
     problem += "    )\n\n"
 
-    # Initial state without negated predicates
+    # Initial state
     problem += "    (:init\n"
     problem += f"        (at {start_pos})\n"
+
+    # Add not_at for all positions except start
+    for pos in positions:
+        if pos != start_pos:
+            problem += f"        (not_at {pos})\n"
+
+    # Add food and noFood predicates
     for pos in positions:
         if pos in food_positions:
             problem += f"        (hasFood {pos})\n"
+        else:
+            problem += f"        (noFood {pos})\n"
+
+    # Add connectivity
     for (a, b) in neighbors:
         problem += f"        (connected {a} {b})\n"
+
     problem += "    )\n\n"
 
     # Goal: all food picked up

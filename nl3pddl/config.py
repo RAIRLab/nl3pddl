@@ -19,6 +19,7 @@ KSTAR_TIMEOUT : float = config["kstar-timeout"]
 THREADS : int = config["threads"]
 KSTAR_N_PLANS : int = config["kstar-n-plans"]
 SKIP_EXPERIMENT : bool = config.get("skip-experiment", False)
+ALWAYS_EVALUATE : bool = config.get("always-evaluate", False)
 
 DOMAINS : list[str] = config["domains"]
 MODELS : dict[str, list[str]] = config["models"]

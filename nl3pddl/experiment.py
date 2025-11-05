@@ -22,6 +22,7 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 
 from .config import (
+    ALWAYS_EVALUATE,
     THREADS,
     ACTION_THRESHOLD,
     HDE_THRESHOLD,
@@ -162,7 +163,6 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             {"pddl_domain":full_domain_raw}, 
             "build_domain"
         )
-        #updated_messages.get().update_score(float("inf"), 0) # Search starts here!
         return {
             "messages" : updated_messages,
             "langgraph_path": state["langgraph_path"] + ["build_domain"]
@@ -180,6 +180,9 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             try:
                 scores = val_feedback_test(d, p, json_last["pddl_domain"])
                 new_messages.update_score(scores[1] - scores[0])
+                if ALWAYS_EVALUATE:
+                    scores = val_evaluate(d, p, json_last["pddl_domain"])
+                    new_messages.get().true_score = scores[0]
             except Exception as e:
                 # If validation fails, use a penalty score (no passing tests)
                 logger.error(f"Error during validation test: {e}")
