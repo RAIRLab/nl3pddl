@@ -48,7 +48,7 @@ def generate_sudoku_problem(output_file, seed=None):
             box = f"b{(r // 2) * 2 + (c // 2) + 1}"
             problem += f"    (posdata {pos} {row} {col} {box})\n"
 
-    # All positions empty initially
+    # Mark all positions empty initially
     for pos in positions:
         problem += f"    (empty {pos})\n"
 
@@ -60,8 +60,8 @@ def generate_sudoku_problem(output_file, seed=None):
                 num = num_names[grid[r][c] - 1]
                 box = f"b{(r // 2) * 2 + (c // 2) + 1}"
 
+                # Mark position as filled (no need for not-empty)
                 problem += f"    (filled {pos})\n"
-                problem += f"    (not (empty {pos}))\n"
 
                 # not-in-row for all other rows
                 for other_r in rows:
