@@ -18,6 +18,7 @@ def generate_hanoi_problem(n, filename):
         # Init
         f.write("  (:init\n")
 
+    
         # Disk sizes (smaller relationships)
         for i in range(n):
             for j in range(i + 1, n):
