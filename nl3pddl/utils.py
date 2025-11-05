@@ -121,12 +121,44 @@ def pred_to_str(p : Predicate) -> str:
     args = [f"?{var} - {type_}" for var, type_ in zip(vars, types)]
     return f"({name} {' '.join(args)})"
 
-def grounded_pred_to_lm_str(p : Predicate) -> str:
+def grounded_pred_to_lm_str(p: Predicate) -> str:
+    """Return landmark-style string for a grounded predicate or its negation.
+
+    The landmark generator sometimes feeds us a Not(...) object
+    from the problem init. If we naively try `p.name` on that, we blow up.
+    Handle negation explicitly and return "NegatedAtom name(args)" to match
+    how landmark facts are labeled elsewhere. Positive atoms stay as
+    "Atom name(args)".
     """
-    Converts a Predicate object to a string representation.
-    This is the representation of predicates used in landmarks.
-    """
+    cls_name = p.__class__.__name__.lower()
+
+    # If this is a Not node, unwrap it to its inner predicate.
+    if cls_name == "not" or hasattr(p, "negated") or hasattr(p, "operand"):
+        inner = getattr(p, "negated", None) or getattr(p, "operand", None)
+        if inner is not None and hasattr(inner, "name") and hasattr(inner, "terms"):
+            name = inner.name
+            vars_ = [t.name for t in inner.terms]
+            return f"NegatedAtom {name}({', '.join(vars_)})"
+
+        s = str(p).strip()
+        # Expected form: (not (pred arg1 arg2 ...))
+        if s.startswith("(not "):
+            inner_str = s[len("(not "):].strip()
+            if inner_str.endswith(")"):
+                inner_str = inner_str[:-1].strip()
+            # inner_str should now look like: (pred arg1 arg2)
+            if inner_str.startswith("(") and inner_str.endswith(")"):
+                inner_core = inner_str[1:-1].strip()
+            else:
+                inner_core = inner_str
+            parts = inner_core.split()
+            if parts:
+                name = parts[0]
+                args = ", ".join(parts[1:])
+                return f"NegatedAtom {name}({args})"
+        return f"NegatedAtom {s}"
+
+    # Positive atom path
     name = p.name
-    vars = [t.name for t in p.terms]
-    args = [f"{var}" for var in vars]
-    return f"Atom {name}({', '.join(args)})"
+    vars_ = [t.name for t in p.terms]
+    return f"Atom {name}({', '.join(vars_)})"

@@ -15,13 +15,23 @@ import time
 # External package imports
 
 from dotenv import load_dotenv
-
+import tiktoken
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 
-from .config import THREADS, ACTION_THRESHOLD, HDE_THRESHOLD
+from .config import (
+    ALWAYS_EVALUATE,
+    THREADS,
+    ACTION_THRESHOLD,
+    HDE_THRESHOLD,
+    PRICE,
+    SKIP_EXPERIMENT,
+    AVERAGE_INPUT_TOKENS,
+    AVERAGE_OUTPUT_TOKENS,
+    AVERAGE_CALLS_PER_EXPERIMENT,
+)
 from .check_output import check_action_output, check_domain_syntax_output
 from .gen_prompts import action_message, domain_template, raw_domain_msg
 from .dataset import Dataset
@@ -153,7 +163,6 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
             {"pddl_domain":full_domain_raw}, 
             "build_domain"
         )
-        #updated_messages.get().update_score(float("inf"), 0) # Search starts here!
         return {
             "messages" : updated_messages,
             "langgraph_path": state["langgraph_path"] + ["build_domain"]
@@ -162,14 +171,18 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
     def check_domain_syntax(state: State):
         json_last = state["messages"].json_last()
         res = check_domain_syntax_output(d, p, json_last)
+        # Only add a new message if we found an error
         new_messages = state["messages"].insert_on_current_branch(
             res, "check_domain_syntax"
-        ) if res else state["messages"]
+        ) if res is not None else state["messages"]
         #If syntactically valid, immediatly update the score based on how well it does on the evals, note that lower is better!
         if res is None:
             try:
                 scores = val_feedback_test(d, p, json_last["pddl_domain"])
                 new_messages.update_score(scores[1] - scores[0])
+                if ALWAYS_EVALUATE:
+                    scores = val_evaluate(d, p, json_last["pddl_domain"])
+                    new_messages.get().true_score = scores[0]
             except Exception as e:
                 # If validation fails, use a penalty score (no passing tests)
                 logger.error(f"Error during validation test: {e}")
@@ -345,12 +358,17 @@ def run_experiment_instance(
     if the experiment ran without errors, and the final state of the experiment
     (in the event of an error, the final state before failure).
     """
-    graph = create_langgraph(d, p)
 
     initial_state : State = gen_initial_state(batch_id, d, p)
 
     # Langgraph experiment state
     state : State = initial_state
+
+    if SKIP_EXPERIMENT:
+        logger.info(f"Skipping experiment {batch_id} for domain {p.domain_path} with path {p.feedback_pipeline} as per configuration.")
+        return True, "Experiment skipped", state
+
+    graph = create_langgraph(d, p)
 
     # TODO: this is no longer meaningful in light of search
     config = {
@@ -395,6 +413,38 @@ def experiment_init() -> None:
         global hf_token 
         hf_token = os.environ.get("HF_API_KEY")
 
+def experiment_cost_estimate_prompt(param_list) -> None:
+    num_experiments = len(param_list)
+    per_experiment_call_costs = []
+
+    # Warn about missing price entries 
+    models = set(p.model for p in param_list)
+    for model in models:
+        if model not in PRICE:
+            print(f"Price information for model '{model}' not found. Cost estimation may be inaccurate.")
+
+    # Sum up per-experiment costs
+    for p in param_list:
+        if p.model not in PRICE:
+            continue
+        price_entry = PRICE[p.model]
+        in_rate = float(price_entry["input"])  # USD per input token
+        out_rate = float(price_entry["output"])  # USD per output token
+        call_cost = in_rate * float(AVERAGE_INPUT_TOKENS) + out_rate * float(AVERAGE_OUTPUT_TOKENS)
+        per_experiment_call_costs.append(call_cost)
+
+    estimated_total_cost = float(AVERAGE_CALLS_PER_EXPERIMENT) * sum(per_experiment_call_costs)
+
+    print(f"Experiments (param grid size): {num_experiments}")
+    print(f"Avg calls/experiment: {AVERAGE_CALLS_PER_EXPERIMENT}")
+    print(f"Avg tokens per call: in={AVERAGE_INPUT_TOKENS}, out={AVERAGE_OUTPUT_TOKENS}")
+    print(f"Estimated total cost (USD): ${estimated_total_cost:,.2f}")
+
+    choice = input("Proceed with experiment? [y/N]: ").strip().lower()
+    if choice != "y":
+        print("Aborting by user choice.")
+        exit(1)
+
 def run_experiment() -> None:
     """
     Driver, runs the experiments in parallel using the parameter grid
@@ -403,6 +453,12 @@ def run_experiment() -> None:
 
     # Load the PDDL dataset
     dataset = Dataset()
+
+    # Build full parameter list to size the run and estimate cost
+    param_list = list(param_grid(dataset))
+    
+    # Estimate cost and confirm with user before starting the experiment
+    experiment_cost_estimate_prompt(param_list)
 
     # Prepare the results output file and dir
     date_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -414,8 +470,9 @@ def run_experiment() -> None:
         writer.writerow(RESULTS_HEADER)
 
     # Run the experiments in parallel and write the results
-    args = [(dataset, params, date_time) for params in param_grid(dataset)]
+    args = [(dataset, params, date_time) for params in param_list]
     num_processes = THREADS if THREADS > 0 else len(args)
+
     print("number of processes", num_processes)
     time.sleep(1)
 
@@ -423,10 +480,13 @@ def run_experiment() -> None:
         with open(results_path, 'a', encoding="utf-8") as res_file:
             csv_writer = csv.writer(res_file)
             for res in pool.map(run_experiment_instance_star, args):
-                (success, err_msg, state) = res
-                write_message_log(state, err_msg, results_dir)
-                if success:
-                    csv_results_row = gen_csv_results(state)
-                    csv_writer.writerow(csv_results_row)
+                try:
+                    (success, err_msg, state) = res
+                    write_message_log(state, err_msg, results_dir)
+                    if success:
+                        csv_results_row = gen_csv_results(state)
+                        csv_writer.writerow(csv_results_row)
+                except Exception as e:
+                    logger.error("Error processing result: %s", e)
 
     print("Successfully joined all threads. Experiment complete.")
