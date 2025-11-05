@@ -96,6 +96,7 @@ def plt_average_eval(ndf, model, pipeline):
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     plt.savefig(f'figs/avgEval-{model}-{pipeline}.png')
+    plt.close()
 
 def plt_domain_failure_mode(ndf, model, pipeline):
     # Group by domain and count action_timeout and hde_timeout
@@ -123,6 +124,21 @@ def plt_domain_failure_mode(ndf, model, pipeline):
     plt.legend(labels=labels, loc='lower center')
     plt.savefig(f'figs/pie-{model}-{pipeline}.png')
 
+def plt_h_score_vs_true_score_progression(ndf, model, pipeline):
+    # Only that made it to the evaluation stage
+    ndf = ndf[ndf['action_timeout'] == False]
+
+    # map domain paths to domain names
+    ndf['domain_path'] = ndf['domain_path'].apply(
+        lambda x: x.split('/')[-1] if '/' in x else x)
+
+    for domain in ndf['domain_path'].unique():
+        domain_df = ndf[ndf['domain_path'] == domain]
+        plt.figure(figsize=(10, 6))
+        for desc_class in domain_df['desc_class'].unique():
+            class_df = domain_df[domain_df['desc_class'] == desc_class]
+            plt.plot(class_df['trial'], class_df['h_scores'], marker='o', label=f'H Scores - {desc_class}')
+            plt.plot(class_df['trial'], class_df['true_scores'], marker='x', label=f'True Scores - {desc_class}')
 
 def get_latest_results_file():
     import glob
@@ -174,6 +190,6 @@ def plot_all_figures(results_file = None):
             ndf = \
               df[(df['model'] == model) & (df['feedback_pipeline'] == pipeline)]
             ndf.rename(columns={'hde_runs': 'hde_steps'}, inplace=True)
-            plt_average_feedback_steps(ndf.copy(deep=True), model, pipeline)
+            #plt_average_feedback_steps(ndf.copy(deep=True), model, pipeline)
             plt_average_eval(ndf.copy(deep=True), model, pipeline)
-            plt_domain_failure_mode(ndf.copy(deep=True), model, pipeline)
+            #plt_domain_failure_mode(ndf.copy(deep=True), model, pipeline)

@@ -81,7 +81,12 @@ def domain_name(d : Dataset, h : Params) -> str:
 def feedback_pipeline_str(p : Params) -> str:
     """
     Returns a string representation of the feedback pipeline.
+
+    Used for naming output log files.
     """
     if len(p.feedback_pipeline) == 0:
         return "none"
-    return "-".join(p.feedback_pipeline)
+    if "random-single" not in p.feedback_pipeline:
+        return " - ".join(p.feedback_pipeline) + "-search"
+    else:
+        return "-".join(p.feedback_pipeline)

@@ -10,8 +10,10 @@ from forbiditerative import planners
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+
 import pddl
 
+from .config import DOMAINS
 from nl3pddl.utils import grounded_pred_to_lm_str
 
 # Define paths
@@ -22,9 +24,15 @@ OUTPUT_DIR = "data/gen_landmarks"
 # Create output directory if it doesn't exist
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-def extract_domain_name(domain_path):
-    """Extract domain name from path"""
-    return os.path.basename(os.path.dirname(domain_path))
+def extract_pddl_domain_name(domain_file: str) -> str:
+    """Parse PDDL to get the domain name string."""
+    try:
+        dom = pddl.parse_domain(domain_file)
+        return dom.name
+    except Exception as e:  # pylint: disable=broad-except
+        # Fallback to folder name if parsing fails
+        print(f"Warning: failed to parse domain name from {domain_file}: {e}")
+        return os.path.basename(os.path.dirname(domain_file))
 
 # Generates landmarks in the form of {"facts": ["Atom ontable(b2)"], "disjunctive": "False", "first_achievers": ["put-down b2"]}
 def generate_landmarks_for(domain_file, problem_file) -> dict:
@@ -57,10 +65,10 @@ def generate_landmarks():
     """
     # Find all domain and problem files
     all_data = []
-    domain_files = glob.glob(f"{DOMAINS_PATH}/*/ground.pddl")
+    domain_files = [os.path.join(DOMAINS_PATH, domain, "ground.pddl") for domain in DOMAINS]
 
     for domain_file in domain_files:
-        domain_name = extract_domain_name(domain_file)
+        domain_name = extract_pddl_domain_name(domain_file)
         # Look for problems like problem-1.pddl, problem-2.pddl, problem-3.pddl, etc.
         problem_pattern = os.path.join(PROBLEMS_PATH, domain_name, "problem-*.pddl")
         problem_files = glob.glob(problem_pattern)

@@ -30,7 +30,8 @@ RESULTS_HEADER = [
     "action_timeout_cause",
     "evals_passed",
     "total_evals",
-    #"domain_raw"
+    "h_scores",
+    "true_scores",
 ]
 
 def gen_csv_results(s : State) -> tuple:
@@ -56,6 +57,8 @@ def gen_csv_results(s : State) -> tuple:
         s["action_timeout_cause"],
         s["evals_passed"],
         s["total_evals"],
+        s["messages"].H_history_str(),
+        s["messages"].true_history_str(),
     )
 
 def write_message_log(s : State, err_msg : str, results_dir : str) -> None:

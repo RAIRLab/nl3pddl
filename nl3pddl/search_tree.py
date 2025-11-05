@@ -8,6 +8,7 @@ from typing import Any
 
 from langchain_core.messages import HumanMessage, AIMessage
 
+from nl3pddl.config import ALWAYS_EVALUATE
 from nl3pddl.params import Params
 
 class MessageTree:
@@ -36,6 +37,7 @@ class MessageTree:
         self.g = 0                              # Cost to reach this node, lower is better
         self.h = float('inf')                   # Heuristic score, lower is better
         self.score = float('inf')               # Combined score, lower is better
+        self.true_score = 0                     # True score wrt eval problems
 
     def leaves(self) -> list['MessageTree']:
         """ Returns all leaves of the tree. """
@@ -104,7 +106,10 @@ class MessageTree:
             # we fallback to this for safety
             s += f" str? (G: {self.g}, H: {self.h}, Score: {self.score})\n"
         else:
-            s += f"{self.message.type.upper()} (G: {self.g}, H: {self.h}, Score: {self.score})\n"
+            if ALWAYS_EVALUATE:
+                s += f"{self.message.type.upper()} (G: {self.g}, H: {self.h}, Score: {self.score}, Eval Score: {self.true_score})\n"
+            else:
+                s += f"{self.message.type.upper()} (G: {self.g}, H: {self.h}, Score: {self.score})\n"
         for child in self.children:
             s += child.to_str(depth + 1)
         return s
@@ -167,6 +172,7 @@ class IndexedMessageTree:
         node.children.append(new_node)
         self.index.append(len(node.children) - 1)
         new_node.json = json
+        new_node.true_score = node.true_score
         new_node.update_score(h_score, node.g + 1)
         # Evaluate the combined score using the search heuristic
         return self
@@ -247,6 +253,30 @@ class IndexedMessageTree:
         """ Updates the score of the current node, given a new heuristic score. """
         self.get().update_score(h_score, g_score)
         return self
+
+    def domain_construction_history(self) -> list['MessageTree']:
+        """ Return the history of nodes from the build_domain node to the current node """
+        node = self.get()
+        history = node.node_history()
+        # find the build_domain node
+        build_domain_index = None
+        for i, n in enumerate(history):
+            if n.langraph_node == "build_domain":
+                build_domain_index = i
+                break
+        if build_domain_index is None:
+            return []
+        return history[build_domain_index:]
+
+    def H_history_str(self) -> str:
+        """ Return a string of the hscores from the build domain node to the current node, seperated by , """
+        history = self.domain_construction_history()
+        return ", ".join([f"{n.h:.2f}" for n in history])
+    
+    def true_history_str(self) -> str:
+        """ Return a string of the true scores from the build domain node to the current node, seperated by , """
+        history = self.domain_construction_history()
+        return ", ".join([f"{n.true_score}" for n in history])
 
 #Testing...
 # tree = IndexedMessageTree(Params())

@@ -5,10 +5,11 @@ import os
 from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass
 
-from tqdm import tqdm
 import pddl
 from pddl.core import Domain, Problem
+from tqdm import tqdm
 
+from .config import DOMAINS
 from .logger import logger
 
 #TODO: this should be moved to a config file, we redefine it in gen_problems.py
@@ -23,20 +24,20 @@ LANDMARK_PROBLEM_DIR = "data/gen_landmarks" #Landmarks are only for testing prob
 def domains() -> list[str]:
     """returns a list of paths of folders in data/domains"""
     domain_paths = []
-    for root, dirs, files in os.walk("data/domains"):
+    for root, dirs, _ in os.walk("data/domains"):
         for dir_name in dirs:
             domain_path = os.path.join(root, dir_name)
             if os.path.isdir(domain_path):
                 domain_paths.append(dir_name)
     return domain_paths
 
-def get_new_domains() -> list[str]:
+def get_config_domains() -> list[str]:
     """returns a list of paths of folders in data/domains
-       marked as new in data/config.json"""
+       marked as being used in the config file"""
     new_domains = []
     for domain in domains():
         domain_path = os.path.join("data/domains", domain)
-        if os.path.isdir(domain_path):
+        if os.path.isdir(domain_path) and any(d in domain for d in DOMAINS):
             new_domains.append(domain_path)
     return new_domains
 
@@ -125,7 +126,7 @@ class Dataset:
         Reads the dataset from the data/domains folder and parses it into
         the internal data structures of the Dataset class.
         """
-        self.domain_paths = get_new_domains()
+        self.domain_paths = get_config_domains()
         for domain_path in tqdm(self.domain_paths, "Parsing Domains"):
             ground_path = os.path.join(domain_path, GROUND_TRUTH_FILE_NAME)
             try:

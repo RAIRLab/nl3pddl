@@ -97,7 +97,7 @@ def generate_flow_problem(width: int, height: int) -> str:
         result = subprocess.run(
             [
                 sys.executable, str(gen_script_path),
-                str(width), str(height), "1"
+                str(width), str(height), "1", "--terminal-only"
             ],
             capture_output=True,
             text=True,

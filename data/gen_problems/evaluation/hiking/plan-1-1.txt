@@ -1,3 +1,0 @@
-(walk loc1 loc3)
-(walk loc3 loc1)
-(walk loc1 loc3)
