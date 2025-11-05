@@ -11,8 +11,8 @@ def generate_pacman_problem(n, output_file, seed=None):
     if seed is not None:
         random.seed(seed)
 
-    # Generate position names
-    positions = [f"p{x}{y}" for x in range(grid_size) for y in range(grid_size)]
+    # Generate position names (now using dashes)
+    positions = [f"p{x}-{y}" for x in range(grid_size) for y in range(grid_size)]
 
     # Randomly choose start position and food positions
     start_pos = random.choice(positions)
@@ -22,13 +22,13 @@ def generate_pacman_problem(n, output_file, seed=None):
     neighbors = []
     for x in range(grid_size):
         for y in range(grid_size):
-            current = f"p{x}{y}"
+            current = f"p{x}-{y}"
             if x + 1 < grid_size:
-                neighbors.append((current, f"p{x+1}{y}"))
-                neighbors.append((f"p{x+1}{y}", current))
+                neighbors.append((current, f"p{x+1}-{y}"))
+                neighbors.append((f"p{x+1}-{y}", current))
             if y + 1 < grid_size:
-                neighbors.append((current, f"p{x}{y+1}"))
-                neighbors.append((f"p{x}{y+1}", current))
+                neighbors.append((current, f"p{x}-{y+1}"))
+                neighbors.append((f"p{x}-{y+1}", current))
 
     # Begin building PDDL content
     problem = f"(define (problem pacman-72-prob-{n})\n"
@@ -37,7 +37,7 @@ def generate_pacman_problem(n, output_file, seed=None):
     problem += "        " + " ".join(positions) + " - position\n"
     problem += "    )\n\n"
 
-    # Initial state with negated predicates
+    # Initial state
     problem += "    (:init\n"
     problem += f"        (at {start_pos})\n"
 
