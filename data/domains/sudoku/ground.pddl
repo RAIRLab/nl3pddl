@@ -11,7 +11,7 @@
     (posdata ?p ?r ?c ?b)
   )
 
-  (:action assign
+  (:action place-number
     :parameters (?p - pos ?r - row ?c - col ?b - box ?n - number)
     :precondition (and
       (empty ?c)
