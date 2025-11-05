@@ -1,5 +1,5 @@
 """
-Simple utility to build PDDL problem files for the 'bloxorz' domain
+Simple utility to build PDDL problem files for the 'bloxorz' domain.
 """
 
 def generate_bloxorz_problem(data_file, output_file):
@@ -11,19 +11,19 @@ def generate_bloxorz_problem(data_file, output_file):
     start_tile = None
     goal_tile = None
 
-    # Parse grid: XX = tile, II = start, GG = goal
+    # Parse grid: take two characters at a time
     for r, line in enumerate(lines, start=1):
         c = 1
         while c <= len(line):
-            ch = line[c-1:c+1]  # take two characters at a time
+            ch = line[c-1:c+1]  # grab a tile (2 characters)
             if ch in ("XX", "II", "GG"):
                 tile = f"t-{r:02d}-{c:02d}"
                 tiles.append((r, c))
                 if ch == "II":
                     start_tile = tile
-                elif ch == "II":
+                elif ch == "GG":
                     goal_tile = tile
-            c += 2  # move to next pair
+            c += 2  # move to next tile
 
     def tile_name(r, c):
         return f"t-{r:02d}-{c:02d}"
@@ -32,8 +32,8 @@ def generate_bloxorz_problem(data_file, output_file):
     adjacency = []
     tile_set = set(tiles)
     for (r, c) in tiles:
-        # east / west
-        if (r, c + 2) in tile_set:  # +2 because each tile is doubled
+        # east / west (+2 because each tile is 2 chars wide)
+        if (r, c + 2) in tile_set:
             adjacency.append((tile_name(r, c), tile_name(r, c + 2), "east"))
             adjacency.append((tile_name(r, c + 2), tile_name(r, c), "west"))
         # north / south
