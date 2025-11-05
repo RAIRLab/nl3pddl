@@ -86,10 +86,10 @@ domains:
   # - pacman-63 
   # - keygrid # too easy!
   # - light-bubble
-  # - pacman-72 # Still very broken do not use
+   - pacman-72 # Still very broken do not use
   # - sudoku # Generator generates unparsable problems.
   # - sliding-puzzle # Generator does not generate problems.
-  - hanoi
+  # - hanoi
 
 
   
