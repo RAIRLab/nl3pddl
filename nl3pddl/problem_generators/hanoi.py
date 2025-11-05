@@ -2,6 +2,8 @@ import argparse
 
 def generate_hanoi_problem(n, filename):
     
+    if n > 8:
+        n = 8
     pegs = ["peg1", "peg2", "peg3"]
     disks = [f"d{i}" for i in range(1, n + 1)]
 
