@@ -11,18 +11,19 @@ def generate_bloxorz_problem(data_file, output_file):
     start_tile = None
     goal_tile = None
 
-    # Parse grid: X = tile, B = start, G = goal
+    # Parse grid: XX = tile, II = start, GG = goal
     for r, line in enumerate(lines, start=1):
-        for c, ch in enumerate(line, start=1):
-            if ch.strip() == "":
-                continue
-            if ch in ("X", "B", "G"):
+        c = 1
+        while c <= len(line):
+            ch = line[c-1:c+1]  # take two characters at a time
+            if ch in ("XX", "II", "GG"):
                 tile = f"t-{r:02d}-{c:02d}"
                 tiles.append((r, c))
-                if ch == "B":
+                if ch == "II":
                     start_tile = tile
-                elif ch == "G":
+                elif ch == "II":
                     goal_tile = tile
+            c += 2  # move to next pair
 
     def tile_name(r, c):
         return f"t-{r:02d}-{c:02d}"
@@ -32,9 +33,9 @@ def generate_bloxorz_problem(data_file, output_file):
     tile_set = set(tiles)
     for (r, c) in tiles:
         # east / west
-        if (r, c + 1) in tile_set:
-            adjacency.append((tile_name(r, c), tile_name(r, c + 1), "east"))
-            adjacency.append((tile_name(r, c + 1), tile_name(r, c), "west"))
+        if (r, c + 2) in tile_set:  # +2 because each tile is doubled
+            adjacency.append((tile_name(r, c), tile_name(r, c + 2), "east"))
+            adjacency.append((tile_name(r, c + 2), tile_name(r, c), "west"))
         # north / south
         if (r + 1, c) in tile_set:
             adjacency.append((tile_name(r, c), tile_name(r + 1, c), "south"))
@@ -44,6 +45,8 @@ def generate_bloxorz_problem(data_file, output_file):
     problem = []
     problem.append(f"(define (problem bloxorz-prob-{data_file.split('.')[0]})")
     problem.append("    (:domain bloxorz)")
+
+    # Objects section
     problem.append("    (:objects")
     problem.append("        b1 - block")
     problem.append("        " + " ".join(tile_name(r, c) for (r, c) in tiles) + " - tile")
