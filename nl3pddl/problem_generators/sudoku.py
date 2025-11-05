@@ -1,5 +1,5 @@
 """
-Utility to build PDDL problem files for the updated 'sudoku' domain.
+Utility to build PDDL problem files for the updated 'sudoku' domain
 """
 
 import random
