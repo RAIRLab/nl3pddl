@@ -11,6 +11,7 @@ from .pacman_63 import generate_pacman_63_problem
 from .pacman_72 import generate_pacman_problem
 from .tilepuzzle import generate_sliding_puzzle_problem as generate_tilepuzzle_problem
 from .lightBubble import generate_problem as generate_bubble_problem
+from .hanoi import generate_hanoi_problem as generate_hanoi_problem
 
 # GENS is a dictionary mapping problem names to their respective generation functions.
 PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
@@ -24,5 +25,6 @@ PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
     "pacman-63": generate_pacman_63_problem,
     "tilepuzzle" : generate_tilepuzzle_problem,
     "light-bubble" : generate_bubble_problem,
-    "pacman-72": generate_pacman_problem
+    "pacman-72": generate_pacman_problem,
+    "hanoi" : generate_hanoi_problem
 }
