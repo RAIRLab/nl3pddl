@@ -13,13 +13,15 @@ from datetime import datetime
 import time
 
 # External package imports
-
 from dotenv import load_dotenv
 import tiktoken
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
+
+from langchain.globals import set_verbose
+set_verbose(True)
 
 from .config import (
     THREADS,
