@@ -45,8 +45,8 @@ if __name__ == "__main__":
     soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
     resource.setrlimit(resource.RLIMIT_NOFILE, (65535, hard))
 
-    soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
-    print(f"now is {soft}, {hard}")
+    #soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    #print(f"now is {soft}, {hard}")
 
 
     if args.generate:
