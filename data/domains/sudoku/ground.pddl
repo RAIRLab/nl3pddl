@@ -31,6 +31,6 @@
       (not (not-in-row ?n ?r))
       (not (not-in-col ?n ?c))
       (not (not-in-box ?n ?b))
-    )
-  )
+    )
+  )
 )
