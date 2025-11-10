@@ -8,7 +8,8 @@
   (:predicates
     (empty ?p - pos)
     (filled ?p - pos)
-    (posdata ?p - pos ?r - row ?c - col ?b - box)
+    (has-number ?p - pos ?n - number)
+    (posdata ?p ?r ?c ?b)
     (not-in-row ?n - number ?r - row)
     (not-in-col ?n - number ?c - col)
     (not-in-box ?n - number ?b - box)
@@ -25,10 +26,11 @@
     )
     :effect (and
       (filled ?p)
+      (has-number ?p ?n)
       (not (empty ?p))
       (not (not-in-row ?n ?r))
       (not (not-in-col ?n ?c))
       (not (not-in-box ?n ?b))
-    )
-  )
+    )
+  )
 )
