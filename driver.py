@@ -1,10 +1,15 @@
 """
 This file contains the driver for the NL3PDDL project.
 """
-
 import resource
-
 import argparse
+
+from langchain.globals import set_verbose, set_debug, set_llm_cache
+
+set_verbose(False)
+set_debug(False)
+set_llm_cache(None)
+
 import nl3pddl as n3p
 
 if __name__ == "__main__":
@@ -39,6 +44,10 @@ if __name__ == "__main__":
     # changing hard limit on open FD, sockets, pipes etc
     soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
     resource.setrlimit(resource.RLIMIT_NOFILE, (65535, hard))
+
+    soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    print(f"now is {soft}, {hard}")
+
 
     if args.generate:
         n3p.generate_problems()

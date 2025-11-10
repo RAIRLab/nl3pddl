@@ -21,9 +21,6 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 
-from langchain.globals import set_verbose
-set_verbose(True)
-
 from .config import (
     THREADS,
     ACTION_THRESHOLD,
