@@ -4,7 +4,7 @@ Utility to build PDDL problem files for the 'sudoku' domain.
 
 import random
 
-def generate_sudoku_problem(output_file, seed=None):
+def generate_sudoku_problem(n, output_file, seed=None):
     grid_size = 4  # 4x4 Sudoku example
 
     if seed is not None:
