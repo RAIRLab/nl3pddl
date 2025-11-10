@@ -1,3 +1,7 @@
+"""
+Utility to build PDDL problem files for the 'sudoku' domain.
+"""
+
 import random
 
 def generate_sudoku_problem(output_file, seed=None):
