@@ -163,5 +163,5 @@ def generate_sudoku_problem(output_file, seed=None):
         print(row)
 
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     generate_sudoku_problem("example_generated.pddl")
