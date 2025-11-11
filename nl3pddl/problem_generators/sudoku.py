@@ -1,7 +1,3 @@
-"""
-Utility to build PDDL problem files for the 'sudoku' domain.
-"""
-
 import random
 from copy import deepcopy
 
@@ -34,7 +30,6 @@ def generate_full_4x4_sudoku():
     fill_grid(grid)
     return grid
 
-
 def is_valid_partial(grid):
     """Return True if every empty cell has at least one possible candidate."""
     for r in range(4):
@@ -52,7 +47,6 @@ def is_valid_partial(grid):
                 if not possible:
                     return False
     return True
-
 
 def generate_valid_4x4_sudoku():
     """Generate a valid 4x4 Sudoku puzzle with one clue per number."""
@@ -76,7 +70,6 @@ def generate_valid_4x4_sudoku():
         # Validate the puzzle (each empty has at least one possible candidate)
         if is_valid_partial(puzzle):
             return puzzle
-
 
 def generate_sudoku_problem(output_file, seed=None):
     grid_size = 4
@@ -132,9 +125,9 @@ def generate_sudoku_problem(output_file, seed=None):
                 filled_positions.add(pos)
 
                 # Sudoku rule constraints
-                problem += f"    (not (not-in-row {num} {row}))\n"
-                problem += f"    (not (not-in-col {num} {col}))\n"
-                problem += f"    (not (not-in-box {num} {box}))\n"
+                #problem += f"    (not (not-in-row {num} {row}))\n"
+                #problem += f"    (not (not-in-col {num} {col}))\n"
+                #problem += f"    (not (not-in-box {num} {box}))\n"
 
                 for other_r in rows:
                     if other_r != row:
@@ -164,5 +157,11 @@ def generate_sudoku_problem(output_file, seed=None):
     with open(output_file, "w") as f:
         f.write(problem)
 
-if __name__ == "__main__":
+    # For debugging: show generated grid
+    print("Generated Sudoku grid (0 = empty):")
+    for row in grid:
+        print(row)
+
+
+if _name_ == "_main_":
     generate_sudoku_problem("example_generated.pddl")
