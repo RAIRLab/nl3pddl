@@ -19,6 +19,14 @@
             "program": "${workspaceFolder}/driver.py",
             "args": ["-g"],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Python Debugger: Driver Plot",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/driver.py",
+            "args": ["-p"],
+            "console": "integratedTerminal"
         }
     ]
 }

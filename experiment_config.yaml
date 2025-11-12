@@ -44,7 +44,7 @@ skip-experiment: false
 
 # Evaluate the generated domains against the evaluation problems every single step, and log 
 # the results to the csv file.
-always-evaluate: true
+always-evaluate: false
 
 # The level to log at:
 # See https://docs.python.org/3/library/logging.html#logging-levels
@@ -66,7 +66,7 @@ hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 5
+trials: 2
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5
@@ -86,8 +86,8 @@ domains:
   # - pacman-63 
   # - keygrid # too easy!
   # - light-bubble
-   - pacman-72 # Still very broken do not use
-  # - sudoku # Generator generates unparsable problems.
+  # - pacman-72
+  - sudoku # Generator generates unparsable problems.
   # - sliding-puzzle # Generator does not generate problems.
   # - hanoi
 
@@ -124,10 +124,10 @@ feedback-pipelines:
     - []
     - ["landmark"]
     - ["validate"]
-    - ["landmark", "validate"]
+    # - ["landmark", "validate"]
     - ["landmark", "random-single"]
     - ["validate", "random-single"]
-    - ["landmark", "validate", "random-single"]
+    # - ["landmark", "validate", "random-single"]
 
 # Specifies the search heuristic to use when generating plans.
 # Should be a string with valid python expression that evaluates to a number
