@@ -83,11 +83,11 @@ domains:
   # - checkers-jumping
   # - flow
   # - hiking # too easy!
-  # - pacman-63 
+  - pacman-63 
   # - keygrid # too easy!
   # - light-bubble
   # - pacman-72
-  - sudoku # Generator generates unparsable problems.
+  # - sudoku # Generator generates unparsable problems.
   # - sliding-puzzle # Generator does not generate problems.
   # - hanoi
 

@@ -13,8 +13,8 @@ def generate_pacman_63_problem(n, output_file, seed=None):
     if seed is not None:
         random.seed(seed)
 
-    # Create all nodes for the matrix
-    nodes = [f"n{i}_{j}" for i in range(num_nodes) for j in range(num_nodes)]
+    # Create all nodes for the matrix, now using dash instead of underscore
+    nodes = [f"n{i}-{j}" for i in range(num_nodes) for j in range(num_nodes)]
 
     # Randomly select start and food nodes
     start_node = random.choice(nodes)
@@ -32,15 +32,15 @@ def generate_pacman_63_problem(n, output_file, seed=None):
     connections = []
     for i in range(num_nodes):
         for j in range(num_nodes):
-            node = f"n{i}_{j}"
+            node = f"n{i}-{j}"
             # Down
             if i + 1 < num_nodes:
-                connections.append((node, f"n{i+1}_{j}"))
-                connections.append((f"n{i+1}_{j}", node))
+                connections.append((node, f"n{i+1}-{j}"))
+                connections.append((f"n{i+1}-{j}", node))
             # Right
             if j + 1 < num_nodes:
-                connections.append((node, f"n{i}_{j+1}"))
-                connections.append((f"n{i}_{j+1}", node))
+                connections.append((node, f"n{i}-{j+1}"))
+                connections.append((f"n{i}-{j+1}", node))
 
     # Build the PDDL problem text
     problem = f"(define (problem pacman-63)\n"
