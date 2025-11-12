@@ -71,7 +71,7 @@ def generate_valid_4x4_sudoku():
         if is_valid_partial(puzzle):
             return puzzle
 
-def generate_sudoku_problem(output_file, seed=None):
+def generate_sudoku_problem(_, output_file, seed=None):
     grid_size = 4
 
     if seed is not None:

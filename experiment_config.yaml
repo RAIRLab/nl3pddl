@@ -79,15 +79,15 @@ kstar-n-plans: 100
 # Every possible combination of these parameters will be evaluated over
 
 domains:
-  - bookseller
-  - checkers-jumping
-  - flow
-  - hiking # too easy!
-  - pacman-63 
+  # - bookseller
+  # - checkers-jumping
+  # - flow
+  # - hiking # too easy!
+  # - pacman-63 
   # - keygrid # too easy!
   # - light-bubble
   # - pacman-72
-  # - sudoku # Generator generates unparsable problems.
+  - sudoku # Generator generates unparsable problems.
   # - sliding-puzzle # Generator does not generate problems.
   # - hanoi
 
