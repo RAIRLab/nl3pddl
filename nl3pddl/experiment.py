@@ -6,6 +6,7 @@ This file contains the driver for the NL3PDDL project.
 import os
 import csv
 import json
+import psutil
 import random
 from typing import Literal
 from concurrent.futures import ThreadPoolExecutor
@@ -13,7 +14,6 @@ from datetime import datetime
 import time
 
 # External package imports
-
 from dotenv import load_dotenv
 import tiktoken
 from langchain.chat_models import init_chat_model
@@ -481,6 +481,11 @@ def run_experiment() -> None:
             csv_writer = csv.writer(res_file)
             for res in pool.map(run_experiment_instance_star, args):
                 try:
+                    #pid = os.getpid() 
+                    #process = psutil.Process(pid)
+                    #open_files = process.open_files()
+                    #for f in open_files:
+                    #    print(f"FD: {f.fd}, Path: {f.path}")
                     (success, err_msg, state) = res
                     write_message_log(state, err_msg, results_dir)
                     if success:
