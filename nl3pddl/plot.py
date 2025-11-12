@@ -23,7 +23,6 @@ def plt_average_feedback_steps(ndf, model, pipeline):
         lambda x: x.split('/')[-1] if '/' in x else x)
 
     stats = ndf.groupby(['domain_path', 'desc_class'])['hde_steps'].agg(["mean", "count", "std"])
-
     ci95_hi = []
     ci95_lo = []
     ms = []
@@ -55,15 +54,22 @@ def plt_average_feedback_steps(ndf, model, pipeline):
     plt.tight_layout()
     plt.savefig(f'figs/avgHDEbM-D-{model}-{pipeline}.png')
 
-def plt_average_eval(ndf, model, pipeline):
+def plt_average_eval_all_domains(ndf, title=""):
+    """ Y-axis: HDE score, X-axis: model, bars are summed over all domains, no error bars"""
+    
     # Only that made it to the evaluation stage
-    # ndf = ndf[ndf['total_evals'] > 0]
+    ndf = ndf[ndf['action_timeout'] == False]
+    #ndf = ndf[ndf['hde_timeout'] == False]
+    
+    ndf['feedback_pipeline'] = ndf['feedback_pipeline'].replace({
+        'none': 'No Feedback',
+        'landmark-random-single': 'Landmark feedback',
+        'landmark-search': 'Landmark feedback with search',
+        'validate-random-single': 'Plan feedback',
+        'validate-search': 'Plan feedback with search'
+    })
 
-    # map domain paths to domain names
-    ndf['domain_path'] = ndf['domain_path'].apply(
-        lambda x: x.split('/')[-1] if '/' in x else x)
-
-    stats = ndf.groupby(['domain_path', 'desc_class'])['evals_passed'].agg(["mean", "count", "std"])
+    stats = ndf.groupby(['model', "feedback_pipeline"])['evals_passed'].agg(["mean", "count", "std"])
 
     ci95_hi = []
     ci95_lo = []
@@ -74,10 +80,9 @@ def plt_average_eval(ndf, model, pipeline):
         ci95_lo.append(max(m - 1.96*s/math.sqrt(c), 0))
         ms.append(m)
 
-    grouped = ndf.groupby(['domain_path', 'desc_class'])[
-        'evals_passed'].mean().unstack()
+    grouped = ndf.groupby(['model', "feedback_pipeline"])['evals_passed'].mean().unstack()
     # Grouped boxplot with error bars as 95% confidence intervals
-    ax = grouped.plot.bar()
+    ax = grouped.plot.bar(figsize=(12, 5))
 
     #generate error bars based on ci_hi and ci_lo
     for i, p in enumerate(ax.patches):
@@ -90,13 +95,15 @@ def plt_average_eval(ndf, model, pipeline):
         ci_lo = ci95_lo[ind]
         plt.vlines(p.get_x() + p.get_width()/2, ci_lo, ci_hi, color='k')
 
-    plt.title(f'Evaluations Passed: {model} - {pipeline}')
-    plt.ylim(0, 10)
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.ylim(top=10)
+    plt.title(f'Average HDE Evaluation Score Across All Domains')
     plt.suptitle('')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
-    plt.savefig(f'figs/avgEval-{model}-{pipeline}.png')
-    plt.close()
+    plt.savefig(f'figs/{title}.png')
+    plt.cla()
+
 
 def plt_domain_failure_mode(ndf, model, pipeline):
     # Group by domain and count action_timeout and hde_timeout
@@ -124,21 +131,21 @@ def plt_domain_failure_mode(ndf, model, pipeline):
     plt.legend(labels=labels, loc='lower center')
     plt.savefig(f'figs/pie-{model}-{pipeline}.png')
 
-def plt_h_score_vs_true_score_progression(ndf, model, pipeline):
-    # Only that made it to the evaluation stage
-    ndf = ndf[ndf['action_timeout'] == False]
+# def plt_h_score_vs_true_score_progression(ndf, model, pipeline):
+#     # Only that made it to the evaluation stage
+#     ndf = ndf[ndf['action_timeout'] == False]
 
-    # map domain paths to domain names
-    ndf['domain_path'] = ndf['domain_path'].apply(
-        lambda x: x.split('/')[-1] if '/' in x else x)
+#     # map domain paths to domain names
+#     ndf['domain_path'] = ndf['domain_path'].apply(
+#         lambda x: x.split('/')[-1] if '/' in x else x)
 
-    for domain in ndf['domain_path'].unique():
-        domain_df = ndf[ndf['domain_path'] == domain]
-        plt.figure(figsize=(10, 6))
-        for desc_class in domain_df['desc_class'].unique():
-            class_df = domain_df[domain_df['desc_class'] == desc_class]
-            plt.plot(class_df['trial'], class_df['h_scores'], marker='o', label=f'H Scores - {desc_class}')
-            plt.plot(class_df['trial'], class_df['true_scores'], marker='x', label=f'True Scores - {desc_class}')
+#     for domain in ndf['domain_path'].unique():
+#         domain_df = ndf[ndf['domain_path'] == domain]
+#         plt.figure(figsize=(10, 6))
+#         for desc_class in domain_df['desc_class'].unique():
+#             class_df = domain_df[domain_df['desc_class'] == desc_class]
+#             plt.plot(class_df['trial'], class_df['h_scores'], marker='o', label=f'H Scores - {desc_class}')
+#             plt.plot(class_df['trial'], class_df['true_scores'], marker='x', label=f'True Scores - {desc_class}')
 
 def get_latest_results_file():
     import glob
@@ -183,13 +190,32 @@ def plot_all_figures(results_file = None):
         print(f"plotting results for {results_file}")
 
     save_previous_figs_and_clear()
+    
 
     df = pd.read_csv(results_file)
-    for model in df['model'].unique():
-        for pipeline in df['feedback_pipeline'].unique():
-            ndf = \
-              df[(df['model'] == model) & (df['feedback_pipeline'] == pipeline)]
-            ndf.rename(columns={'hde_runs': 'hde_steps'}, inplace=True)
-            #plt_average_feedback_steps(ndf.copy(deep=True), model, pipeline)
-            plt_average_eval(ndf.copy(deep=True), model, pipeline)
-            #plt_domain_failure_mode(ndf.copy(deep=True), model, pipeline)
+    df.rename(columns={'hde_runs': 'hde_steps'}, inplace=True)
+
+    #df = df[(df['model'] != 'deepseek-chat') & (df['model'] != 'deepseek-reasoner')]
+    ndf = df[(df['feedback_pipeline'] == 'none')]
+    plt_average_eval_all_domains(ndf.copy(deep=True), title="none")
+    ndf = df[(df['feedback_pipeline'] == 'none') |  
+             (df['feedback_pipeline'] == 'landmark-random-single') |
+             (df['feedback_pipeline'] == 'validate-random-single')
+            ]
+    plt_average_eval_all_domains(ndf.copy(deep=True), title="random") 
+    ndf = df[(df['feedback_pipeline'] == 'none') |  
+            (df['feedback_pipeline'] == 'landmark-random-single') |
+            (df['feedback_pipeline'] == 'validate-random-single') |
+            (df['feedback_pipeline'] == 'landmark-search') |
+            (df['feedback_pipeline'] == 'validate-search')
+        ]
+    plt_average_eval_all_domains(ndf.copy(deep=True), title="all")
+    #for model in df['model'].unique():
+    # for pipeline in df['feedback_pipeline'].unique():
+    #     #ndf = df[(df['model'] == model) & (df['feedback_pipeline'] == pipeline)]
+    #     ndf = df[(df['feedback_pipeline'] == pipeline)]
+    #     ndf.rename(columns={'hde_runs': 'hde_steps'}, inplace=True)
+    #     plt_average_eval_all_domains(ndf.copy(deep=True))
+        #plt_average_feedback_steps(ndf.copy(deep=True), model, pipeline)
+        #plt_average_eval(ndf.copy(deep=True), model, pipeline)
+        #plt_domain_failure_mode(ndf.copy(deep=True), model, pipeline)
