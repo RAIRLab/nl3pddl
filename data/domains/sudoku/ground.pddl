@@ -9,12 +9,15 @@
     (empty ?p - pos)
     (filled ?p - pos)
     (posdata ?p ?r ?c ?b)
+    (not-in-row ?n - number ?r - row)
+    (not-in-col ?n - number ?c - col)
+    (not-in-box ?n - number ?b - box)
   )
 
   (:action place-number
     :parameters (?p - pos ?r - row ?c - col ?b - box ?n - number)
     :precondition (and
-      (empty ?c)
+      (empty ?p)
       (posdata ?p ?r ?c ?b)
       (not-in-row ?n ?r)
       (not-in-col ?n ?c)
