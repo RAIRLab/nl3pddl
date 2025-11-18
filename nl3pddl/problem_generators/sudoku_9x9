@@ -1,0 +1,168 @@
+import random
+from copy import deepcopy
+
+
+def generate_full_9x9_sudoku():
+    """Generate a fully solved 9x9 Sudoku grid."""
+    grid = [[0 for _ in range(9)] for _ in range(9)]
+
+    def fill_grid(g):
+        for i in range(81):
+            r, c = divmod(i, 9)
+            if g[r][c] == 0:
+                nums = list(range(1, 10))
+                random.shuffle(nums)
+                for val in nums:
+                    # Check row and column
+                    if val not in g[r] and val not in (g[x][c] for x in range(9)):
+                        # Check 3x3 box
+                        sr, sc = (r // 3) * 3, (c // 3) * 3
+                        if all(val not in g[x][sc:sc+3] for x in range(sr, sr+3)):
+                            g[r][c] = val
+                            if fill_grid(g):
+                                return True
+                g[r][c] = 0
+                return False
+        return True
+
+    fill_grid(grid)
+    return grid
+
+
+def is_valid_partial_9x9(grid):
+    """Return True if every empty cell has at least one possible candidate."""
+    for r in range(9):
+        for c in range(9):
+            if grid[r][c] == 0:
+                possible = set(range(1, 10))
+
+                # Remove row and col values
+                possible -= set(grid[r])
+                possible -= {grid[x][c] for x in range(9)}
+
+                # Remove box values
+                sr, sc = (r // 3) * 3, (c // 3) * 3
+                for x in range(sr, sr + 3):
+                    for y in range(sc, sc + 3):
+                        possible.discard(grid[x][y])
+
+                if not possible:
+                    return False
+    return True
+
+
+def generate_valid_9x9_sudoku():
+    """Generate a 9x9 Sudoku puzzle with exactly one clue per number 1–9."""
+    while True:
+        full = generate_full_9x9_sudoku()
+
+        # Pick one cell for each number
+        keep_positions = []
+        for num in range(1, 10):
+            cells = [(r, c) for r in range(9) for c in range(9) if full[r][c] == num]
+            pos = random.choice(cells)
+            keep_positions.append(pos)
+
+        # Build puzzle
+        puzzle = deepcopy(full)
+        for r in range(9):
+            for c in range(9):
+                if (r, c) not in keep_positions:
+                    puzzle[r][c] = 0
+
+        # Ensure no dead end
+        if is_valid_partial_9x9(puzzle):
+            return puzzle
+
+
+def generate_sudoku_problem(_, output_file, seed=None):
+    grid_size = 9
+
+    if seed is not None:
+        random.seed(seed)
+
+    digits = list(range(1, 10))
+    num_names = ["one","two","three","four","five","six","seven","eight","nine"]
+
+    rows = [f"r{i}" for i in range(1, 10)]
+    cols = [f"c{i}" for i in range(1, 10)]
+    boxes = [f"b{i}" for i in range(1, 10)]
+    positions = [f"p{r}{c}" for r in range(1, 10) for c in range(1, 10)]
+
+    # Generate Sudoku puzzle
+    grid = generate_valid_9x9_sudoku()
+
+    # Start building PDDL text
+    problem = "(define (problem sudoku)\n"
+    problem += "  (:domain sudoku)\n\n"
+
+    # Objects
+    problem += "  (:objects\n"
+    problem += "    " + " ".join(positions) + " - pos\n"
+    problem += "    " + " ".join(rows) + " - row\n"
+    problem += "    " + " ".join(cols) + " - col\n"
+    problem += "    " + " ".join(boxes) + " - box\n"
+    problem += "    " + " ".join(num_names) + " - number\n"
+    problem += "  )\n\n"
+
+    # Init section
+    problem += "  (:init\n"
+    for r in range(grid_size):
+        for c in range(grid_size):
+            pos = f"p{r+1}{c+1}"
+            row = f"r{r+1}"
+            col = f"c{c+1}"
+            box = f"b{(r // 3) * 3 + (c // 3) + 1}"
+            problem += f"    (posdata {pos} {row} {col} {box})\n"
+
+    filled_positions = set()
+    for r in range(grid_size):
+        for c in range(grid_size):
+            if grid[r][c] != 0:
+                pos = f"p{r+1}{c+1}"
+                num = num_names[grid[r][c] - 1]
+                row = f"r{r+1}"
+                col = f"c{c+1}"
+                box = f"b{(r // 3) * 3 + (c // 3) + 1}"
+
+                # Mark filled cell
+                problem += f"    (filled {pos})\n"
+                filled_positions.add(pos)
+
+                # Rule exclusions
+                for other_r in rows:
+                    if other_r != row:
+                        problem += f"    (not-in-row {num} {other_r})\n"
+                for other_c in cols:
+                    if other_c != col:
+                        problem += f"    (not-in-col {num} {other_c})\n"
+                for other_b in boxes:
+                    if other_b != box:
+                        problem += f"    (not-in-box {num} {other_b})\n"
+
+    # Mark empty positions
+    for pos in positions:
+        if pos not in filled_positions:
+            problem += f"    (empty {pos})\n"
+
+    problem += "  )\n\n"
+
+    # Goal
+    problem += "  (:goal (and\n"
+    for pos in positions:
+        problem += f"    (filled {pos})\n"
+    problem += "  ))\n"
+    problem += ")\n"
+
+    # Save to file
+    with open(output_file, "w") as f:
+        f.write(problem)
+
+    # Print Sudoku for debugging
+    print("Generated 9x9 Sudoku grid (0 = empty):")
+    for row in grid:
+        print(row)
+
+
+if __name__ == "__main__":
+    generate_sudoku_problem("unused", "example_generated_9x9.pddl")
