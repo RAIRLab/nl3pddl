@@ -165,4 +165,4 @@ def generate_sudoku_problem(_, output_file, seed=None):
 
 
 if __name__ == "__main__":
-    generate_sudoku_problem("unused", "example_generated_9x9.pddl")
+    generate_sudoku_problem("example_generated_9x9.pddl")
