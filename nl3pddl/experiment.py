@@ -36,7 +36,7 @@ from .check_output import check_action_output, check_domain_syntax_output
 from .gen_prompts import action_message, domain_template, raw_domain_msg
 from .dataset import Dataset
 from .params import Params, action_names, domain_name, param_grid
-from .feedback_eval import multi_landmark_feedback, multi_val_feedback, val_evaluate, val_feedback_test
+from .feedback_eval import hde_evaluate, multi_landmark_feedback, multi_val_feedback, val_evaluate, val_feedback_test
 from .logger import logger
 from .response_schema import ActionSchema, DomainSchema
 from .experiment_state import State, gen_initial_state        
@@ -263,7 +263,7 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         }
     
     def final_evaluation(state: State):
-        res = val_evaluate(d, p, state["messages"].json_last()["pddl_domain"])
+        res = hde_evaluate(d, p, state["messages"].json_last()["pddl_domain"])
         logger.debug(
             "Running evaluation of the domain. passed %d/%d",
             res[0], res[1]

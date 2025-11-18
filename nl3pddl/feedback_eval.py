@@ -67,6 +67,35 @@ def raw_validate(
     shutil.rmtree(tmpdir)
     return None
 
+def raw_validate_str_plan(
+    new_domain_str : str,
+    problem_path : str,
+    plan_str : str
+) -> str | None:
+    """
+    Given a domain string (presumably produced by the model), a problem path,
+    and a plan string, validates the plan against the problem in the new domain.
+    """
+    tmpdir = tempfile.mkdtemp()
+    new_domain_path = new_pipe(tmpdir, 'new_domain.pddl', new_domain_str)
+    plan_path = new_pipe(tmpdir, 'plan.txt', plan_str)
+    try:
+        #Forward direction, try plan from the new domain in the original domain
+        args = [VAL_PATH, "-v", "-e", new_domain_path, problem_path, plan_path]
+        _ = subprocess.check_output(args)
+    except CalledProcessError as err:
+        shutil.rmtree(tmpdir)
+        stdoutstr = err.output.decode() if err.output else "No STDOUT"
+        stderrstr = err.stderr.decode() if err.stderr else "No STDERR"
+        if err.returncode == -11:
+            return "The PDDL for the generated domain is invalid, and caused val to crash. Please ensure it is valid STRIPS style PDDL. Check to ensure that the typing is correct."
+        if err.returncode == 1:
+            # It is imperative we return the stderr here, as VAL outputs nothing on stdout on plan check failure.
+            return "VAL Failed to execute the plan: " + stderrstr
+        return "VAL Failed with the following outputs STDOUT:\n" + stdoutstr + "\nSTDERR:\n" + stderrstr
+    shutil.rmtree(tmpdir)
+    return None
+
 def val_evaluate(
         d : Dataset, 
         p : Params,
@@ -246,6 +275,54 @@ def val_feedback_test(
             if result is None:
                 continue
             problem_valid = False
+        if problem_valid:
+            valid_count += 1
+        total_count += 1
+    return valid_count, total_count
+
+def hde_evaluate(
+        d : Dataset, 
+        p : Params,
+        new_domain_str : str
+) -> tuple[int, int]:
+    """
+    Checks how many plans are valid in the new domain from the evaluation set.
+    Then genererates plans in the new domain for the evaluation problems,
+    and checks if those plans are valid in the original domain.
+    """
+    valid_count = 0
+    total_count = 0
+    # Get the evaluation problem paths
+    problem_paths = d.evaluation_problem_paths[p.domain_path]
+    for problem_path in problem_paths:
+        problem_valid = True
+        # If any of the plans for the problem fail, report it as the problem failing HDE
+        for plan_path in d.evaluation_plan_paths[problem_path]:
+            result = raw_validate(new_domain_str, problem_path, plan_path)
+            if result is None:
+                continue
+            problem_valid = False
+        # Now generate plans in the new domain for the problem
+        plan_obj = raw_kstar(new_domain_str, problem_path)
+        if plan_obj is None:
+            problem_valid = False
+        if plan_obj.get("unsolvable", False):
+            problem_valid = False
+        if not plan_obj.get("plans", []):
+            problem_valid = False
+        else:
+            for new_plan in plan_obj["plans"]:
+                # Dump plan to string
+                new_plan_str = "\n".join(f"({a})" for a in new_plan["actions"])
+                # Validate in original domain
+                result = raw_validate(
+                    str(d.domains[p.domain_path]),
+                    problem_path,
+                    new_plan_str
+                )
+                if result is None:
+                    continue
+                problem_valid = False
         if problem_valid:
             valid_count += 1
         total_count += 1

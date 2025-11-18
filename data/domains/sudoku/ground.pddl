@@ -8,7 +8,7 @@
   (:predicates
     (empty ?p - pos)
     (filled ?p - pos)
-    (posdata ?p ?r ?c ?b)
+    (posdata ?p - pos ?r - row ?c - col ?b - box)
     (not-in-row ?n - number ?r - row)
     (not-in-col ?n - number ?c - col)
     (not-in-box ?n - number ?b - box)
