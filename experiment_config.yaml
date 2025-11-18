@@ -40,7 +40,7 @@ plans-per-problem: 2
 # This flag is used to test the experiment setup without actually running
 # any experiments. When set to true, the experiment will skip running and only
 # the parallelism will be tested.
-skip-experiment: true 
+skip-experiment: false 
 
 # Evaluate the generated domains against the evaluation problems every single step, and log 
 # the results to the csv file.
@@ -66,7 +66,7 @@ hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 1
+trials: 5
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5
@@ -79,17 +79,20 @@ kstar-n-plans: 100
 # Every possible combination of these parameters will be evaluated over
 
 domains:
+  - blocks
+  - miconic
   - bookseller
   - checkers-jumping
   - flow
-  - hiking # too easy!
+  - hiking
   - pacman-63 
-  - keygrid # too easy!
+  - keygrid
   - light-bubble
   - pacman-72
   - hanoi
-  - sudoku
   - bloxorz
+  # - sudoku
+
 
   # - sliding-puzzle # Generator does not generate problems.
   # - sudoku-9x9 # Too hard 

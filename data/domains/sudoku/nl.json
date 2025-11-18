@@ -32,7 +32,7 @@
     },
     "actions": {
         "place-number": {
-            "first": "Assigns a number to an empty position while maintaining Sudoku constraints.",
+            "first": "Assigns a number to an empty position while maintaining sudoku constraints.",
             "detailed-first": "This action allows the planner to place a number into a cell that is currently empty. Its preconditions require that the cell is empty, that it belongs to a specific row, column, and box (via 'posdata'), and that the number does not already exist in that row, column, or box. The effects mark the cell as filled, remove the 'empty' predicate, and remove the corresponding 'not-in-row', 'not-in-col', and 'not-in-box' predicates to indicate the number’s placement."
         }
     }

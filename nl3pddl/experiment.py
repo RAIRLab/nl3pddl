@@ -227,15 +227,15 @@ def create_langgraph(d: Dataset, p: Params) -> CompiledStateGraph:
         except Exception as e:
             msg = f"Error during feedback generation: {str(e)}" 
             logger.error(msg)
-            val_feedback_msgs = [HumanMessage(msg)]
+            feedback_messages = [HumanMessage(msg)]
 
         state["messages"].insert_batch_on_current_branch(
             feedback_messages, langraph_node="feedback"
         )
-        state["messages"] = state["messages"].select_best_branch()
+        updated = state["messages"].select_best_branch()
         
         return {
-            "messages": state["messages"],
+            "messages": updated,
             "landmark_passed": landmark_feedback_msgs is None,
             "val_passed": val_feedback_msgs is None,
             # TODO: not used anymore

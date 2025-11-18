@@ -160,7 +160,7 @@ class Dataset:
                 self.feedback_problems[problem_path] = problem
                 self.feedback_plan_paths[problem_path] = \
                     [os.path.join(feedback_dir, f"plan-{i}-{j}.txt") for j in
-                     range(1, PLANS_PER_PROBLEM + 1)]
+                     range(0, PLANS_PER_PROBLEM)]
                 for plan_path in self.feedback_plan_paths[problem_path]:
                     if os.path.exists(plan_path):
                         self.feedback_plans[plan_path] = parse_plan(plan_path)
