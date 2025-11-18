@@ -75,7 +75,7 @@ def generate_valid_9x9_sudoku():
             return puzzle
 
 
-def generate_sudoku_problem(_, output_file, seed=None):
+def generate_sudoku_9x9_problem(_, output_file, seed=None):
     grid_size = 9
 
     if seed is not None:
@@ -164,5 +164,5 @@ def generate_sudoku_problem(_, output_file, seed=None):
         print(row)
 
 
-if __name__ == "__main__":
-    generate_sudoku_problem("example_generated_9x9.pddl")
+# if __name__ == "__main__":
+#     generate_sudoku_problem("example_generated_9x9.pddl")

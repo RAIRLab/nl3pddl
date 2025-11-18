@@ -150,6 +150,61 @@ def generate_bloxorz_problem(data_file, output_file):
         f.write("\n".join(problem))
 
 
+def generate_bloxorz_problem(n, output_file):
+    """Generate a Bloxorz problem with a random grid and write to output_file."""
+    grid = generate_bloxorz_grid(num_islands=n)
+    lines = grid
+    tiles = []
+    start_tile = None
+    goal_tile = None
+
+    for r, line in enumerate(lines, start=1):
+        for c, ch in enumerate(line, start=1):
+            if ch.strip() == "":
+                continue
+            if ch in ("X", "B", "G", "S"):  # include S in tiles too
+                tile = f"t-{r:02d}-{c:02d}"
+                tiles.append((r, c))
+                if ch == "B":
+                    start_tile = tile
+                elif ch == "G":
+                    goal_tile = tile
+
+    def tile_name(r, c):
+        return f"t-{r:02d}-{c:02d}"
+
+    adjacency = []
+    tile_set = set(tiles)
+    for (r, c) in tiles:
+        if (r, c + 1) in tile_set:
+            adjacency.append((tile_name(r, c), tile_name(r, c + 1), "east"))
+            adjacency.append((tile_name(r, c + 1), tile_name(r, c), "west"))
+        if (r + 1, c) in tile_set:
+            adjacency.append((tile_name(r, c), tile_name(r + 1, c), "south"))
+            adjacency.append((tile_name(r + 1, c), tile_name(r, c), "north"))
+
+    problem = []
+    problem.append(f"(define (problem bloxorz-prob-{n})")
+    problem.append("    (:domain bloxorz)")
+    problem.append("    (:objects")
+    problem.append("        b1 - block")
+    problem.append("        " + " ".join(tile_name(r, c) for (r, c) in tiles) + " - tile")
+    problem.append("    )\n")
+
+    problem.append("    (:init")
+    problem.append(f"        (standing-on b1 {start_tile})")
+    for t1, t2, d in adjacency:
+        problem.append(f"        (adjacent {t1} {t2} {d})")
+    problem.append("    )\n")
+
+    problem.append("    (:goal (and")
+    problem.append(f"        (standing-on b1 {goal_tile})")
+    problem.append("    ))")
+    problem.append(")")
+
+    with open(output_file, "w") as f:
+        f.write("\n".join(problem))
+
 if __name__ == "__main__":
     random.seed(14)  # for reproducible output
     grid = generate_bloxorz_grid(num_islands=6)
