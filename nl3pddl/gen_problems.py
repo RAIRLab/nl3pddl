@@ -127,6 +127,9 @@ def generate_problems() -> None:
     if os.path.exists(config.GENERATED_PROBLEMS_DIR):
         shutil.rmtree(config.GENERATED_PROBLEMS_DIR)
     items = PROBLEM_GENERATORS.items()
-    with ThreadPoolExecutor(max_workers=len(items)) as pool:
-        pool.map(generate_problem, items)
-    print("Joined all processes")
+    for item in items:
+        generate_problem(item)
+    # TODO: DO NOT GENERATE IN PARALLEL; DOES NOT GENERATE ALL PLANS
+    # with ThreadPoolExecutor(max_workers=len(items)) as pool:
+    #     pool.map(generate_problem, items)
+    # print("Joined all processes")

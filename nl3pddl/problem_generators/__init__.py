@@ -13,6 +13,8 @@ from .sliding_puzzle import generate_sliding_puzzle_problem
 from .lightBubble import generate_problem as generate_light_bubble_problem
 from .sudoku import generate_sudoku_problem
 from .hanoi import generate_hanoi_problem as generate_hanoi_problem
+from .bloxorz_maze_generator import generate_bloxorz_problem
+from .sudoku_9x9 import generate_sudoku_9x9_problem
 
 # GENS is a dictionary mapping problem names to their respective generation functions.
 # DO NOT COMMENT OUT GENERATORS HERE; instead, modify the experiment_config.yaml to include/exclude domains.
@@ -29,5 +31,7 @@ PROBLEM_GENERATORS : dict[str, Callable[[Any], None]] = {
     "sliding-puzzle": generate_sliding_puzzle_problem,
     "light-bubble": generate_light_bubble_problem,
     "sudoku": generate_sudoku_problem,
-    "hanoi" : generate_hanoi_problem
+    "hanoi" : generate_hanoi_problem,
+    "bloxorz": generate_bloxorz_problem,
+    "sudoku-9x9": generate_sudoku_9x9_problem
 }
