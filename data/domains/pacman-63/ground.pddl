@@ -5,10 +5,9 @@
    (:predicates
       (has_food ?location - node)
       (no_food ?location - node)
-      (is_safe ?location - node)               ; complement of is_opponent_ghost
+      (is_safe ?location - node)               ; No ghosts present
       (is_visited ?location - node)
       (at ?location - node)
-      (not_at ?location - node)
       (connected ?n1 ?n2 - node)
    )
 
@@ -16,14 +15,12 @@
       :parameters (?start ?end - node)
       :precondition (and
          (at ?start)
-         (not_at ?end)
          (no_food ?end)
          (connected ?start ?end)
          (is_safe ?end)
       )
       :effect (and
          (at ?end)
-         (not_at ?start)
          (is_visited ?end)
       )
    )
@@ -38,7 +35,6 @@
       )
       :effect (and
          (at ?end)
-         (not_at ?start)
          (no_food ?end)
          (is_visited ?end)
       )

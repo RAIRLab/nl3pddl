@@ -52,12 +52,10 @@ def generate_pacman_63_problem(n, output_file, seed=None):
     # Initial state
     problem += "    (:init\n"
 
-    # Pacman's position
+    # Pacman's starting position
     for node in nodes:
         if node == start_node:
             problem += f"        (at {node})\n"
-        else:
-            problem += f"        (not_at {node})\n"
 
     # Food distribution
     for node in nodes:
