@@ -23,7 +23,7 @@
         },
         "at": {
             "first": "Pacman is currently at a node.",
-            "detailed-first": "Shows Pacman’s current position in the environment."
+            "detailed-first": "Shows Pacman's current position in the environment."
         },
         "connected": {
             "first": "Two nodes are connected.",
