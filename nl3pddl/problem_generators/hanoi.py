@@ -25,8 +25,7 @@ def generate_hanoi_problem(n, filename):
             for j in range(i + 1, n):
                 f.write(f"    (smaller {disks[j]} {disks[i]})\n")
         f.write("\n")
-
-
+        
         # Initial stack: all on peg1, in size order (largest at bottom)
         for i in range(n):
             if i == 0:
@@ -35,7 +34,7 @@ def generate_hanoi_problem(n, filename):
             else:
                 # smaller disk on top of previous one
                 f.write(f"    (on-top {disks[i]} {disks[i-1]})\n")
-                f.write(f"    (on {disks[i]} {disks[i-1]})\n")
+                #f.write(f"    (on {disks[i]} {disks[i-1]})\n") //
 
         # Clear top disk and clear other pegs
         f.write(f"    (clear-disk {disks[-1]})\n")
