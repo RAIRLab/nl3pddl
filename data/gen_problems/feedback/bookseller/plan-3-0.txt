@@ -1,6 +1,0 @@
-(loadfirst drone1 book2 loc1)
-(flydrone drone1 loc1 loc4)
-(unloadfinal drone1 book2 loc4)
-(loadfirst drone1 book4 loc4)
-(flydrone drone1 loc4 loc1)
-(unloadfinal drone1 book4 loc1)

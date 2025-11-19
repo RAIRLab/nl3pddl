@@ -1,42 +1,38 @@
 {
-    "overall": {
-        "first": "The Hiking domain involves navigating a trail with various terrain features such as hills and water bodies, aiming to reach a designated goal location.",
-        "detailed-first": "This domain models a hiking scenario where a hiker can move between adjacent locations along a trail. The environment includes different terrain types, such as hills and water bodies, which may affect the hiker's movement options. The hiker starts at a specific location and must navigate through the trail to reach a goal location. The planning problem focuses on determining a sequence of walking and climbing actions that allow the hiker to successfully traverse the terrain and reach the goal while adhering to the constraints imposed by the terrain features."
+  "overall": {
+    "first": "The Hiking domain involves navigating through various terrains, such as flat areas and hills, while avoiding wet locations to reach a destination.",
+    "detailed-first": "This domain models a hiking scenario where a hiker travels between adjacent locations. The terrain includes flat and hilly areas, and some locations may be wet, preventing further movement from them. The hiker starts at a specific dry location and must plan a route to the goal, moving only from dry places and choosing appropriate actions to traverse flat or hilly terrain."
+  },
+  "predicates": {
+    "at": {
+      "first": "The hiker is at a specific location.",
+      "detailed-first": "Indicates the hiker’s current position in the environment. The hiker can only be at one location at a time."
     },
-    "predicates": {
-        "at": {
-            "first": "The hiker is at a specific location.",
-            "detailed-first": "Indicates the hiker’s current position within the hiking area. At any time, the hiker can be located at exactly one place."
-        },
-        "isHill": {
-            "first": "The location is a hill.",
-            "detailed-first": "Indicates that the location is a hill, which may affect the hiker's movement options."
-        },
-        "isWater": {
-            "first": "The location is a water body.",
-            "detailed-first": "Indicates that the location is a water body, which may impede the hiker's movement."
-        },
-        "isGoal": {
-            "first": "The location is the goal.",
-            "detailed-first": "Indicates that the location is the goal, which the hiker is trying to reach."
-        },
-        "adjacent": {
-            "first": "The locations are adjacent.",
-            "detailed-first": "Indicates that the two locations are next to each other, allowing for easier movement between them."
-        },
-        "onTrail" : {
-            "first": "The location is on the trail.",
-            "detailed-first": "Indicates that the location is on the designated hiking trail."
-        }
+    "isDry": {
+      "first": "The location is dry.",
+      "detailed-first": "Indicates that the location is dry, allowing the hiker to move from this location. Wet locations cannot be used as starting points for movement."
     },
-    "actions": {
-        "walk": {
-            "first": "Begin walking along the trail.",
-            "detailed-first": "This action initiates walking along the designated trail, allowing the player to explore the hiking area."
-        },
-        "climb": {
-            "first": "Begin climbing the hill.",
-            "detailed-first": "This action initiates climbing the hill, allowing the player to ascend to a higher elevation and enjoy the view."
-        }
+    "isHill": {
+      "first": "The location is a hill.",
+      "detailed-first": "Indicates that the location is hilly terrain, which can be climbed by the hiker using the climb action."
+    },
+    "isFlat": {
+      "first": "The location is flat terrain.",
+      "detailed-first": "Indicates that the location is flat terrain, suitable for walking using the walk action."
+    },
+    "adjacent": {
+      "first": "The locations are adjacent.",
+      "detailed-first": "Specifies that two locations are directly connected, allowing the hiker to move between them."
     }
+  },
+  "actions": {
+    "walk": {
+      "first": "Walk to an adjacent flat location.",
+      "detailed-first": "This action moves the hiker from a dry location to an adjacent flat location. The hiker must start on dry ground and can only walk onto flat terrain."
+    },
+    "climb": {
+      "first": "Climb to an adjacent hill location.",
+      "detailed-first": "This action moves the hiker from a dry location to an adjacent hill. The hiker must begin on a dry location and can climb up to the hilly terrain."
+    }
+  }
 }

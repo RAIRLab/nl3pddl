@@ -1,5 +1,28 @@
 # This is the configuration file for the experiment
-# Domains are strictly determined by what is present in the data/domains folder!
+
+# Misc Settings ===============================================================
+
+# Used for cost estimation of experiments.
+price:
+  o4-mini:
+    input: 4.0e-6
+    output: 1.6e-5
+  gpt-5-nano:
+    input: 5e-8
+    output: 4e-7
+  deepseek-chat:
+    input: 2.8e-7
+    output: 4.2e-7
+  deepseek-reasoner:
+    input: 2.8e-7
+    output: 4.2e-7
+    
+# Average token usage and call counts for cost estimation
+avg-tokens:
+  input: 459      # average input tokens per model call (estimated from blocks)
+  output: 190     # average output tokens per model call (estimated from blocks)
+
+avg-calls-per-experiment: 10  # average number of model calls per experiment
 
 # Problem Generation Parameters ================================================
 
@@ -13,6 +36,15 @@ evaluation-problems: 10
 plans-per-problem: 2
 
 # General Experiment Config Parameters =========================================
+
+# This flag is used to test the experiment setup without actually running
+# any experiments. When set to true, the experiment will skip running and only
+# the parallelism will be tested.
+skip-experiment: false 
+
+# Evaluate the generated domains against the evaluation problems every single step, and log 
+# the results to the csv file.
+always-evaluate: false
 
 # The level to log at:
 # See https://docs.python.org/3/library/logging.html#logging-levels
@@ -30,11 +62,11 @@ threads: -1
 action-threshold: 5
 
 # Maximum number of reprompts to refine the domain.
-hde-threshold: 5
+hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 5
+trials: 2
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5
@@ -45,24 +77,39 @@ kstar-n-plans: 100
 # Grid Parameters ==============================================================
 # The following parameters define a parameter grid to evaluate over.
 # Every possible combination of these parameters will be evaluated over
-# every single domain in the dataset/domains folder.
 
+domains:
+  - bookseller
+  - checkers-jumping
+  - flow
+  - hiking # too easy!
+  - pacman-63 
+  - keygrid # too easy!
+  - light-bubble
+  - pacman-72
+  - hanoi
+  - sudoku
+  - bloxorz
+
+  # - sliding-puzzle # Generator does not generate problems.
+  # - sudoku-9x9 # Too hard 
+
+
+  
 # What models are we evaluating?
 # This can be any valid provider and model pair, assuming the API key is set in
 # the ENV file and passed in.
 models:
-  openai:
-    - o4-mini
+  #openai:
+    # - o4-mini
     #    - gpt-4o-mini
     # - gpt-5-nano
-  #deepseek:
-  #        - deepseek-chat
+  deepseek:
+   - deepseek-chat
+   - deepseek-reasoner
   #huggingface:
   #       - "Qwen/Qwen2.5-7B-Instruct"
   #- NousResearch/Hermes-4-405B
-
-#Supported model providers are: together, azure_openai, groq, ibm, azure_ai, deepseek, bedrock, google_anthropic_vertex, google_genai, o
-#│llama, cohere, xai, huggingface, perplexity, anthropic, openai, fireworks, mistralai, google_vertexai, bedrock_converse
 
 # Description classes to evaluate over, should correspond to the classes
 # present in the dataset/*/nl.json files.
@@ -80,8 +127,10 @@ feedback-pipelines:
     - []
     - ["landmark"]
     - ["validate"]
-    - ["landmark", "validate"]
-    - ["landmark", "validate", "random-single"]
+    # - ["landmark", "validate"]
+    - ["landmark", "random-single"]
+    - ["validate", "random-single"]
+    # - ["landmark", "validate", "random-single"]
 
 # Specifies the search heuristic to use when generating plans.
 # Should be a string with valid python expression that evaluates to a number
@@ -94,5 +143,3 @@ search-heuristic:
 # Should the model be presented with a description of predicates from the
 # problem set when initially generating the domain?
 give-pred-description: [true]
-
-

@@ -152,10 +152,10 @@ def check_action_output(
     # Check if the predicates are valid
     res = pred_syntax_check(preds)
     if isinstance(res, PipelineResult):
-        return bad_pred_list_template.format(
+        return HumanMessage(bad_pred_list_template.format(
             predicates=preds, 
             error=res.message
-        )
+        ))
 
     # Check if the action string is valid
     res = action_syntax_check(action_str)
