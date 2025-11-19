@@ -56,8 +56,6 @@ def generate_pacman_63_problem(n, output_file, seed=None):
     for node in nodes:
         if node == start_node:
             problem += f"        (at {node})\n"
-        else:
-            problem += f"        (not_at {node})\n"
 
     # Food distribution
     for node in nodes:

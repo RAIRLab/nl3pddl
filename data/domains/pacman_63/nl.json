@@ -25,10 +25,6 @@
             "first": "Pacman is currently at a node.",
             "detailed-first": "Shows Pacman’s current position in the environment."
         },
-        "not_at": {
-            "first": "Pacman is not at this node.",
-            "detailed-first": "Indicates that Pacman is not currently at the node."
-        },
         "connected": {
             "first": "Two nodes are connected.",
             "detailed-first": "Defines the map layout by indicating which nodes have direct paths between them. Movement and eating actions require connectivity."
