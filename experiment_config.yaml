@@ -17,7 +17,7 @@ plans-per-problem: 2
 # This flag is used to test the experiment setup without actually running
 # any experiments. When set to true, the experiment will skip running and only
 # the parallelism will be tested.
-skip-experiment: false 
+skip-experiment: false
 
 # The level to log at:
 # See https://docs.python.org/3/library/logging.html#logging-levels
@@ -39,7 +39,7 @@ hde-threshold: 10
 
 # How many times the entire parameter grid is repeated with randomized seeds 
 # for LLM generation. Used for statistical significance.
-trials: 5
+trials: 2
 
 # Timeout for KStar in seconds (Used during landmark evaluation)
 kstar-timeout: 5
@@ -69,11 +69,11 @@ models:
     # - o4-mini
     #    - gpt-4o-mini
     # - gpt-5-nano
-  deepseek:
-    - deepseek-chat
-  #huggingface:
-  #       - "Qwen/Qwen2.5-7B-Instruct"
-  #- NousResearch/Hermes-4-405B
+  #deepseek:
+  #  - deepseek-chat
+  huggingface:
+         - "Qwen/Qwen2.5-7B-Instruct"
+         - "NousResearch/Hermes-4-405B"
 
 price:
   o4-mini:
